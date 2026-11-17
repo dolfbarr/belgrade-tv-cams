@@ -34,6 +34,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+          cache-dependency-glob: "tools/catalog-probe/uv.lock"
 
       - name: Lint & test catalog-probe
         working-directory: tools/catalog-probe
