@@ -1,0 +1,34 @@
+# Git worktrees
+.worktrees/
+
+# Gradle & Android
+.gradle/
+**/build/
+local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
+captures/
+.navigation/
+.externalNativeBuild/
+.cxx/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Python / uv / ruff / pytest
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
