@@ -3,6 +3,7 @@
 package rs.belgrade.tvcams.ui.tv
 
 import android.view.KeyEvent
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,10 +29,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,6 +65,9 @@ import rs.belgrade.tvcams.domain.model.CameraCategory
 import rs.belgrade.tvcams.domain.model.StreamTransportType
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.StripFilter
+import rs.belgrade.tvcams.domain.tv.TvKeyCode
+import rs.belgrade.tvcams.domain.tv.TvKeyPhase
+import rs.belgrade.tvcams.domain.tv.TvKeyRouter
 import rs.belgrade.tvcams.domain.tv.TvRemoteAction
 import rs.belgrade.tvcams.domain.tv.TvStageState
 import rs.belgrade.tvcams.player.DualTransportCameraSurface
@@ -96,7 +97,11 @@ fun CameraStageScreen(
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
 ) {
     val stageFocusRequester = remember { FocusRequester() }
-    var okLongPressConsumed by remember { mutableStateOf(false) }
+    val keyRouter = remember { TvKeyRouter() }
+
+    BackHandler(enabled = true) {
+        onAction(TvRemoteAction.NavigateBack)
+    }
 
     LaunchedEffect(state.overlayMode) {
         if (state.overlayMode != OverlayMode.QUICK_STRIP) {
@@ -108,18 +113,25 @@ fun CameraStageScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .focusRequester(stageFocusRequester)
-            .focusable()
             .onPreviewKeyEvent { keyEvent ->
-                handleTvRemoteKeyEvent(
-                    nativeEvent = keyEvent.nativeKeyEvent,
-                    eventType = keyEvent.type,
+                val phase = when (keyEvent.type) {
+                    KeyEventType.KeyDown -> TvKeyPhase.DOWN
+                    KeyEventType.KeyUp -> TvKeyPhase.UP
+                    else -> return@onPreviewKeyEvent false
+                }
+                val decision = keyRouter.route(
+                    keyCode = mapAndroidKeyCode(keyEvent.nativeKeyEvent.keyCode),
+                    phase = phase,
+                    repeatCount = keyEvent.nativeKeyEvent.repeatCount,
                     overlayMode = state.overlayMode,
-                    okLongPressConsumed = okLongPressConsumed,
-                    onSetLongPressConsumed = { okLongPressConsumed = it },
-                    onAction = onAction,
                 )
-            },
+                if (decision.action != null) {
+                    onAction(decision.action)
+                }
+                decision.consumed
+            }
+            .focusRequester(stageFocusRequester)
+            .focusable(),
     ) {
         // Layer 0: Permanent edge-to-edge 1920x1080 camera stream surface (zero layout shift)
         DualTransportCameraSurface(
@@ -173,99 +185,24 @@ fun CameraStageScreen(
     }
 }
 
-private fun handleTvRemoteKeyEvent(
-    nativeEvent: KeyEvent,
-    eventType: KeyEventType,
-    overlayMode: OverlayMode,
-    okLongPressConsumed: Boolean,
-    onSetLongPressConsumed: (Boolean) -> Unit,
-    onAction: (TvRemoteAction) -> Unit,
-): Boolean {
-    val keyCode = nativeEvent.keyCode
-
-    // Always support dedicated TV channel rockers and info/bookmark buttons
-    if (eventType == KeyEventType.KeyDown && nativeEvent.repeatCount == 0) {
-        when (keyCode) {
-            KeyEvent.KEYCODE_CHANNEL_UP -> {
-                onAction(TvRemoteAction.ZapNext)
-                return true
-            }
-            KeyEvent.KEYCODE_CHANNEL_DOWN -> {
-                onAction(TvRemoteAction.ZapPrevious)
-                return true
-            }
-            KeyEvent.KEYCODE_INFO -> {
-                onAction(TvRemoteAction.ToggleInfoOrSelect)
-                return true
-            }
-            KeyEvent.KEYCODE_BOOKMARK -> {
-                onAction(TvRemoteAction.ToggleFavoriteCurrent)
-                return true
-            }
-            KeyEvent.KEYCODE_MENU,
-            KeyEvent.KEYCODE_GUIDE,
-            -> {
-                onAction(TvRemoteAction.OpenQuickStrip)
-                return true
-            }
-            KeyEvent.KEYCODE_BACK -> {
-                onAction(TvRemoteAction.NavigateBack)
-                return true
-            }
-        }
-    }
-
-    // When Quick Strip is open, let Compose focus system traverse chips & camera cards
-    if (overlayMode == OverlayMode.QUICK_STRIP) {
-        return false
-    }
-
-    // Stage D-pad handling in HUD_VISIBLE and PURE_CAMERA modes
-    when (keyCode) {
-        KeyEvent.KEYCODE_DPAD_CENTER,
-        KeyEvent.KEYCODE_ENTER,
-        KeyEvent.KEYCODE_NUMPAD_ENTER,
-        -> {
-            if (eventType == KeyEventType.KeyDown) {
-                if (nativeEvent.repeatCount == 0) {
-                    onSetLongPressConsumed(false)
-                } else if (!okLongPressConsumed && nativeEvent.repeatCount >= 1) {
-                    onSetLongPressConsumed(true)
-                    onAction(TvRemoteAction.ToggleFavoriteCurrent)
-                }
-                return true
-            }
-            if (eventType == KeyEventType.KeyUp) {
-                if (!okLongPressConsumed) {
-                    onAction(TvRemoteAction.ToggleInfoOrSelect)
-                }
-                onSetLongPressConsumed(false)
-                return true
-            }
-        }
-
-        KeyEvent.KEYCODE_DPAD_RIGHT -> if (eventType == KeyEventType.KeyDown) {
-            onAction(TvRemoteAction.ZapNext)
-            return true
-        }
-
-        KeyEvent.KEYCODE_DPAD_LEFT -> if (eventType == KeyEventType.KeyDown) {
-            onAction(TvRemoteAction.ZapPrevious)
-            return true
-        }
-
-        KeyEvent.KEYCODE_DPAD_DOWN -> if (eventType == KeyEventType.KeyDown && nativeEvent.repeatCount == 0) {
-            onAction(TvRemoteAction.OpenQuickStrip)
-            return true
-        }
-
-        KeyEvent.KEYCODE_DPAD_UP -> if (eventType == KeyEventType.KeyDown && nativeEvent.repeatCount == 0) {
-            onAction(TvRemoteAction.ToggleZapScope)
-            return true
-        }
-    }
-
-    return false
+private fun mapAndroidKeyCode(keyCode: Int): TvKeyCode = when (keyCode) {
+    KeyEvent.KEYCODE_DPAD_CENTER,
+    KeyEvent.KEYCODE_ENTER,
+    KeyEvent.KEYCODE_NUMPAD_ENTER,
+    -> TvKeyCode.DPAD_CENTER
+    KeyEvent.KEYCODE_DPAD_LEFT -> TvKeyCode.DPAD_LEFT
+    KeyEvent.KEYCODE_DPAD_RIGHT -> TvKeyCode.DPAD_RIGHT
+    KeyEvent.KEYCODE_DPAD_UP -> TvKeyCode.DPAD_UP
+    KeyEvent.KEYCODE_DPAD_DOWN -> TvKeyCode.DPAD_DOWN
+    KeyEvent.KEYCODE_CHANNEL_UP -> TvKeyCode.CHANNEL_UP
+    KeyEvent.KEYCODE_CHANNEL_DOWN -> TvKeyCode.CHANNEL_DOWN
+    KeyEvent.KEYCODE_INFO -> TvKeyCode.INFO
+    KeyEvent.KEYCODE_BOOKMARK -> TvKeyCode.BOOKMARK
+    KeyEvent.KEYCODE_MENU,
+    KeyEvent.KEYCODE_GUIDE,
+    -> TvKeyCode.MENU
+    KeyEvent.KEYCODE_BACK -> TvKeyCode.BACK
+    else -> TvKeyCode.OTHER
 }
 
 @Composable

@@ -20,6 +20,9 @@ import rs.belgrade.tvcams.domain.stream.FailoverDecision
 import rs.belgrade.tvcams.domain.stream.SnapshotUrlBuilder
 import rs.belgrade.tvcams.domain.stream.StreamFailoverTracker
 import rs.belgrade.tvcams.domain.tv.OverlayMode
+import rs.belgrade.tvcams.domain.tv.TvKeyCode
+import rs.belgrade.tvcams.domain.tv.TvKeyPhase
+import rs.belgrade.tvcams.domain.tv.TvKeyRouter
 import rs.belgrade.tvcams.domain.tv.TvRemoteAction
 import rs.belgrade.tvcams.domain.tv.TvStageReducer
 import rs.belgrade.tvcams.domain.tv.TvStageState
@@ -239,5 +242,34 @@ class DomainSuiteTest {
         val backFromPure = TvStageReducer.reduce(state, TvRemoteAction.NavigateBack)
         assertTrue(backFromPure.shouldExitApp)
         assertNull(backFromPure.state.noticeMessage)
+    }
+
+    @Test
+    fun `tv key router distinguishes short press OK from hold OK favorite and respects quick strip focus`() {
+        val router = TvKeyRouter()
+
+        // Short OK in PURE_CAMERA: KeyDown(repeat=0) consumes without firing, KeyUp fires ToggleInfoOrSelect
+        val downShort = router.route(TvKeyCode.DPAD_CENTER, TvKeyPhase.DOWN, repeatCount = 0, OverlayMode.PURE_CAMERA)
+        assertTrue(downShort.consumed)
+        assertNull(downShort.action)
+
+        val upShort = router.route(TvKeyCode.DPAD_CENTER, TvKeyPhase.UP, repeatCount = 0, OverlayMode.PURE_CAMERA)
+        assertTrue(upShort.consumed)
+        assertEquals(TvRemoteAction.ToggleInfoOrSelect, upShort.action)
+
+        // Hold OK in HUD_VISIBLE: KeyDown(repeat=1) fires ToggleFavoriteCurrent once; KeyUp does not toggle HUD
+        router.route(TvKeyCode.DPAD_CENTER, TvKeyPhase.DOWN, repeatCount = 0, OverlayMode.HUD_VISIBLE)
+        val downHold = router.route(TvKeyCode.DPAD_CENTER, TvKeyPhase.DOWN, repeatCount = 1, OverlayMode.HUD_VISIBLE)
+        assertTrue(downHold.consumed)
+        assertEquals(TvRemoteAction.ToggleFavoriteCurrent, downHold.action)
+
+        val upAfterHold = router.route(TvKeyCode.DPAD_CENTER, TvKeyPhase.UP, repeatCount = 0, OverlayMode.HUD_VISIBLE)
+        assertTrue(upAfterHold.consumed)
+        assertNull(upAfterHold.action)
+
+        // In QUICK_STRIP mode, D-pad arrows & OK pass through (consumed = false) so Compose FilterChips/Cards focus
+        val stripRight = router.route(TvKeyCode.DPAD_RIGHT, TvKeyPhase.DOWN, repeatCount = 0, OverlayMode.QUICK_STRIP)
+        assertFalse(stripRight.consumed)
+        assertNull(stripRight.action)
     }
 }

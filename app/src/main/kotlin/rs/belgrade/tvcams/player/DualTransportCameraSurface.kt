@@ -1,6 +1,7 @@
 package rs.belgrade.tvcams.player
 
 import android.graphics.BitmapFactory
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
@@ -39,6 +40,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import rs.belgrade.tvcams.R
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.StreamDescriptor
 import rs.belgrade.tvcams.domain.model.StreamTransportType
@@ -214,9 +216,16 @@ private fun HlsStreamRenderer(
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { viewContext ->
-            PlayerView(viewContext).apply {
+            (LayoutInflater.from(viewContext).inflate(
+                R.layout.player_view_texture,
+                null,
+                false,
+            ) as PlayerView).apply {
                 useController = false
                 resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+                isFocusable = false
+                isFocusableInTouchMode = false
+                descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT,
