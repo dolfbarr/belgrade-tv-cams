@@ -102,12 +102,13 @@ class CameraStageViewModel(
             return
         }
 
-        if (next.activeCameraId != null && next.activeCameraId != previous.activeCameraId) {
+        val nextCameraId = next.activeCameraId
+        if (nextCameraId != null && nextCameraId != previous.activeCameraId) {
             val nextPrimaryTransport = next.activeCamera?.streams?.firstOrNull()?.type
                 ?: StreamTransportType.HLS
             _telemetry.value = PlaybackTelemetry.Connecting(nextPrimaryTransport)
             viewModelScope.launch {
-                favoritesRepository.setLastCamera(next.activeCameraId)
+                favoritesRepository.setLastCamera(nextCameraId)
             }
         }
 
