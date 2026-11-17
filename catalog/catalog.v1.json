@@ -1,0 +1,1057 @@
+{
+  "schema_version": 1,
+  "revision": 2026111721,
+  "updated_at": "2026-11-17T21:32:10Z",
+  "cameras": [
+    {
+      "id": "bg-brankov-most",
+      "name": "Brankov most — Terazijski tunel",
+      "streets": [
+        "Brankov most",
+        "Brankova",
+        "Terazijski tunel",
+        "Pop Lukina"
+      ],
+      "municipality": "Stari Grad / Novi Beograd",
+      "category": "BRIDGES",
+      "direction": "Pogled duž Brankove ulice ka Novom Beogradu i ulazu u Terazijski tunel",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_1.jpg",
+      "coordinates": {
+        "lat": 44.8149,
+        "lon": 20.4533
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/brankov.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_1.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-gazela",
+      "name": "Most Gazela",
+      "streets": [
+        "Most Gazela",
+        "Autoput E-75",
+        "Savska",
+        "Bulevar vojvode Mišića"
+      ],
+      "municipality": "Savski Venac / Novi Beograd",
+      "category": "BRIDGES",
+      "direction": "Kolovozne trake mosta Gazela preko Save u oba smera",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_2.jpg",
+      "coordinates": {
+        "lat": 44.8019,
+        "lon": 20.4408
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/gazela.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_2.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-most-na-adi",
+      "name": "Most na Adi — Bulevar Milutina Milankovića",
+      "streets": [
+        "Most na Adi",
+        "Bulevar Milutina Milankovića",
+        "Jurija Gagarina"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BRIDGES",
+      "direction": "Severni prilaz Mostu na Adi sa novobeogradske petlje",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_4.jpg",
+      "coordinates": {
+        "lat": 44.8054,
+        "lon": 20.4152
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/ada.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_4.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-pancevacki-most",
+      "name": "Pančevački most",
+      "streets": [
+        "Pančevački most",
+        "Bulevar despota Stefana",
+        "Dragoslava Srejovića"
+      ],
+      "municipality": "Palilula",
+      "category": "BRIDGES",
+      "direction": "Gradski prilaz i uključenje na Pančevački most preko Dunava",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_7.jpg",
+      "coordinates": {
+        "lat": 44.8229,
+        "lon": 20.4856
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/pancevac.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_7.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-plavi-most",
+      "name": "Plavi most — Autoput",
+      "streets": [
+        "Vojislava Ilića",
+        "Autoput E-75",
+        "Mokroluška"
+      ],
+      "municipality": "Voždovac / Zvezdara",
+      "category": "BRIDGES",
+      "direction": "Petlja Plavi most iznad autoputa Beograd–Niš",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_14.jpg",
+      "coordinates": {
+        "lat": 44.7824,
+        "lon": 20.5021
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/plavimost.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_14.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-slavija",
+      "name": "Trg Slavija",
+      "streets": [
+        "Trg Slavija",
+        "Kralja Milana",
+        "Beogradska",
+        "Nemanjina",
+        "Makenzijeva"
+      ],
+      "municipality": "Vračar / Savski Venac",
+      "category": "SQUARES",
+      "direction": "Kružni tok na Trgu Slavija i prilazne gradske arterije",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_8.jpg",
+      "coordinates": {
+        "lat": 44.8025,
+        "lon": 20.4664
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/slavija.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_8.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-autokomanda",
+      "name": "Autokomanda",
+      "streets": [
+        "Bulevar oslobođenja",
+        "Vojvode Stepe",
+        "Autoput E-75",
+        "Tabanovačka"
+      ],
+      "municipality": "Voždovac / Savski Venac",
+      "category": "SQUARES",
+      "direction": "Kružni tok i petlja Autokomanda ka Voždovcu i autoputu",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_3.jpg",
+      "coordinates": {
+        "lat": 44.7894,
+        "lon": 20.4648
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/autokomanda.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_3.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-trg-republike",
+      "name": "Trg Republike",
+      "streets": [
+        "Trg Republike",
+        "Kolarčeva",
+        "Francuska",
+        "Vase Čarapića"
+      ],
+      "municipality": "Stari Grad",
+      "category": "SQUARES",
+      "direction": "Centralni gradski trg ispred Narodnog muzeja i Narodnog pozorišta",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
+      "coordinates": {
+        "lat": 44.8162,
+        "lon": 20.4603
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/trgrepublike.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-trg-nikole-pasica",
+      "name": "Trg Nikole Pašića",
+      "streets": [
+        "Trg Nikole Pašića",
+        "Dečanska",
+        "Bulevar kralja Aleksandra"
+      ],
+      "municipality": "Stari Grad",
+      "category": "SQUARES",
+      "direction": "Saobraćajnica duž Trga Nikole Pašića ka Domu Narodne skupštine",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_20.jpg",
+      "coordinates": {
+        "lat": 44.8124,
+        "lon": 20.4628
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/trgnikole.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_20.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-savski-trg",
+      "name": "Savski trg",
+      "streets": [
+        "Savski trg",
+        "Nemanjina",
+        "Karađorđeva",
+        "Savska"
+      ],
+      "municipality": "Savski Venac",
+      "category": "SQUARES",
+      "direction": "Obodni saobraćaj na Savskom trgu pored zgrade stare Železničke stanice",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_19.jpg",
+      "coordinates": {
+        "lat": 44.8082,
+        "lon": 20.4561
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/zeleznicka.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_19.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-bogoslovija",
+      "name": "Bogoslovija",
+      "streets": [
+        "Mije Kovačevića",
+        "Dragoslava Srejovića",
+        "Severni bulevar"
+      ],
+      "municipality": "Palilula",
+      "category": "SQUARES",
+      "direction": "Kružni tok kod Bogoslovije ka Pančevačkom mostu i Zvezdari",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_5.jpg",
+      "coordinates": {
+        "lat": 44.8152,
+        "lon": 20.4918
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/bogoslovija.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_5.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-kruzni-tok-nbg",
+      "name": "Kružni tok Novi Beograd",
+      "streets": [
+        "Bulevar Mihajla Pupina",
+        "Omladinskih brigada",
+        "Pariske komune"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "SQUARES",
+      "direction": "Kružni tok kod Opštine Novi Beograd",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_21.jpg",
+      "coordinates": {
+        "lat": 44.8206,
+        "lon": 20.4139
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/opstinanbg.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_21.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-vukov-spomenik",
+      "name": "Vukov spomenik",
+      "streets": [
+        "Bulevar kralja Aleksandra",
+        "Ruzveltova",
+        "Kraljice Marije"
+      ],
+      "municipality": "Zvezdara / Palilula / Vračar",
+      "category": "SQUARES",
+      "direction": "Raskrsnica kod Vukovog spomenika i Elektrotehničkog fakulteta",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_6.jpg",
+      "coordinates": {
+        "lat": 44.8051,
+        "lon": 20.4774
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/vuk.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_6.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-bulevar-mihajla-pupina",
+      "name": "Bulevar Mihajla Pupina",
+      "streets": [
+        "Bulevar Mihajla Pupina",
+        "Ušće",
+        "Antifašističke borbe"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "Pravac pored Palate Srbija i Ušća ka Brankovom mostu",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_9.jpg",
+      "coordinates": {
+        "lat": 44.8178,
+        "lon": 20.4319
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/pupina.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_9.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-nemanjina",
+      "name": "Nemanjina ulica",
+      "streets": [
+        "Nemanjina",
+        "Kneza Miloša",
+        "Sarajevska"
+      ],
+      "municipality": "Savski Venac",
+      "category": "BOULEVARDS",
+      "direction": "Raskrsnica Nemanjine i Kneza Miloša između Savskog trga i Slavije",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_11.jpg",
+      "coordinates": {
+        "lat": 44.8058,
+        "lon": 20.4607
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/nemanjina.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_11.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-takovska",
+      "name": "Takovska ulica",
+      "streets": [
+        "Takovska",
+        "Bulevar kralja Aleksandra",
+        "Kneza Miloša",
+        "Svetogorska"
+      ],
+      "municipality": "Palilula / Stari Grad",
+      "category": "BOULEVARDS",
+      "direction": "Potez Takovske ulice od Glavne pošte i Skupštine ka Cvijićevoj",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_13.jpg",
+      "coordinates": {
+        "lat": 44.8117,
+        "lon": 20.4676
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/takovska.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_13.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-bulevar-despota-stefana",
+      "name": "Bulevar despota Stefana",
+      "streets": [
+        "Bulevar despota Stefana",
+        "Cvijićeva",
+        "Džordža Vašingtona"
+      ],
+      "municipality": "Stari Grad / Palilula",
+      "category": "BOULEVARDS",
+      "direction": "Saobraćajni koridor od centra grada ka Pančevačkom mostu",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_17.jpg",
+      "coordinates": {
+        "lat": 44.8172,
+        "lon": 20.4721
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/despotastefana.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_17.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-jurija-gagarina",
+      "name": "Jurija Gagarina",
+      "streets": [
+        "Jurija Gagarina",
+        "Omladinskih brigada",
+        "Gandijeva"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "Novobeogradski blokovi — bulevar sa tramvajskim koridorom",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_12.jpg",
+      "coordinates": {
+        "lat": 44.8038,
+        "lon": 20.3982
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/gagarina.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_12.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-autoput-nbg-genex",
+      "name": "Autoput Novi Beograd — Genex",
+      "streets": [
+        "Autoput E-75",
+        "Bulevar Arsenija Čarnojevića",
+        "Narodnih heroja"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "Autoput kroz Novi Beograd kod kule Genex (Zapadna kapija)",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_10.jpg",
+      "coordinates": {
+        "lat": 44.8195,
+        "lon": 20.4044
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/genex.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_10.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-vrcin-ulaz",
+      "name": "Beograd (Vrčin) — Ulaz na autoput",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Bubanj Potok — Vrčin"
+      ],
+      "municipality": "Grocka / Voždovac",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Beograd–Vrčin, izlaz iz Beograda ka Nišu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.jpg",
+      "coordinates": {
+        "lat": 44.6961,
+        "lon": 20.5731
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-vrcin-izlaz",
+      "name": "Beograd (Vrčin) — Prilaz Beogradu",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Vrčin — Bubanj Potok"
+      ],
+      "municipality": "Grocka / Voždovac",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Beograd–Vrčin, ulazak u Beograd iz smera Niša",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
+      "coordinates": {
+        "lat": 44.6965,
+        "lon": 20.5725
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-simanovci-ulaz",
+      "name": "Šimanovci — Ulaz na autoput",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Dobanovci — Šimanovci"
+      ],
+      "municipality": "Surčin / Pećinci",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni prilaz Beogradu na koridoru E-70, smer od Beograda ka Šidu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam12/index.jpg",
+      "coordinates": {
+        "lat": 44.8691,
+        "lon": 20.0984
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam12/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam12/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-simanovci-izlaz",
+      "name": "Šimanovci — Prilaz Beogradu",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Šimanovci — Aerodrom Nikola Tesla"
+      ],
+      "municipality": "Surčin / Pećinci",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni prilaz Beogradu na koridoru E-70, smer ka Surčinu i Beogradu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam11/index.jpg",
+      "coordinates": {
+        "lat": 44.8694,
+        "lon": 20.0991
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam11/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam11/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-stara-pazova-ulaz",
+      "name": "Stara Pazova — Ulaz na autoput",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Batajnica — Stara Pazova"
+      ],
+      "municipality": "Zemun / Stara Pazova",
+      "category": "HIGHWAYS",
+      "direction": "Severni prilaz Beogradu na koridoru E-75, smer od Beograda ka Novom Sadu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam2/index.jpg",
+      "coordinates": {
+        "lat": 44.9912,
+        "lon": 20.2038
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam2/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam2/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-stara-pazova-izlaz",
+      "name": "Stara Pazova — Prilaz Beogradu",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Stara Pazova — Batajnica"
+      ],
+      "municipality": "Zemun / Stara Pazova",
+      "category": "HIGHWAYS",
+      "direction": "Severni prilaz Beogradu na koridoru E-75, smer iz Novog Sada ka Beogradu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam1/index.jpg",
+      "coordinates": {
+        "lat": 44.9908,
+        "lon": 20.2044
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam1/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam1/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-obrenovac-ulaz",
+      "name": "Obrenovac — Ulaz na Miloš Veliki",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Surčin — Obrenovac"
+      ],
+      "municipality": "Obrenovac",
+      "category": "HIGHWAYS",
+      "direction": "Jugozapadni prilaz Beogradu na autoputu Miloš Veliki, smer ka Čačku",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam4/index.jpg",
+      "coordinates": {
+        "lat": 44.6518,
+        "lon": 20.2335
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam4/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam4/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-obrenovac-izlaz",
+      "name": "Obrenovac — Prilaz Beogradu",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Obrenovac — Surčin"
+      ],
+      "municipality": "Obrenovac",
+      "category": "HIGHWAYS",
+      "direction": "Jugozapadni prilaz Beogradu na autoputu Miloš Veliki, izlaz ka Surčinu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam3/index.jpg",
+      "coordinates": {
+        "lat": 44.6522,
+        "lon": 20.2341
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam3/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam3/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+name: Catalog Health Sync & Pages Deploy
+
+on:
+  schedule:
+    # Probe Belgrade upstream camera endpoints daily at 04:15 UTC
+    - cron: "15 4 * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "catalog/**"
+      - "tools/catalog-probe/**"
+      - ".github/workflows/catalog-sync.yml"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "catalog-pages"
+  cancel-in-progress: false
+
+jobs:
+  probe-catalog:
+    name: Probe Upstream Streams & Validate Manifest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Lint & test catalog-probe
+        working-directory: tools/catalog-probe
+        run: |
+          uv run ruff check .
+          uv run pytest
+
+      - name: Probe live Belgrade camera endpoints
+        run: |
+          uv run --project tools/catalog-probe catalog-probe \
+            --output catalog/catalog.v1.json \
+            --output app/src/main/assets/seed_catalog.v1.json
+
+      - name: Commit updated stream ordering on schedule
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet catalog/catalog.v1.json app/src/main/assets/seed_catalog.v1.json; then
+            git add catalog/catalog.v1.json app/src/main/assets/seed_catalog.v1.json
+            git commit -m "chore(catalog): refresh Belgrade camera manifest health"
+            git push
+          fi
+
+      - name: Upload Pages catalog artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: catalog
+
+  deploy-pages:
+    name: Publish Static Catalog to GitHub Pages
+    needs: probe-catalog
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
