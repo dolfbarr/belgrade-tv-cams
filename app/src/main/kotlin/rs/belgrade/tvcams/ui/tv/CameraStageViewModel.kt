@@ -12,26 +12,33 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
 import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.model.Camera
+import rs.belgrade.tvcams.domain.model.SerbiaCity
 import rs.belgrade.tvcams.domain.model.StreamTransportType
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.TvRemoteAction
 import rs.belgrade.tvcams.domain.tv.TvStageReducer
 import rs.belgrade.tvcams.domain.tv.TvStageState
+import rs.belgrade.tvcams.domain.weather.CurrentWeather
+import rs.belgrade.tvcams.domain.weather.WeatherRepository
 import rs.belgrade.tvcams.player.PlaybackTelemetry
 
 class CameraStageViewModel(
     private val catalogCoordinator: CatalogBootstrapCoordinator,
     private val favoritesRepository: FavoritesRepository,
+    private val weatherRepository: WeatherRepository,
 ) : ViewModel() {
 
     private val _stageState = MutableStateFlow(TvStageState.initial(cameras = emptyList()))
@@ -41,6 +48,9 @@ class CameraStageViewModel(
         PlaybackTelemetry.Connecting(StreamTransportType.HLS),
     )
     val telemetry: StateFlow<PlaybackTelemetry> = _telemetry.asStateFlow()
+
+    private val _currentWeather = MutableStateFlow<CurrentWeather?>(null)
+    val currentWeather: StateFlow<CurrentWeather?> = _currentWeather.asStateFlow()
 
     private val _exitEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val exitEvents = _exitEvents.asSharedFlow()
@@ -59,9 +69,11 @@ class CameraStageViewModel(
     private var autoHideJob: Job? = null
     private var noticeDismissJob: Job? = null
     private var autoHideEnabled: Boolean = true
+    private var lastWeatherCity: SerbiaCity? = null
 
     init {
         bootstrap()
+        observeActiveCameraWeather()
     }
 
     private fun bootstrap() {
@@ -75,10 +87,11 @@ class CameraStageViewModel(
                 favoriteIds = prefs.favoriteIds,
                 initialCameraId = prefs.lastCameraId,
                 zapScope = prefs.zapScope,
+                showClockOverlay = prefs.showClockOverlay,
+                showWeatherOverlay = prefs.showWeatherOverlay,
             )
             scheduleAutoHideIfEligible()
 
-            // Background conditional GET against GitHub Pages static catalog
             when (val sync = catalogCoordinator.syncRemote(initialManifest.revision)) {
                 is CatalogSyncOutcome.Applied -> {
                     dispatch(TvRemoteAction.CatalogRefreshed(sync.manifest.cameras))
@@ -87,6 +100,34 @@ class CameraStageViewModel(
                 is CatalogSyncOutcome.Rejected,
                 is CatalogSyncOutcome.Offline,
                 -> Unit
+            }
+        }
+    }
+
+    private fun observeActiveCameraWeather() {
+        viewModelScope.launch {
+            combine(
+                _stageState.map { it.activeCamera }.distinctUntilChanged { a, b -> a?.id == b?.id },
+                _stageState.map { it.showWeatherOverlay }.distinctUntilChanged(),
+            ) { cam, showWeather ->
+                cam to showWeather
+            }.collectLatest { (cam, showWeather) ->
+                if (!showWeather || cam == null) {
+                    return@collectLatest
+                }
+                val camCity = cam.city
+                if (lastWeatherCity != null && lastWeatherCity != camCity) {
+                    _currentWeather.value = null
+                }
+                val coords = cam.coordinates
+                while (isActive) {
+                    val fetched = weatherRepository.getCurrentWeather(coords.lat, coords.lon)
+                    if (fetched != null) {
+                        lastWeatherCity = camCity
+                        _currentWeather.value = fetched
+                    }
+                    delay(WEATHER_POLL_MS)
+                }
             }
         }
     }
@@ -113,18 +154,35 @@ class CameraStageViewModel(
         }
 
         if (next.favoriteIds != previous.favoriteIds) {
+            val updatedFavorites = next.favoriteIds
             viewModelScope.launch {
-                favoritesRepository.setFavorites(next.favoriteIds)
+                favoritesRepository.setFavorites(updatedFavorites)
             }
         }
 
         if (next.zapScope != previous.zapScope) {
+            val updatedScope = next.zapScope
             viewModelScope.launch {
-                favoritesRepository.setZapScope(next.zapScope)
+                favoritesRepository.setZapScope(updatedScope)
             }
         }
 
-        if (next.noticeMessage != null && next.noticeMessage != previous.noticeMessage) {
+        if (next.showClockOverlay != previous.showClockOverlay) {
+            val showClock = next.showClockOverlay
+            viewModelScope.launch {
+                favoritesRepository.setShowClockOverlay(showClock)
+            }
+        }
+
+        if (next.showWeatherOverlay != previous.showWeatherOverlay) {
+            val showWeather = next.showWeatherOverlay
+            viewModelScope.launch {
+                favoritesRepository.setShowWeatherOverlay(showWeather)
+            }
+        }
+
+        val nextNotice = next.noticeMessage
+        if (nextNotice != null && nextNotice != previous.noticeMessage) {
             scheduleNoticeDismissal()
         }
 
@@ -158,11 +216,16 @@ class CameraStageViewModel(
     class Factory(
         private val catalogCoordinator: CatalogBootstrapCoordinator,
         private val favoritesRepository: FavoritesRepository,
+        private val weatherRepository: WeatherRepository,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             require(modelClass.isAssignableFrom(CameraStageViewModel::class.java))
-            return CameraStageViewModel(catalogCoordinator, favoritesRepository) as T
+            return CameraStageViewModel(
+                catalogCoordinator = catalogCoordinator,
+                favoritesRepository = favoritesRepository,
+                weatherRepository = weatherRepository,
+            ) as T
         }
     }
 
@@ -170,5 +233,6 @@ class CameraStageViewModel(
         const val ZAP_DEBOUNCE_MS = 250L
         const val HUD_AUTO_HIDE_MS = 5_000L
         const val NOTICE_VISIBLE_MS = 2_800L
+        const val WEATHER_POLL_MS = 15L * 60L * 1_000L
     }
 }

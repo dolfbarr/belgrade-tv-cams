@@ -13,17 +13,29 @@ android {
         applicationId = "rs.belgrade.tvcams"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
 
         buildConfigField(
             "String",
             "DEFAULT_CATALOG_URL",
-            "\"https://dolfbarr.github.io/belgrade-tv-cams/catalog.v1.json\"",
+            "\"https://dolfbarr.github.io/belgrade-tv-cams/catalog.v2.json\"",
         )
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(

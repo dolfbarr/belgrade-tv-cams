@@ -19,8 +19,9 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    systemProperty(
-        "belgrade.catalog.path",
-        rootProject.file("catalog/catalog.v1.json").absolutePath,
-    )
+    val v1Catalog = rootProject.file("catalog/catalog.v1.json")
+    val v2Catalog = rootProject.file("catalog/catalog.v2.json")
+    inputs.files(v1Catalog, v2Catalog)
+    systemProperty("belgrade.catalog.v1.path", v1Catalog.absolutePath)
+    systemProperty("belgrade.catalog.v2.path", v2Catalog.absolutePath)
 }

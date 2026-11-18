@@ -13,19 +13,19 @@ from catalog_probe.prober import apply_probe_ordering, probe_cameras_live
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="catalog-probe",
-        description="Probe Belgrade camera endpoints and write static catalog.v1.json manifests.",
+        description="Probe Serbia camera endpoints and write static catalog.v2.json manifests.",
     )
     parser.add_argument(
         "--output",
         type=Path,
         action="append",
         required=True,
-        help="Destination path(s) for catalog.v1.json (may be specified multiple times).",
+        help="Destination path(s) for catalog.v2.json (may be specified multiple times).",
     )
     parser.add_argument(
         "--offline",
         action="store_true",
-        help="Write curated catalog without executing live HTTP HEAD probes.",
+        help="Write curated catalog without executing live HTTP probes.",
     )
     parser.add_argument(
         "--timeout",
@@ -58,7 +58,7 @@ def main(argv: list[str] | None = None) -> int:
     updated_at = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     manifest = CatalogManifest(
-        schema_version=1,
+        schema_version=2,
         revision=revision,
         updated_at=updated_at,
         cameras=tuple(cameras),

@@ -38,7 +38,7 @@ class CatalogBootstrapCoordinator(
     suspend fun loadInitial(): CatalogManifest {
         val seed = seedSource.readSeed()
         val cached = runCatching { cacheStore.readCached() }.getOrNull()
-        if (cached != null && isValidManifest(cached) && cached.revision >= seed.revision) {
+        if (cached != null && isValidManifest(cached) && cached.schemaVersion >= seed.schemaVersion && cached.revision >= seed.revision) {
             return cached
         }
         return seed
@@ -66,7 +66,7 @@ class CatalogBootstrapCoordinator(
     }
 
     private fun isValidManifest(manifest: CatalogManifest): Boolean =
-        manifest.schemaVersion == CatalogJsonCodec.SUPPORTED_SCHEMA_VERSION &&
+        manifest.schemaVersion in CatalogJsonCodec.SUPPORTED_SCHEMA_VERSIONS &&
             manifest.cameras.isNotEmpty() &&
             manifest.cameras.all { it.id.isNotBlank() && it.streams.isNotEmpty() }
 }

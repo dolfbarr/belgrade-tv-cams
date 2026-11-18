@@ -6,6 +6,13 @@ from enum import StrEnum
 from typing import Any
 
 
+class SerbiaCity(StrEnum):
+    BELGRADE = "BELGRADE"
+    NOVI_SAD = "NOVI_SAD"
+    SUBOTICA = "SUBOTICA"
+    NIS = "NIS"
+
+
 class CameraCategory(StrEnum):
     BRIDGES = "BRIDGES"
     SQUARES = "SQUARES"
@@ -78,12 +85,16 @@ class CameraEntry:
     poster_url: str
     coordinates: GeoCoordinates
     streams: tuple[StreamDescriptor, ...]
+    city: SerbiaCity = SerbiaCity.BELGRADE
+    timezone: str = "Europe/Belgrade"
     poster_headers: dict[str, str] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "id": self.id,
             "name": self.name,
+            "city": self.city.value,
+            "timezone": self.timezone,
             "streets": list(self.streets),
             "municipality": self.municipality,
             "category": self.category.value,
@@ -102,9 +113,13 @@ class CameraEntry:
         poster_headers = (
             {str(k): str(v) for k, v in raw_poster_headers.items()} if raw_poster_headers else None
         )
+        raw_city = raw.get("city", SerbiaCity.BELGRADE.value)
+        raw_timezone = raw.get("timezone", "Europe/Belgrade")
         return cls(
             id=str(raw["id"]),
             name=str(raw["name"]),
+            city=SerbiaCity(str(raw_city)),
+            timezone=str(raw_timezone),
             streets=tuple(str(s) for s in raw["streets"]),
             municipality=str(raw["municipality"]),
             category=CameraCategory(str(raw["category"])),

@@ -34,6 +34,8 @@ class DataStoreFavoritesRepository(
                 lastCameraId = prefs[KEY_LAST_CAMERA_ID],
                 zapScope = scope,
                 autoHideHud = prefs[KEY_AUTO_HIDE_HUD] ?: true,
+                showClockOverlay = prefs[KEY_SHOW_CLOCK_OVERLAY] ?: true,
+                showWeatherOverlay = prefs[KEY_SHOW_WEATHER_OVERLAY] ?: true,
             )
         }
 
@@ -55,10 +57,24 @@ class DataStoreFavoritesRepository(
         }
     }
 
+    override suspend fun setShowClockOverlay(enabled: Boolean) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_SHOW_CLOCK_OVERLAY] = enabled
+        }
+    }
+
+    override suspend fun setShowWeatherOverlay(enabled: Boolean) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_SHOW_WEATHER_OVERLAY] = enabled
+        }
+    }
+
     private companion object {
         val KEY_FAVORITE_IDS = stringSetPreferencesKey("favorite_camera_ids")
         val KEY_LAST_CAMERA_ID = stringPreferencesKey("last_camera_id")
         val KEY_ZAP_SCOPE = stringPreferencesKey("zap_scope")
         val KEY_AUTO_HIDE_HUD = booleanPreferencesKey("auto_hide_hud")
+        val KEY_SHOW_CLOCK_OVERLAY = booleanPreferencesKey("show_clock_overlay")
+        val KEY_SHOW_WEATHER_OVERLAY = booleanPreferencesKey("show_weather_overlay")
     }
 }

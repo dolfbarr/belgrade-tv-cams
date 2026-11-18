@@ -94,20 +94,32 @@ def apply_probe_ordering(
 def probe_cameras_live(
     cameras: list[CameraEntry],
     timeout_seconds: float = 6.0,
+    transport: httpx.BaseTransport | None = None,
 ) -> dict[str, ProbeResult]:
     results: dict[str, ProbeResult] = {}
-    with httpx.Client(http2=True, timeout=timeout_seconds, follow_redirects=True) as client:
+    with httpx.Client(
+        http2=transport is None,
+        timeout=timeout_seconds,
+        follow_redirects=True,
+        transport=transport,
+    ) as client:
         for camera in cameras:
             for stream in camera.streams:
                 if stream.url in results:
                     continue
+                req_headers = stream.headers or {}
                 try:
-                    response = client.head(stream.url, headers=stream.headers or {})
-                    ok = 200 <= response.status_code < 300
+                    response = client.head(stream.url, headers=req_headers)
+                    status_code = response.status_code
+                    if not (200 <= status_code < 300):
+                        # CDNs such as BunnyCDN reject HEAD on HLS; fall back to streaming GET
+                        with client.stream("GET", stream.url, headers=req_headers) as get_resp:
+                            status_code = get_resp.status_code
+                    ok = 200 <= status_code < 300
                     results[stream.url] = ProbeResult(
                         url=stream.url,
                         reachable=ok,
-                        status_code=response.status_code,
+                        status_code=status_code,
                     )
                 except httpx.HTTPError as exc:
                     results[stream.url] = ProbeResult(

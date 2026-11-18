@@ -6,6 +6,22 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
+enum class SerbiaCity {
+    BELGRADE,
+    NOVI_SAD,
+    SUBOTICA,
+    NIS,
+    ;
+
+    fun displayLabel(): String = when (this) {
+        BELGRADE -> "Belgrade"
+        NOVI_SAD -> "Novi Sad"
+        SUBOTICA -> "Subotica"
+        NIS -> "Niš"
+    }
+}
+
+@Serializable
 enum class CameraCategory {
     BRIDGES,
     SQUARES,
@@ -17,7 +33,7 @@ enum class CameraCategory {
         BRIDGES -> "Bridges"
         SQUARES -> "Squares"
         BOULEVARDS -> "Boulevards"
-        HIGHWAYS -> "Highway approaches"
+        HIGHWAYS -> "Highway & border"
     }
 }
 
@@ -48,6 +64,8 @@ data class StreamDescriptor(
 data class Camera(
     val id: String,
     val name: String,
+    val city: SerbiaCity = SerbiaCity.BELGRADE,
+    val timezone: String = "Europe/Belgrade",
     val streets: List<String>,
     val municipality: String,
     val category: CameraCategory,
@@ -71,7 +89,8 @@ data class CatalogManifest(
 )
 
 object CatalogJsonCodec {
-    const val SUPPORTED_SCHEMA_VERSION: Int = 1
+    val SUPPORTED_SCHEMA_VERSIONS: Set<Int> = setOf(1, 2)
+    const val LATEST_SCHEMA_VERSION: Int = 2
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {

@@ -10,8 +10,11 @@ import rs.belgrade.tvcams.data.catalog.AssetCatalogSeedSource
 import rs.belgrade.tvcams.data.catalog.FileCatalogCacheStore
 import rs.belgrade.tvcams.data.catalog.OkHttpRemoteCatalogClient
 import rs.belgrade.tvcams.data.favorites.DataStoreFavoritesRepository
+import rs.belgrade.tvcams.data.weather.OpenMeteoWeatherClient
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
+import rs.belgrade.tvcams.domain.weather.GridCachedWeatherRepository
+import rs.belgrade.tvcams.domain.weather.WeatherRepository
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -25,6 +28,10 @@ class AppContainer(application: Application) {
 
     val favoritesRepository: FavoritesRepository = DataStoreFavoritesRepository(
         appContext = application.applicationContext,
+    )
+
+    val weatherRepository: WeatherRepository = GridCachedWeatherRepository(
+        upstream = OpenMeteoWeatherClient(httpClient = httpClient),
     )
 
     val catalogCoordinator: CatalogBootstrapCoordinator = CatalogBootstrapCoordinator(

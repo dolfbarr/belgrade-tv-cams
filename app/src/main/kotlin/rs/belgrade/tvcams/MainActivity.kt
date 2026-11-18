@@ -35,12 +35,14 @@ class MainActivity : ComponentActivity() {
                     factory = CameraStageViewModel.Factory(
                         catalogCoordinator = appContainer.catalogCoordinator,
                         favoritesRepository = appContainer.favoritesRepository,
+                        weatherRepository = appContainer.weatherRepository,
                     ),
                 )
 
                 val state by stageViewModel.stageState.collectAsStateWithLifecycle()
                 val streamCamera by stageViewModel.debouncedStreamCamera.collectAsStateWithLifecycle()
                 val telemetry by stageViewModel.telemetry.collectAsStateWithLifecycle()
+                val currentWeather by stageViewModel.currentWeather.collectAsStateWithLifecycle()
 
                 LaunchedEffect(stageViewModel) {
                     stageViewModel.exitEvents.collect {
@@ -52,6 +54,7 @@ class MainActivity : ComponentActivity() {
                     state = state,
                     streamCamera = streamCamera,
                     telemetry = telemetry,
+                    currentWeather = currentWeather,
                     httpClient = appContainer.httpClient,
                     onAction = stageViewModel::dispatch,
                     onTelemetryChanged = stageViewModel::updateTelemetry,

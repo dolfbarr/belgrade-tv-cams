@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Belgrade live cams</string>
+    <string name="app_name">Serbia live cams</string>
     <string name="scope_all">All cameras</string>
+    <string name="scope_city">Current city</string>
     <string name="scope_favorites">Favorites</string>
-    <string name="category_all">All locations</string>
+    <string name="category_all">All Serbia</string>
     <string name="category_favorites">Favorites</string>
+    <string name="city_belgrade">Belgrade</string>
+    <string name="city_novi_sad">Novi Sad</string>
+    <string name="city_subotica">Subotica</string>
+    <string name="city_nis">Niš</string>
     <string name="category_bridges">Bridges</string>
     <string name="category_squares">Squares</string>
     <string name="category_boulevards">Boulevards</string>
-    <string name="category_highways">Highway approaches</string>
+    <string name="category_highways">Highway &amp; border</string>
+    <string name="toggle_clock_on">Clock: On</string>
+    <string name="toggle_clock_off">Clock: Off</string>
+    <string name="toggle_weather_on">Weather: On</string>
+    <string name="toggle_weather_off">Weather: Off</string>
     <string name="badge_live_hls">Live HLS</string>
     <string name="badge_snapshot">Live snapshot</string>
     <string name="status_connecting">Connecting to camera…</string>
     <string name="status_retrying">Stream unreachable — retrying…</string>
     <string name="notice_added_favorite">Added to Favorites</string>
     <string name="notice_removed_favorite">Removed from Favorites</string>
-    <string name="notice_empty_favorites">No favorite cameras saved yet — hold OK on any camera to save it</string>
     <string name="empty_favorites_heading">No favorite cameras yet</string>
     <string name="empty_favorites_body">Press and hold OK while watching any street camera to pin it here</string>
-    <string name="empty_favorites_action">Browse all Belgrade cameras</string>
-    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Switch camera · ▼: Camera list · ▲: All / Favorites</string>
+    <string name="empty_favorites_action">Browse all Serbia cameras</string>
+    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Switch camera · ▼: Cities &amp; overlays · ▲: Zap scope</string>
 </resources>

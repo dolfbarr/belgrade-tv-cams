@@ -42,20 +42,20 @@ jobs:
           uv run ruff check .
           uv run pytest
 
-      - name: Probe live Belgrade camera endpoints
+      - name: Probe live Serbia camera endpoints
         run: |
           uv run --project tools/catalog-probe catalog-probe \
-            --output catalog/catalog.v1.json \
-            --output app/src/main/assets/seed_catalog.v1.json
+            --output catalog/catalog.v2.json \
+            --output app/src/main/assets/seed_catalog.v2.json
 
       - name: Commit updated stream ordering on schedule
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet catalog/catalog.v1.json app/src/main/assets/seed_catalog.v1.json; then
-            git add catalog/catalog.v1.json app/src/main/assets/seed_catalog.v1.json
-            git commit -m "chore(catalog): refresh Belgrade camera manifest health"
+          if ! git diff --quiet catalog/catalog.v2.json app/src/main/assets/seed_catalog.v2.json; then
+            git add catalog/catalog.v2.json app/src/main/assets/seed_catalog.v2.json
+            git commit -m "chore(catalog): refresh Serbia camera manifest health"
             git push
           fi
 

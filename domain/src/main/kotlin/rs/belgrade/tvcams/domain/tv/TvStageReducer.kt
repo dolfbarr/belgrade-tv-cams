@@ -3,6 +3,7 @@ package rs.belgrade.tvcams.domain.tv
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
+import rs.belgrade.tvcams.domain.model.SerbiaCity
 
 enum class OverlayMode {
     HUD_VISIBLE,
@@ -13,6 +14,7 @@ enum class OverlayMode {
 sealed interface StripFilter {
     data object All : StripFilter
     data object Favorites : StripFilter
+    data class City(val city: SerbiaCity) : StripFilter
     data class Category(val category: CameraCategory) : StripFilter
 }
 
@@ -23,6 +25,8 @@ sealed interface TvRemoteAction {
     data object ToggleFavoriteCurrent : TvRemoteAction
     data object OpenQuickStrip : TvRemoteAction
     data object ToggleZapScope : TvRemoteAction
+    data object ToggleClockOverlay : TvRemoteAction
+    data object ToggleWeatherOverlay : TvRemoteAction
     data class SelectCamera(val cameraId: String) : TvRemoteAction
     data class SelectStripFilter(val filter: StripFilter) : TvRemoteAction
     data object NavigateBack : TvRemoteAction
@@ -39,6 +43,8 @@ data class TvStageState(
     val overlayMode: OverlayMode,
     val hudPinned: Boolean,
     val stripFilter: StripFilter,
+    val showClockOverlay: Boolean,
+    val showWeatherOverlay: Boolean,
     val noticeMessage: String?,
 ) {
     val activeCamera: Camera?
@@ -47,9 +53,20 @@ data class TvStageState(
     val isCurrentFavorite: Boolean
         get() = activeCamera?.id?.let { favoriteIds.contains(it) } ?: false
 
+    val hasAnyAmbientOverlay: Boolean
+        get() = showClockOverlay || showWeatherOverlay
+
     val zapPlaylist: List<Camera>
         get() = when (zapScope) {
             ZapScope.ALL -> cameras
+            ZapScope.CITY -> {
+                val city = activeCamera?.city
+                if (city != null) {
+                    cameras.filter { it.city == city }.ifEmpty { cameras }
+                } else {
+                    cameras
+                }
+            }
             ZapScope.FAVORITES -> cameras.filter { favoriteIds.contains(it.id) }.ifEmpty { cameras }
         }
 
@@ -64,6 +81,7 @@ data class TvStageState(
         get() = when (val currentFilter = stripFilter) {
             StripFilter.All -> cameras
             StripFilter.Favorites -> cameras.filter { favoriteIds.contains(it.id) }
+            is StripFilter.City -> cameras.filter { it.city == currentFilter.city }
             is StripFilter.Category -> cameras.filter { it.category == currentFilter.category }
         }
 
@@ -73,6 +91,8 @@ data class TvStageState(
             favoriteIds: Set<String> = emptySet(),
             initialCameraId: String? = null,
             zapScope: ZapScope = ZapScope.ALL,
+            showClockOverlay: Boolean = true,
+            showWeatherOverlay: Boolean = true,
         ): TvStageState {
             val effectiveScope = if (zapScope == ZapScope.FAVORITES && favoriteIds.isEmpty()) {
                 ZapScope.ALL
@@ -89,6 +109,8 @@ data class TvStageState(
                 overlayMode = OverlayMode.HUD_VISIBLE,
                 hudPinned = false,
                 stripFilter = StripFilter.All,
+                showClockOverlay = showClockOverlay,
+                showWeatherOverlay = showWeatherOverlay,
                 noticeMessage = null,
             )
         }
@@ -164,37 +186,80 @@ object TvStageReducer {
         )
 
         TvRemoteAction.ToggleZapScope -> {
-            if (state.zapScope == ZapScope.ALL) {
-                if (state.favoriteIds.isEmpty()) {
+            val nextOverlay = if (state.overlayMode == OverlayMode.QUICK_STRIP) {
+                OverlayMode.QUICK_STRIP
+            } else {
+                OverlayMode.HUD_VISIBLE
+            }
+            when (state.zapScope) {
+                ZapScope.ALL -> {
+                    val activeCity = state.activeCamera?.city ?: SerbiaCity.BELGRADE
+                    val cityCount = state.cameras.count { it.city == activeCity }
                     TvStageTransition(
                         state.copy(
-                            noticeMessage = "No favorite cameras saved yet — hold OK on any camera to save it",
-                        ),
-                    )
-                } else {
-                    val favCams = state.cameras.filter { state.favoriteIds.contains(it.id) }
-                    val nextActiveId = state.activeCameraId?.takeIf { id -> favCams.any { it.id == id } }
-                        ?: favCams.firstOrNull()?.id
-                    TvStageTransition(
-                        state.copy(
-                            zapScope = ZapScope.FAVORITES,
-                            activeCameraId = nextActiveId,
-                            overlayMode = OverlayMode.HUD_VISIBLE,
+                            zapScope = ZapScope.CITY,
+                            overlayMode = nextOverlay,
                             hudPinned = false,
-                            noticeMessage = "Zapping Favorites (${favCams.size})",
+                            noticeMessage = "Zapping ${activeCity.displayLabel()} ($cityCount)",
                         ),
                     )
                 }
-            } else {
-                TvStageTransition(
+
+                ZapScope.CITY -> {
+                    if (state.favoriteIds.isEmpty()) {
+                        TvStageTransition(
+                            state.copy(
+                                zapScope = ZapScope.ALL,
+                                overlayMode = nextOverlay,
+                                hudPinned = false,
+                                noticeMessage = "Zapping all cameras (${state.cameras.size})",
+                            ),
+                        )
+                    } else {
+                        val favCams = state.cameras.filter { state.favoriteIds.contains(it.id) }
+                        val nextActiveId = state.activeCameraId?.takeIf { id -> favCams.any { it.id == id } }
+                            ?: favCams.firstOrNull()?.id
+                        TvStageTransition(
+                            state.copy(
+                                zapScope = ZapScope.FAVORITES,
+                                activeCameraId = nextActiveId,
+                                overlayMode = nextOverlay,
+                                hudPinned = false,
+                                noticeMessage = "Zapping Favorites (${favCams.size})",
+                            ),
+                        )
+                    }
+                }
+
+                ZapScope.FAVORITES -> TvStageTransition(
                     state.copy(
                         zapScope = ZapScope.ALL,
-                        overlayMode = OverlayMode.HUD_VISIBLE,
+                        overlayMode = nextOverlay,
                         hudPinned = false,
                         noticeMessage = "Zapping all cameras (${state.cameras.size})",
                     ),
                 )
             }
+        }
+
+        TvRemoteAction.ToggleClockOverlay -> {
+            val nextClock = !state.showClockOverlay
+            TvStageTransition(
+                state.copy(
+                    showClockOverlay = nextClock,
+                    noticeMessage = if (nextClock) "Clock overlay: On" else "Clock overlay: Off",
+                ),
+            )
+        }
+
+        TvRemoteAction.ToggleWeatherOverlay -> {
+            val nextWeather = !state.showWeatherOverlay
+            TvStageTransition(
+                state.copy(
+                    showWeatherOverlay = nextWeather,
+                    noticeMessage = if (nextWeather) "Weather overlay: On" else "Weather overlay: Off",
+                ),
+            )
         }
 
         is TvRemoteAction.SelectCamera -> {
