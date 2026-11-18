@@ -50,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Button
@@ -64,14 +65,19 @@ import coil3.compose.AsyncImage
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import coil3.request.allowRgb565
+import coil3.size.Size
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import okhttp3.OkHttpClient
 import rs.belgrade.tvcams.R
+import rs.belgrade.tvcams.data.stream.OkHttpStreamUrlResolver
 import rs.belgrade.tvcams.domain.airquality.AirQualityBand
 import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
+import rs.belgrade.tvcams.domain.favorites.PerformanceMode
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
+import rs.belgrade.tvcams.domain.favorites.TransportFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
@@ -128,6 +134,7 @@ fun CameraStageScreen(
     currentWeather: CurrentWeather?,
     currentAirQuality: CurrentAirQuality?,
     httpClient: OkHttpClient,
+    streamResolver: OkHttpStreamUrlResolver,
     onAction: (TvRemoteAction) -> Unit,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
     enableBackHandler: Boolean = true,
@@ -190,10 +197,12 @@ fun CameraStageScreen(
             .focusRequester(stageFocusRequester)
             .focusable(),
     ) {
-        // Layer 0: Edge-to-edge 1920x1080 stream surface with poster underlay & OLED pixel orbit
+        // Layer 0: Adaptive 1920x1080 / low-spec stream surface with poster underlay & OLED pixel orbit
         DualTransportCameraSurface(
             camera = streamCamera ?: activeCam,
             httpClient = httpClient,
+            streamResolver = streamResolver,
+            performanceMode = state.performanceMode,
             oledOrbitOffset = oledOrbit,
             onTelemetryChanged = onTelemetryChanged,
             modifier = Modifier.fillMaxSize(),
@@ -219,7 +228,12 @@ fun CameraStageScreen(
             modifier = Modifier
                 .align(statusBoxAlignment)
                 .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical)
-                .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
+                .offset {
+                    IntOffset(
+                        x = oledOrbit.dxDp.dp.roundToPx(),
+                        y = oledOrbit.dyDp.dp.roundToPx(),
+                    )
+                },
         )
 
         // Layer 2: Configurable Info Panel (default Bottom Center) with Current View Name + Ambient Telemetry
@@ -271,7 +285,12 @@ fun CameraStageScreen(
                 modifier = Modifier
                     .align(panelBoxAlignment)
                     .then(panelPadding)
-                    .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
+                    .offset {
+                        IntOffset(
+                            x = oledOrbit.dxDp.dp.roundToPx(),
+                            y = oledOrbit.dyDp.dp.roundToPx(),
+                        )
+                    },
                 horizontalAlignment = panelColumnAlignment,
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
@@ -835,6 +854,7 @@ private fun CityBadge(cityLabel: String) {
 @Composable
 private fun QualityBadge(quality: VideoQuality) {
     val (bgColor, borderColor, textColor) = when (quality) {
+        VideoQuality.UHD_4K -> Triple(Color(0x33F59E0B), Color(0x77FBBF24), AccentAmber)
         VideoQuality.UHD_2K -> Triple(Color(0x3310B981), Color(0x6610B981), Color(0xFF34D399))
         VideoQuality.FHD_1080P,
         VideoQuality.HD_720P,
@@ -862,7 +882,11 @@ private fun TransportBadge(telemetry: PlaybackTelemetry) {
     val (dotColor, label) = when (telemetry) {
         is PlaybackTelemetry.Connecting -> AccentAmber to stringResource(R.string.status_connecting)
         is PlaybackTelemetry.PlayingLive -> when (telemetry.transport) {
-            StreamTransportType.HLS -> AccentLive to stringResource(R.string.badge_live_hls)
+            StreamTransportType.HLS,
+            StreamTransportType.YOUTUBE_LIVE,
+            StreamTransportType.RUTUBE_LIVE,
+            StreamTransportType.IPCAMLIVE,
+            -> AccentLive to stringResource(R.string.badge_live_hls)
             StreamTransportType.SNAPSHOT_POLL -> {
                 val base = stringResource(R.string.badge_snapshot)
                 val full = if (telemetry.updatedTimeLabel != null) {
@@ -970,6 +994,30 @@ private fun CameraQuickStrip(
                     colors = chipColors,
                 ) {
                     Text(text = qualityText)
+                }
+            }
+            item(key = "toggle_transport_filter") {
+                val streamText = when (state.transportFilter) {
+                    TransportFilter.ALL -> "Stream: All"
+                    TransportFilter.LIVE_VIDEO_ONLY -> "Stream: Live video (${state.liveVideoTotalCount})"
+                    TransportFilter.SNAPSHOT_ONLY -> "Stream: Snapshots (${state.snapshotTotalCount})"
+                }
+                FilterChip(
+                    selected = state.transportFilter != TransportFilter.ALL,
+                    onClick = { onAction(TvRemoteAction.CycleTransportFilter) },
+                    colors = chipColors,
+                ) {
+                    Text(text = streamText)
+                }
+            }
+            item(key = "toggle_performance_mode") {
+                val perfText = "Perf: ${state.performanceMode.displayLabel()}"
+                FilterChip(
+                    selected = state.performanceMode != PerformanceMode.AUTO,
+                    onClick = { onAction(TvRemoteAction.CyclePerformanceMode) },
+                    colors = chipColors,
+                ) {
+                    Text(text = perfText)
                 }
             }
             item(key = "toggle_auto_rotate") {
@@ -1092,6 +1140,13 @@ private fun CameraQuickStrip(
                     StripFilter.All,
                     "${stringResource(R.string.category_all)} (${qualityPool.size})",
                     currentStripFilter == StripFilter.All,
+                ),
+            )
+            add(
+                Triple(
+                    StripFilter.Popular,
+                    "${stringResource(R.string.category_popular)} (${state.featuredTotalCount})",
+                    currentStripFilter == StripFilter.Popular,
                 ),
             )
             add(
@@ -1451,6 +1506,8 @@ private fun CameraPreviewCard(
         ImageRequest.Builder(context)
             .data(posterUrl)
             .httpHeaders(networkHeaders)
+            .size(Size(320, 180))
+            .allowRgb565(true)
             .build()
     }
 
@@ -1510,8 +1567,45 @@ private fun CameraPreviewCard(
                     }
                 }
 
+                // Bottom-left LIVE video vs SNAP snapshot transport badge
+                val isLiveMotion = camera.isLiveVideo
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(if (isLiveMotion) Color(0xE67F1D1D) else Color(0xD90F172A))
+                        .border(
+                            width = 1.dp,
+                            color = if (isLiveMotion) Color(0x99EF4444) else Color(0x5538BDF8),
+                            shape = RoundedCornerShape(4.dp),
+                        )
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(5.dp)
+                            .height(5.dp)
+                            .clip(RoundedCornerShape(3.dp))
+                            .background(if (isLiveMotion) AccentLive else AccentSky),
+                    )
+                    Text(
+                        text = if (isLiveMotion) {
+                            stringResource(R.string.badge_card_live)
+                        } else {
+                            stringResource(R.string.badge_card_snap)
+                        },
+                        color = if (isLiveMotion) TextPrimary else AccentSky,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
                 val camQuality = camera.resolvedQuality
                 val badgeTextColor = when (camQuality) {
+                    VideoQuality.UHD_4K -> AccentAmber
                     VideoQuality.UHD_2K -> Color(0xFF34D399)
                     VideoQuality.FHD_1080P,
                     VideoQuality.HD_720P,

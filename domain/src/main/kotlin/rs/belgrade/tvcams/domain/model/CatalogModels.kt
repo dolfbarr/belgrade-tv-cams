@@ -11,6 +11,15 @@ enum class CameraCountry {
     RUSSIA,
     SPAIN,
     ROMANIA,
+    UK,
+    FRANCE,
+    NETHERLANDS,
+    GERMANY,
+    GEORGIA,
+    ARMENIA,
+    USA,
+    SOUTH_KOREA,
+    JAPAN,
     ;
 
     fun displayLabel(): String = when (this) {
@@ -18,6 +27,15 @@ enum class CameraCountry {
         RUSSIA -> "Russia"
         SPAIN -> "Spain"
         ROMANIA -> "Romania"
+        UK -> "United Kingdom"
+        FRANCE -> "France"
+        NETHERLANDS -> "Netherlands"
+        GERMANY -> "Germany"
+        GEORGIA -> "Georgia"
+        ARMENIA -> "Armenia"
+        USA -> "USA"
+        SOUTH_KOREA -> "South Korea"
+        JAPAN -> "Japan"
     }
 }
 
@@ -28,12 +46,23 @@ enum class CameraCity(val country: CameraCountry) {
     NOVI_SAD(CameraCountry.SERBIA),
     SUBOTICA(CameraCountry.SERBIA),
     NIS(CameraCountry.SERBIA),
+    MOSCOW(CameraCountry.RUSSIA),
     SAINT_PETERSBURG(CameraCountry.RUSSIA),
     ROSTOV_ON_DON(CameraCountry.RUSSIA),
     TOMSK(CameraCountry.RUSSIA),
+    MAGADAN(CameraCountry.RUSSIA),
     BARCELONA(CameraCountry.SPAIN),
     MADRID(CameraCountry.SPAIN),
     BUCHAREST(CameraCountry.ROMANIA),
+    LONDON(CameraCountry.UK),
+    PARIS(CameraCountry.FRANCE),
+    AMSTERDAM(CameraCountry.NETHERLANDS),
+    BERLIN(CameraCountry.GERMANY),
+    TBILISI(CameraCountry.GEORGIA),
+    YEREVAN(CameraCountry.ARMENIA),
+    NEW_YORK(CameraCountry.USA),
+    SEOUL(CameraCountry.SOUTH_KOREA),
+    TOKYO(CameraCountry.JAPAN),
     ;
 
     fun displayLabel(): String = when (this) {
@@ -42,12 +71,23 @@ enum class CameraCity(val country: CameraCountry) {
         NOVI_SAD -> "Novi Sad"
         SUBOTICA -> "Subotica"
         NIS -> "Niš"
+        MOSCOW -> "Moscow"
         SAINT_PETERSBURG -> "Saint Petersburg"
         ROSTOV_ON_DON -> "Rostov-on-Don"
         TOMSK -> "Tomsk"
+        MAGADAN -> "Magadan"
         BARCELONA -> "Barcelona"
         MADRID -> "Madrid"
         BUCHAREST -> "Bucharest"
+        LONDON -> "London"
+        PARIS -> "Paris"
+        AMSTERDAM -> "Amsterdam"
+        BERLIN -> "Berlin"
+        TBILISI -> "Tbilisi"
+        YEREVAN -> "Yerevan"
+        NEW_YORK -> "New York"
+        SEOUL -> "Seoul"
+        TOKYO -> "Tokyo"
     }
 
     companion object {
@@ -60,6 +100,7 @@ typealias SerbiaCity = CameraCity
 
 @Serializable
 enum class VideoQuality {
+    UHD_4K,
     UHD_2K,
     FHD_1080P,
     HD_720P,
@@ -68,19 +109,21 @@ enum class VideoQuality {
 
     val isHd: Boolean
         get() = when (this) {
-            UHD_2K, FHD_1080P, HD_720P -> true
+            UHD_4K, UHD_2K, FHD_1080P, HD_720P -> true
             SD -> false
         }
 
     val sortRank: Int
         get() = when (this) {
-            UHD_2K -> 0
-            FHD_1080P -> 1
-            HD_720P -> 2
-            SD -> 3
+            UHD_4K -> 0
+            UHD_2K -> 1
+            FHD_1080P -> 2
+            HD_720P -> 3
+            SD -> 4
         }
 
     fun shortBadgeLabel(): String = when (this) {
+        UHD_4K -> "4K UHD"
         UHD_2K -> "2K QHD"
         FHD_1080P -> "1080p HD"
         HD_720P -> "720p HD"
@@ -107,7 +150,14 @@ enum class CameraCategory {
 @Serializable
 enum class StreamTransportType {
     HLS,
+    YOUTUBE_LIVE,
+    RUTUBE_LIVE,
+    IPCAMLIVE,
     SNAPSHOT_POLL,
+    ;
+
+    val isLiveVideo: Boolean
+        get() = this != SNAPSHOT_POLL
 }
 
 @Serializable
@@ -134,6 +184,7 @@ data class Camera(
     val country: CameraCountry? = null,
     val city: CameraCity = CameraCity.BELGRADE,
     val quality: VideoQuality? = null,
+    val featured: Boolean? = null,
     val timezone: String = "Europe/Belgrade",
     val streets: List<String>,
     val municipality: String,
@@ -151,6 +202,12 @@ data class Camera(
 
     val resolvedQuality: VideoQuality
         get() = quality ?: VideoQuality.SD
+
+    val isFeatured: Boolean
+        get() = featured == true
+
+    val isLiveVideo: Boolean
+        get() = streams.firstOrNull()?.type?.isLiveVideo == true
 }
 
 @Serializable
@@ -164,8 +221,8 @@ data class CatalogManifest(
 )
 
 object CatalogJsonCodec {
-    val SUPPORTED_SCHEMA_VERSIONS: Set<Int> = setOf(1, 2, 3, 4)
-    const val LATEST_SCHEMA_VERSION: Int = 4
+    val SUPPORTED_SCHEMA_VERSIONS: Set<Int> = setOf(1, 2, 3, 4, 5)
+    const val LATEST_SCHEMA_VERSION: Int = 5
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {

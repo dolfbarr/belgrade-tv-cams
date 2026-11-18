@@ -10,17 +10,29 @@ data class HomeChannelSelection(
 
 object HomeChannelSelector {
     private val FEATURED_IDS_ORDER: List<String> = listOf(
+        "jp-tyo-shibuya-scramble",
+        "us-nyc-times-square",
+        "uk-lon-abbey-road",
+        "fr-par-eiffel-tower",
+        "nl-ams-dam-square",
+        "de-ber-alexanderplatz",
+        "kr-sel-hangang-banpo",
+        "ru-mow-moskva-reka",
+        "ru-spb-palace-bridge",
+        "ru-gdX-nagaev-bay",
+        "ge-tbs-freedom-square",
+        "am-evn-republic-square",
+        "es-bcn-3cat-panorama",
+        "es-mad-cibeles",
+        "ro-buh-calea-victoriei-live",
         "bg-kralja-milana-london",
         "bg-lakat-nova-galenika",
         "ns-pupinova-palata",
         "su-gradski-trg-korzo",
         "ni-vidojevica-allsky",
         "bg-sava-centar-usce",
-        "ru-spb-palace-bridge",
         "ru-rov-leninsky-skyline",
         "ru-tof-yuzhnaya",
-        "es-bcn-3cat-panorama",
-        "es-mad-cibeles",
         "ro-buh-piata-romana",
         "bg-most-na-adi-topcider",
         "bg-zmaj-autoput",
@@ -33,14 +45,14 @@ object HomeChannelSelector {
     fun selectChannelCameras(
         cameras: List<Camera>,
         favoriteIds: Set<String>,
-        maxItems: Int = 12,
+        maxItems: Int = 16,
     ): HomeChannelSelection {
         val limit = maxItems.coerceAtLeast(1)
         val matchedFavorites = cameras.filter { favoriteIds.contains(it.id) }
         if (matchedFavorites.isNotEmpty()) {
             return HomeChannelSelection(
                 isFavoritesMode = true,
-                channelTitle = "World live cams — Favorites",
+                channelTitle = "World Live Cams — Favorites",
                 cameras = matchedFavorites.take(limit),
             )
         }
@@ -55,6 +67,13 @@ object HomeChannelSelector {
         }
         if (curated.size < limit) {
             for (cam in cameras) {
+                if (cam.isFeatured && curated.none { it.id == cam.id } && curated.size < limit) {
+                    curated.add(cam)
+                }
+            }
+        }
+        if (curated.size < limit) {
+            for (cam in cameras) {
                 if (curated.none { it.id == cam.id } && curated.size < limit) {
                     curated.add(cam)
                 }
@@ -63,7 +82,7 @@ object HomeChannelSelector {
 
         return HomeChannelSelection(
             isFavoritesMode = false,
-            channelTitle = "World live cams — Featured",
+            channelTitle = "World Live Cams — Featured",
             cameras = curated,
         )
     }

@@ -74,6 +74,66 @@ enum class QualityFilter {
     }
 }
 
+enum class TransportFilter {
+    ALL,
+    LIVE_VIDEO_ONLY,
+    SNAPSHOT_ONLY,
+    ;
+
+    fun matches(isLiveVideo: Boolean): Boolean = when (this) {
+        ALL -> true
+        LIVE_VIDEO_ONLY -> isLiveVideo
+        SNAPSHOT_ONLY -> !isLiveVideo
+    }
+
+    fun next(): TransportFilter = when (this) {
+        ALL -> LIVE_VIDEO_ONLY
+        LIVE_VIDEO_ONLY -> SNAPSHOT_ONLY
+        SNAPSHOT_ONLY -> ALL
+    }
+
+    fun displayLabel(): String = when (this) {
+        ALL -> "All"
+        LIVE_VIDEO_ONLY -> "Live video"
+        SNAPSHOT_ONLY -> "Snapshots"
+    }
+}
+
+enum class PerformanceMode {
+    AUTO,
+    LOW_SPEC,
+    MAX_QUALITY,
+    ;
+
+    fun next(): PerformanceMode = when (this) {
+        AUTO -> LOW_SPEC
+        LOW_SPEC -> MAX_QUALITY
+        MAX_QUALITY -> AUTO
+    }
+
+    fun displayLabel(): String = when (this) {
+        AUTO -> "Auto"
+        LOW_SPEC -> "Low-spec"
+        MAX_QUALITY -> "Max"
+    }
+
+    fun shouldUseLowSpecSurface(isLowRamDevice: Boolean): Boolean = when (this) {
+        LOW_SPEC -> true
+        AUTO -> isLowRamDevice
+        MAX_QUALITY -> false
+    }
+
+    fun maxVideoHeightPx(displayHeightPx: Int, isLowRamDevice: Boolean): Int = when (this) {
+        LOW_SPEC -> 720
+        AUTO -> if (isLowRamDevice) {
+            minOf(displayHeightPx.coerceAtLeast(720), 1080)
+        } else {
+            displayHeightPx.coerceIn(720, 2160)
+        }
+        MAX_QUALITY -> 2160
+    }
+}
+
 enum class AutoRotateInterval(val seconds: Int) {
     OFF(0),
     SEC_15(15),
@@ -117,6 +177,8 @@ data class ViewerPreferences(
     val lastCameraId: String? = null,
     val zapScope: ZapScope = ZapScope.ALL,
     val qualityFilter: QualityFilter = QualityFilter.ALL,
+    val transportFilter: TransportFilter = TransportFilter.ALL,
+    val performanceMode: PerformanceMode = PerformanceMode.AUTO,
     val autoRotateInterval: AutoRotateInterval = AutoRotateInterval.OFF,
     val infoPanelPosition: InfoPanelPosition = InfoPanelPosition.BOTTOM_CENTER,
     val autoHideHud: Boolean = true,
@@ -133,6 +195,8 @@ interface FavoritesRepository {
     suspend fun setLastCamera(cameraId: String)
     suspend fun setZapScope(scope: ZapScope)
     suspend fun setQualityFilter(filter: QualityFilter)
+    suspend fun setTransportFilter(filter: TransportFilter) = Unit
+    suspend fun setPerformanceMode(mode: PerformanceMode) = Unit
     suspend fun setAutoRotateInterval(interval: AutoRotateInterval)
     suspend fun setInfoPanelPosition(position: InfoPanelPosition) = Unit
     suspend fun setShowClockOverlay(enabled: Boolean)

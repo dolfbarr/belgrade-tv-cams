@@ -108,6 +108,128 @@ fun CountryFlagIcon(
                 drawRect(color = Color(0xFFFCD116), topLeft = Offset(colW, 0f), size = Size(colW, h))
                 drawRect(color = Color(0xFFCE1126), topLeft = Offset(colW * 2f, 0f), size = Size(colW, h))
             }
+
+            CameraCountry.UK -> {
+                drawRect(color = Color(0xFF012169), topLeft = Offset(0f, 0f), size = Size(w, h))
+                // White diagonals
+                drawLine(color = Color.White, start = Offset(0f, 0f), end = Offset(w, h), strokeWidth = h * 0.20f)
+                drawLine(color = Color.White, start = Offset(w, 0f), end = Offset(0f, h), strokeWidth = h * 0.20f)
+                // Red diagonals
+                drawLine(color = Color(0xFFC8102E), start = Offset(0f, 0f), end = Offset(w, h), strokeWidth = h * 0.09f)
+                drawLine(color = Color(0xFFC8102E), start = Offset(w, 0f), end = Offset(0f, h), strokeWidth = h * 0.09f)
+                // White St George cross backing
+                drawRect(color = Color.White, topLeft = Offset(0f, h * 0.34f), size = Size(w, h * 0.32f))
+                drawRect(color = Color.White, topLeft = Offset(w * 0.38f, 0f), size = Size(w * 0.24f, h))
+                // Red St George cross
+                drawRect(color = Color(0xFFC8102E), topLeft = Offset(0f, h * 0.40f), size = Size(w, h * 0.20f))
+                drawRect(color = Color(0xFFC8102E), topLeft = Offset(w * 0.42f, 0f), size = Size(w * 0.16f, h))
+            }
+
+            CameraCountry.FRANCE -> {
+                val colW = w / 3f
+                drawRect(color = Color(0xFF002654), topLeft = Offset(0f, 0f), size = Size(colW, h))
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(colW, 0f), size = Size(colW, h))
+                drawRect(color = Color(0xFFED2939), topLeft = Offset(colW * 2f, 0f), size = Size(colW, h))
+            }
+
+            CameraCountry.NETHERLANDS -> {
+                val bandH = h / 3f
+                drawRect(color = Color(0xFFAE1C28), topLeft = Offset(0f, 0f), size = Size(w, bandH))
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, bandH), size = Size(w, bandH))
+                drawRect(color = Color(0xFF21468B), topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+            }
+
+            CameraCountry.GERMANY -> {
+                val bandH = h / 3f
+                drawRect(color = Color(0xFF09090B), topLeft = Offset(0f, 0f), size = Size(w, bandH))
+                drawRect(color = Color(0xFFDD0000), topLeft = Offset(0f, bandH), size = Size(w, bandH))
+                drawRect(color = Color(0xFFFFCE00), topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+            }
+
+            CameraCountry.GEORGIA -> {
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h))
+                val georgiaRed = Color(0xFFFF0000)
+                drawRect(color = georgiaRed, topLeft = Offset(0f, h * 0.39f), size = Size(w, h * 0.22f))
+                drawRect(color = georgiaRed, topLeft = Offset(w * 0.42f, 0f), size = Size(w * 0.16f, h))
+                for ((cx, cy) in listOf(0.21f to 0.20f, 0.79f to 0.20f, 0.21f to 0.80f, 0.79f to 0.80f)) {
+                    drawRect(
+                        color = georgiaRed,
+                        topLeft = Offset(w * cx - 2f, h * cy - 1f),
+                        size = Size(4f, 2f),
+                    )
+                    drawRect(
+                        color = georgiaRed,
+                        topLeft = Offset(w * cx - 1f, h * cy - 2f),
+                        size = Size(2f, 4f),
+                    )
+                }
+            }
+
+            CameraCountry.ARMENIA -> {
+                val bandH = h / 3f
+                drawRect(color = Color(0xFFD90012), topLeft = Offset(0f, 0f), size = Size(w, bandH))
+                drawRect(color = Color(0xFF0033A0), topLeft = Offset(0f, bandH), size = Size(w, bandH))
+                drawRect(color = Color(0xFFF2A800), topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+            }
+
+            CameraCountry.USA -> {
+                val stripeH = h / 7f
+                for (i in 0 until 7) {
+                    val color = if (i % 2 == 0) Color(0xFFB22234) else Color(0xFFF8FAFC)
+                    drawRect(color = color, topLeft = Offset(0f, stripeH * i), size = Size(w, stripeH))
+                }
+                val cantonW = w * 0.46f
+                val cantonH = stripeH * 4f
+                drawRect(color = Color(0xFF3C3B6E), topLeft = Offset(0f, 0f), size = Size(cantonW, cantonH))
+                for (row in 0..1) {
+                    for (col in 0..2) {
+                        drawCircle(
+                            color = Color.White,
+                            radius = h * 0.042f,
+                            center = Offset(
+                                cantonW * (0.20f + col * 0.30f),
+                                cantonH * (0.32f + row * 0.38f),
+                            ),
+                        )
+                    }
+                }
+            }
+
+            CameraCountry.SOUTH_KOREA -> {
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h))
+                val r = h * 0.26f
+                val center = Offset(w * 0.5f, h * 0.5f)
+                drawArc(
+                    color = Color(0xFFCD2E3A),
+                    startAngle = 180f,
+                    sweepAngle = 180f,
+                    useCenter = true,
+                    topLeft = Offset(center.x - r, center.y - r),
+                    size = Size(r * 2f, r * 2f),
+                )
+                drawArc(
+                    color = Color(0xFF0047A0),
+                    startAngle = 0f,
+                    sweepAngle = 180f,
+                    useCenter = true,
+                    topLeft = Offset(center.x - r, center.y - r),
+                    size = Size(r * 2f, r * 2f),
+                )
+                val barColor = Color(0xFF0F172A)
+                drawLine(color = barColor, start = Offset(w * 0.16f, h * 0.28f), end = Offset(w * 0.26f, h * 0.16f), strokeWidth = 1.3f)
+                drawLine(color = barColor, start = Offset(w * 0.74f, h * 0.16f), end = Offset(w * 0.84f, h * 0.28f), strokeWidth = 1.3f)
+                drawLine(color = barColor, start = Offset(w * 0.16f, h * 0.72f), end = Offset(w * 0.26f, h * 0.84f), strokeWidth = 1.3f)
+                drawLine(color = barColor, start = Offset(w * 0.74f, h * 0.84f), end = Offset(w * 0.84f, h * 0.72f), strokeWidth = 1.3f)
+            }
+
+            CameraCountry.JAPAN -> {
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h))
+                drawCircle(
+                    color = Color(0xFFBC002D),
+                    radius = h * 0.29f,
+                    center = Offset(w * 0.5f, h * 0.5f),
+                )
+            }
         }
     }
 }

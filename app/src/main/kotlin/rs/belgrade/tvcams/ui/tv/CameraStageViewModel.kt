@@ -111,6 +111,8 @@ class CameraStageViewModel(
                 initialCameraId = targetCameraId,
                 zapScope = prefs.zapScope,
                 qualityFilter = prefs.qualityFilter,
+                transportFilter = prefs.transportFilter,
+                performanceMode = prefs.performanceMode,
                 autoRotateInterval = prefs.autoRotateInterval,
                 infoPanelPosition = prefs.infoPanelPosition,
                 showClockOverlay = prefs.showClockOverlay,
@@ -293,6 +295,20 @@ class CameraStageViewModel(
             val updatedQuality = next.qualityFilter
             viewModelScope.launch {
                 favoritesRepository.setQualityFilter(updatedQuality)
+            }
+        }
+
+        if (next.transportFilter != previous.transportFilter) {
+            val updatedTransport = next.transportFilter
+            viewModelScope.launch {
+                favoritesRepository.setTransportFilter(updatedTransport)
+            }
+        }
+
+        if (next.performanceMode != previous.performanceMode) {
+            val updatedPerf = next.performanceMode
+            viewModelScope.launch {
+                favoritesRepository.setPerformanceMode(updatedPerf)
             }
         }
 

@@ -23,9 +23,11 @@ tasks.test {
     val v2Catalog = rootProject.file("catalog/catalog.v2.json")
     val v3Catalog = rootProject.file("catalog/catalog.v3.json")
     val v4Catalog = rootProject.file("catalog/catalog.v4.json")
-    inputs.files(v1Catalog, v2Catalog, v3Catalog, v4Catalog)
+    val v5Catalog = rootProject.file("catalog/catalog.v5.json")
+    inputs.files(v1Catalog, v2Catalog, v3Catalog, v4Catalog, v5Catalog)
     systemProperty("belgrade.catalog.v1.path", v1Catalog.absolutePath)
     systemProperty("belgrade.catalog.v2.path", v2Catalog.absolutePath)
     systemProperty("belgrade.catalog.v3.path", v3Catalog.absolutePath)
     systemProperty("belgrade.catalog.v4.path", v4Catalog.absolutePath)
+    systemProperty("belgrade.catalog.v5.path", v5Catalog.absolutePath)
 }

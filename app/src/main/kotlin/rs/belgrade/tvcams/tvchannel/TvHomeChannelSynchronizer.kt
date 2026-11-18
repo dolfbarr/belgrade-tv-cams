@@ -45,7 +45,7 @@ class TvHomeChannelSynchronizer(
                 val selection = HomeChannelSelector.selectChannelCameras(
                     cameras = cameras,
                     favoriteIds = favoriteIds,
-                    maxItems = 12,
+                    maxItems = 16,
                 )
                 val helper = PreviewChannelHelper(appContext)
                 val appLinkIntent = Intent(appContext, MainActivity::class.java).apply {
@@ -54,7 +54,7 @@ class TvHomeChannelSynchronizer(
 
                 val channelBuilder = PreviewChannel.Builder()
                     .setDisplayName(selection.channelTitle)
-                    .setDescription("Live street, bridge, and skyline cameras across Serbia, Russia, Spain, and Romania")
+                    .setDescription("Live 4K & HD street, skyline, and harbor cameras across Europe, Asia, and North America")
                     .setAppLinkIntent(appLinkIntent)
                     .setInternalProviderId(CHANNEL_INTERNAL_ID)
                     .setLogo(createChannelLogoBitmap())
@@ -112,15 +112,16 @@ class TvHomeChannelSynchronizer(
             setClassName(appContext.packageName, MainActivity::class.java.name)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
+        val transportTag = if (cam.isLiveVideo) "LIVE" else "SNAP"
         val countryLabel = cam.resolvedCountry.displayLabel()
         val cityLabel = cam.city.displayLabel()
         val streetsLabel = cam.streets.joinToString(" · ")
         return PreviewProgram.Builder()
             .setChannelId(channelId)
             .setType(TvContractCompat.PreviewProgramColumns.TYPE_EVENT)
-            .setLive(true)
+            .setLive(cam.isLiveVideo)
             .setTitle(cam.name)
-            .setDescription("$countryLabel · $cityLabel · $streetsLabel")
+            .setDescription("[$transportTag] $countryLabel · $cityLabel · $streetsLabel")
             .setPosterArtUri(cam.posterUrl.toUri())
             .setPosterArtAspectRatio(TvContractCompat.PreviewProgramColumns.ASPECT_RATIO_16_9)
             .setIntent(launchIntent)

@@ -11,6 +11,15 @@ class CameraCountry(StrEnum):
     RUSSIA = "RUSSIA"
     SPAIN = "SPAIN"
     ROMANIA = "ROMANIA"
+    UK = "UK"
+    FRANCE = "FRANCE"
+    NETHERLANDS = "NETHERLANDS"
+    GERMANY = "GERMANY"
+    GEORGIA = "GEORGIA"
+    ARMENIA = "ARMENIA"
+    USA = "USA"
+    SOUTH_KOREA = "SOUTH_KOREA"
+    JAPAN = "JAPAN"
 
 
 class CameraCity(StrEnum):
@@ -19,33 +28,53 @@ class CameraCity(StrEnum):
     NOVI_SAD = "NOVI_SAD"
     SUBOTICA = "SUBOTICA"
     NIS = "NIS"
+    MOSCOW = "MOSCOW"
     SAINT_PETERSBURG = "SAINT_PETERSBURG"
     ROSTOV_ON_DON = "ROSTOV_ON_DON"
     TOMSK = "TOMSK"
+    MAGADAN = "MAGADAN"
     BARCELONA = "BARCELONA"
     MADRID = "MADRID"
     BUCHAREST = "BUCHAREST"
+    LONDON = "LONDON"
+    PARIS = "PARIS"
+    AMSTERDAM = "AMSTERDAM"
+    BERLIN = "BERLIN"
+    TBILISI = "TBILISI"
+    YEREVAN = "YEREVAN"
+    NEW_YORK = "NEW_YORK"
+    SEOUL = "SEOUL"
+    TOKYO = "TOKYO"
 
     @property
     def default_country(self) -> CameraCountry:
-        if self in (
-            CameraCity.BELGRADE,
-            CameraCity.ZEMUN,
-            CameraCity.NOVI_SAD,
-            CameraCity.SUBOTICA,
-            CameraCity.NIS,
-        ):
-            return CameraCountry.SERBIA
-        if self in (
-            CameraCity.SAINT_PETERSBURG,
-            CameraCity.ROSTOV_ON_DON,
-            CameraCity.TOMSK,
-        ):
-            return CameraCountry.RUSSIA
-        if self in (CameraCity.BARCELONA, CameraCity.MADRID):
-            return CameraCountry.SPAIN
-        return CameraCountry.ROMANIA
+        return _CITY_COUNTRY_MAP[self]
 
+
+_CITY_COUNTRY_MAP: dict[CameraCity, CameraCountry] = {
+    CameraCity.BELGRADE: CameraCountry.SERBIA,
+    CameraCity.ZEMUN: CameraCountry.SERBIA,
+    CameraCity.NOVI_SAD: CameraCountry.SERBIA,
+    CameraCity.SUBOTICA: CameraCountry.SERBIA,
+    CameraCity.NIS: CameraCountry.SERBIA,
+    CameraCity.MOSCOW: CameraCountry.RUSSIA,
+    CameraCity.SAINT_PETERSBURG: CameraCountry.RUSSIA,
+    CameraCity.ROSTOV_ON_DON: CameraCountry.RUSSIA,
+    CameraCity.TOMSK: CameraCountry.RUSSIA,
+    CameraCity.MAGADAN: CameraCountry.RUSSIA,
+    CameraCity.BARCELONA: CameraCountry.SPAIN,
+    CameraCity.MADRID: CameraCountry.SPAIN,
+    CameraCity.BUCHAREST: CameraCountry.ROMANIA,
+    CameraCity.LONDON: CameraCountry.UK,
+    CameraCity.PARIS: CameraCountry.FRANCE,
+    CameraCity.AMSTERDAM: CameraCountry.NETHERLANDS,
+    CameraCity.BERLIN: CameraCountry.GERMANY,
+    CameraCity.TBILISI: CameraCountry.GEORGIA,
+    CameraCity.YEREVAN: CameraCountry.ARMENIA,
+    CameraCity.NEW_YORK: CameraCountry.USA,
+    CameraCity.SEOUL: CameraCountry.SOUTH_KOREA,
+    CameraCity.TOKYO: CameraCountry.JAPAN,
+}
 
 SerbiaCity = CameraCity
 
@@ -58,6 +87,7 @@ class CameraCategory(StrEnum):
 
 
 class VideoQuality(StrEnum):
+    UHD_4K = "UHD_4K"
     UHD_2K = "UHD_2K"
     FHD_1080P = "FHD_1080P"
     HD_720P = "HD_720P"
@@ -65,22 +95,31 @@ class VideoQuality(StrEnum):
 
     @property
     def is_hd(self) -> bool:
-        return self in (VideoQuality.UHD_2K, VideoQuality.FHD_1080P, VideoQuality.HD_720P)
+        return self != VideoQuality.SD
 
     @property
     def sort_rank(self) -> int:
-        if self == VideoQuality.UHD_2K:
+        if self == VideoQuality.UHD_4K:
             return 0
-        if self == VideoQuality.FHD_1080P:
+        if self == VideoQuality.UHD_2K:
             return 1
-        if self == VideoQuality.HD_720P:
+        if self == VideoQuality.FHD_1080P:
             return 2
-        return 3
+        if self == VideoQuality.HD_720P:
+            return 3
+        return 4
 
 
 class StreamTransportType(StrEnum):
     HLS = "HLS"
+    YOUTUBE_LIVE = "YOUTUBE_LIVE"
+    RUTUBE_LIVE = "RUTUBE_LIVE"
+    IPCAMLIVE = "IPCAMLIVE"
     SNAPSHOT_POLL = "SNAPSHOT_POLL"
+
+    @property
+    def is_live_video(self) -> bool:
+        return self != StreamTransportType.SNAPSHOT_POLL
 
 
 @dataclass(frozen=True, slots=True)
@@ -146,12 +185,21 @@ class CameraEntry:
     country: CameraCountry | None = None
     city: CameraCity = CameraCity.BELGRADE
     quality: VideoQuality = VideoQuality.SD
+    featured: bool | None = None
     timezone: str = "Europe/Belgrade"
     poster_headers: dict[str, str] | None = None
 
     @property
     def resolved_country(self) -> CameraCountry:
         return self.country if self.country is not None else self.city.default_country
+
+    @property
+    def is_featured(self) -> bool:
+        return self.featured is True
+
+    @property
+    def is_live_video(self) -> bool:
+        return bool(self.streams) and self.streams[0].type.is_live_video
 
     def to_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -160,10 +208,12 @@ class CameraEntry:
         }
         if self.country is not None:
             payload["country"] = self.country.value
+        payload["city"] = self.city.value
+        payload["quality"] = self.quality.value
+        if self.featured is not None:
+            payload["featured"] = self.featured
         payload.update(
             {
-                "city": self.city.value,
-                "quality": self.quality.value,
                 "timezone": self.timezone,
                 "streets": list(self.streets),
                 "municipality": self.municipality,
@@ -188,6 +238,8 @@ class CameraEntry:
         country = CameraCountry(str(raw_country)) if raw_country is not None else None
         raw_city = raw.get("city", CameraCity.BELGRADE.value)
         raw_quality = raw.get("quality", VideoQuality.SD.value)
+        raw_featured = raw.get("featured")
+        featured = bool(raw_featured) if raw_featured is not None else None
         raw_timezone = raw.get("timezone", "Europe/Belgrade")
         return cls(
             id=str(raw["id"]),
@@ -195,6 +247,7 @@ class CameraEntry:
             country=country,
             city=CameraCity(str(raw_city)),
             quality=VideoQuality(str(raw_quality)),
+            featured=featured,
             timezone=str(raw_timezone),
             streets=tuple(str(s) for s in raw["streets"]),
             municipality=str(raw["municipality"]),

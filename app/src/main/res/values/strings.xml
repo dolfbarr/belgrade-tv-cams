@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">World live cams</string>
-    <string name="screensaver_name">World live cams</string>
+    <string name="app_name">World Live Cams</string>
+    <string name="screensaver_name">World Live Cams</string>
     <string name="category_all">All World</string>
+    <string name="category_popular">Popular</string>
     <string name="category_favorites">Favorites</string>
     <string name="category_bridges">Bridges</string>
     <string name="category_squares">Squares</string>
@@ -18,19 +19,21 @@
     <string name="toggle_solar_off">Sun: Off</string>
     <string name="toggle_oled_on">OLED guard: On</string>
     <string name="toggle_oled_off">OLED guard: Off</string>
-    <string name="section_hd_title">HD streams</string>
-    <string name="section_hd_subtitle">2K · 1080p · 720p</string>
+    <string name="section_hd_title">HD &amp; 4K</string>
+    <string name="section_hd_subtitle">4K · 2K · 1080p · 720p</string>
     <string name="section_sd_title">SD streams</string>
     <string name="section_sd_subtitle">576p · Standard</string>
-    <string name="badge_live_hls">Live HLS</string>
+    <string name="badge_live_hls">Live video</string>
     <string name="badge_snapshot">Live snapshot</string>
+    <string name="badge_card_live">LIVE</string>
+    <string name="badge_card_snap">SNAP</string>
     <string name="status_connecting">Connecting to camera…</string>
     <string name="status_retrying">Stream unreachable — retrying…</string>
     <string name="empty_favorites_heading">No favorite cameras yet</string>
     <string name="empty_favorites_body">Press and hold OK while watching any street camera to pin it here</string>
     <string name="empty_favorites_action">Browse all world cameras</string>
-    <string name="empty_quality_heading">No cameras match this quality filter</string>
-    <string name="empty_quality_body">Switch the quality filter to view cameras in this country, city, or category</string>
+    <string name="empty_quality_heading">No cameras match active filters</string>
+    <string name="empty_quality_body">Switch the stream or quality filter to view cameras in this country, city, or category</string>
     <string name="empty_quality_action">Switch quality filter</string>
-    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Camera · ▼: Menu &amp; panel · ▲: Scope</string>
+    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Camera · ▼: Menu &amp; perf · ▲: Scope</string>
 </resources>

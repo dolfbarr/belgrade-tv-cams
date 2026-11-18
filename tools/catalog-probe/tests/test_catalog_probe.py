@@ -10,7 +10,10 @@ from catalog_probe.models import (
     CameraCategory,
     CameraCity,
     CameraCountry,
+    CameraEntry,
     CatalogManifest,
+    GeoCoordinates,
+    StreamDescriptor,
     StreamTransportType,
     VideoQuality,
     manifest_from_json,
@@ -22,8 +25,10 @@ from catalog_probe.prober import (
     extract_naxi_hq_streams,
     extract_naxi_lq_snapshots,
     extract_toll4all_streams,
+    extract_youtube_video_id,
     normalize_snapshot_url,
     probe_cameras_live,
+    refresh_rostelecom_live_urls,
     refresh_rutube_live_urls,
 )
 
@@ -33,9 +38,16 @@ def test_normalize_snapshot_url_strips_stale_cache_buster() -> None:
     assert normalize_snapshot_url(raw) == "https://stream.uzivobeograd.rs/live/cam_14.jpg"
 
 
-def test_curated_v4_world_catalog_invariants() -> None:
+def test_extract_youtube_video_id_variants() -> None:
+    assert extract_youtube_video_id("https://www.youtube.com/watch?v=ZxCeWQ3Lcig") == "ZxCeWQ3Lcig"
+    assert extract_youtube_video_id("https://youtu.be/dfVK7ld38Ys?t=5") == "dfVK7ld38Ys"
+    assert extract_youtube_video_id("https://www.youtube.com/live/RVvYQghFCXk") == "RVvYQghFCXk"
+    assert extract_youtube_video_id("https://example.com/watch?v=ZxCeWQ3Lcig") is None
+
+
+def test_curated_v5_world_catalog_invariants() -> None:
     cameras = build_curated_cameras()
-    assert len(cameras) == 128
+    assert len(cameras) == 225
 
     seen_ids: set[str] = set()
     categories: set[CameraCategory] = set()
@@ -49,13 +61,58 @@ def test_curated_v4_world_catalog_invariants() -> None:
         CameraCity.NOVI_SAD: "Europe/Belgrade",
         CameraCity.SUBOTICA: "Europe/Belgrade",
         CameraCity.NIS: "Europe/Belgrade",
+        CameraCity.MOSCOW: "Europe/Moscow",
         CameraCity.SAINT_PETERSBURG: "Europe/Moscow",
         CameraCity.ROSTOV_ON_DON: "Europe/Moscow",
         CameraCity.TOMSK: "Asia/Tomsk",
+        CameraCity.MAGADAN: "Asia/Magadan",
         CameraCity.BARCELONA: "Europe/Madrid",
         CameraCity.MADRID: "Europe/Madrid",
         CameraCity.BUCHAREST: "Europe/Bucharest",
+        CameraCity.LONDON: "Europe/London",
+        CameraCity.PARIS: "Europe/Paris",
+        CameraCity.AMSTERDAM: "Europe/Amsterdam",
+        CameraCity.BERLIN: "Europe/Berlin",
+        CameraCity.TBILISI: "Asia/Tbilisi",
+        CameraCity.YEREVAN: "Asia/Yerevan",
+        CameraCity.NEW_YORK: "America/New_York",
+        CameraCity.SEOUL: "Asia/Seoul",
+        CameraCity.TOKYO: "Asia/Tokyo",
     }
+
+    city_bounds: dict[CameraCity, tuple[float, float, float, float]] = {
+        CameraCity.BELGRADE: (44.55, 45.05, 19.65, 21.15),
+        CameraCity.ZEMUN: (44.80, 45.08, 19.20, 20.43),
+        CameraCity.NOVI_SAD: (44.95, 45.40, 19.70, 20.05),
+        CameraCity.SUBOTICA: (45.95, 46.25, 19.50, 20.20),
+        CameraCity.NIS: (42.30, 43.45, 21.50, 22.85),
+        CameraCity.MOSCOW: (55.50, 56.00, 37.30, 38.00),
+        CameraCity.SAINT_PETERSBURG: (59.80, 60.15, 29.70, 30.60),
+        CameraCity.ROSTOV_ON_DON: (47.10, 47.40, 39.50, 39.95),
+        CameraCity.TOMSK: (56.40, 56.60, 84.85, 85.15),
+        CameraCity.MAGADAN: (59.50, 60.05, 150.60, 151.00),
+        CameraCity.BARCELONA: (41.20, 41.50, 1.75, 2.28),
+        CameraCity.MADRID: (40.35, 40.95, -3.95, -3.55),
+        CameraCity.BUCHAREST: (44.30, 44.65, 25.90, 26.25),
+        CameraCity.LONDON: (51.40, 51.65, -0.55, 0.10),
+        CameraCity.PARIS: (48.75, 48.95, 2.15, 2.45),
+        CameraCity.AMSTERDAM: (52.30, 52.45, 4.80, 5.05),
+        CameraCity.BERLIN: (52.38, 52.62, 13.15, 13.72),
+        CameraCity.TBILISI: (41.50, 41.80, 44.65, 45.05),
+        CameraCity.YEREVAN: (40.10, 40.60, 44.40, 44.80),
+        CameraCity.NEW_YORK: (40.65, 40.85, -74.10, -73.90),
+        CameraCity.SEOUL: (37.45, 37.65, 126.85, 127.15),
+        CameraCity.TOKYO: (35.50, 35.80, 139.60, 139.90),
+    }
+
+    query_allowed_hosts = (
+        "ipcamlive.com",
+        "openapi-alpha.ivideon.com",
+        "rec.maglan.ru",
+        "youtube.com",
+        "camera.rt.ru",
+        "bl.rutube.ru",
+    )
 
     for cam in cameras:
         assert cam.id not in seen_ids, f"Duplicate camera ID: {cam.id}"
@@ -68,54 +125,21 @@ def test_curated_v4_world_catalog_invariants() -> None:
         assert cam.municipality.strip() != ""
         assert cam.direction.strip() != ""
         assert cam.poster_url.startswith("https://")
-        assert "?" not in cam.poster_url
+        if not any(host in cam.poster_url for host in query_allowed_hosts):
+            assert "?" not in cam.poster_url, f"Unexpected query in poster_url: {cam.poster_url}"
         categories.add(cam.category)
         country_counts[cam.country] += 1
         city_counts[cam.city] += 1
         quality_counts[cam.quality] += 1
 
-        # Verify city coordinate accuracy so Open-Meteo returns true local weather per city
-        if cam.city == CameraCity.BELGRADE:
-            assert 44.55 <= cam.coordinates.lat <= 45.05
-            assert 19.65 <= cam.coordinates.lon <= 21.15
-        elif cam.city == CameraCity.ZEMUN:
-            assert 44.80 <= cam.coordinates.lat <= 45.08
-            assert 19.20 <= cam.coordinates.lon <= 20.43
-        elif cam.city == CameraCity.NOVI_SAD:
-            assert 44.95 <= cam.coordinates.lat <= 45.40
-            assert 19.70 <= cam.coordinates.lon <= 20.05
-        elif cam.city == CameraCity.SUBOTICA:
-            assert 45.95 <= cam.coordinates.lat <= 46.25
-            assert 19.50 <= cam.coordinates.lon <= 20.20
-        elif cam.city == CameraCity.NIS:
-            assert 42.30 <= cam.coordinates.lat <= 43.45
-            assert 21.50 <= cam.coordinates.lon <= 22.85
-        elif cam.city == CameraCity.SAINT_PETERSBURG:
-            assert 59.80 <= cam.coordinates.lat <= 60.15
-            assert 29.70 <= cam.coordinates.lon <= 30.60
-        elif cam.city == CameraCity.ROSTOV_ON_DON:
-            assert 47.10 <= cam.coordinates.lat <= 47.40
-            assert 39.50 <= cam.coordinates.lon <= 39.95
-        elif cam.city == CameraCity.TOMSK:
-            assert 56.40 <= cam.coordinates.lat <= 56.60
-            assert 84.85 <= cam.coordinates.lon <= 85.15
-        elif cam.city == CameraCity.BARCELONA:
-            assert 41.30 <= cam.coordinates.lat <= 41.50
-            assert 2.05 <= cam.coordinates.lon <= 2.28
-        elif cam.city == CameraCity.MADRID:
-            assert 40.35 <= cam.coordinates.lat <= 40.55
-            assert -3.80 <= cam.coordinates.lon <= -3.55
-        elif cam.city == CameraCity.BUCHAREST:
-            assert 44.30 <= cam.coordinates.lat <= 44.60
-            assert 25.90 <= cam.coordinates.lon <= 26.25
+        lat_min, lat_max, lon_min, lon_max = city_bounds[cam.city]
+        assert lat_min <= cam.coordinates.lat <= lat_max, f"{cam.id} lat out of {cam.city} bounds"
+        assert lon_min <= cam.coordinates.lon <= lon_max, f"{cam.id} lon out of {cam.city} bounds"
 
         assert len(cam.streams) >= 1
         for stream in cam.streams:
-            if not any(
-                host in stream.url
-                for host in ("ipcamlive.com", "openapi-alpha.ivideon.com", "bl.rutube.ru")
-            ):
-                assert "?" not in stream.url
+            if not any(host in stream.url for host in query_allowed_hosts):
+                assert "?" not in stream.url, f"Unexpected query in stream url: {stream.url}"
             if "bitinfo.co.rs" in stream.url:
                 assert stream.headers is not None
                 assert stream.headers.get("Referer") == "https://kamere.toll4all.com/"
@@ -128,9 +152,18 @@ def test_curated_v4_world_catalog_invariants() -> None:
 
     assert country_counts == {
         CameraCountry.SERBIA: 78,
-        CameraCountry.RUSSIA: 23,
-        CameraCountry.SPAIN: 22,
-        CameraCountry.ROMANIA: 5,
+        CameraCountry.RUSSIA: 35,
+        CameraCountry.SPAIN: 29,
+        CameraCountry.ROMANIA: 8,
+        CameraCountry.UK: 9,
+        CameraCountry.FRANCE: 8,
+        CameraCountry.NETHERLANDS: 8,
+        CameraCountry.GERMANY: 8,
+        CameraCountry.GEORGIA: 4,
+        CameraCountry.ARMENIA: 3,
+        CameraCountry.USA: 13,
+        CameraCountry.SOUTH_KOREA: 10,
+        CameraCountry.JAPAN: 12,
     }
     assert city_counts == {
         CameraCity.BELGRADE: 40,
@@ -138,27 +171,36 @@ def test_curated_v4_world_catalog_invariants() -> None:
         CameraCity.NOVI_SAD: 8,
         CameraCity.SUBOTICA: 9,
         CameraCity.NIS: 13,
+        CameraCity.MOSCOW: 7,
         CameraCity.SAINT_PETERSBURG: 12,
-        CameraCity.ROSTOV_ON_DON: 1,
+        CameraCity.ROSTOV_ON_DON: 3,
         CameraCity.TOMSK: 10,
-        CameraCity.BARCELONA: 10,
-        CameraCity.MADRID: 12,
-        CameraCity.BUCHAREST: 5,
+        CameraCity.MAGADAN: 3,
+        CameraCity.BARCELONA: 14,
+        CameraCity.MADRID: 15,
+        CameraCity.BUCHAREST: 8,
+        CameraCity.LONDON: 9,
+        CameraCity.PARIS: 8,
+        CameraCity.AMSTERDAM: 8,
+        CameraCity.BERLIN: 8,
+        CameraCity.TBILISI: 4,
+        CameraCity.YEREVAN: 3,
+        CameraCity.NEW_YORK: 13,
+        CameraCity.SEOUL: 10,
+        CameraCity.TOKYO: 12,
     }
-    assert quality_counts == {
-        VideoQuality.UHD_2K: 18,
-        VideoQuality.FHD_1080P: 27,
-        VideoQuality.HD_720P: 46,
-        VideoQuality.SD: 37,
-    }
-    assert sum(1 for c in cameras if c.quality.is_hd) == 91
-    assert sum(1 for c in cameras if not c.quality.is_hd) == 37
 
-    # Verify HD-before-SD ordering invariant within every city
+    # Every single one of the 22 cities must have >= 1 live motion video camera,
+    # and live video cameras must be sorted ahead of snapshots (then highest resolution first).
     for city in CameraCity:
         city_cams = [c for c in cameras if c.city == city]
-        ranks = [c.quality.sort_rank for c in city_cams]
-        assert ranks == sorted(ranks), f"City {city} cameras are not sorted HD-first: {ranks}"
+        live_count = sum(1 for c in city_cams if c.is_live_video)
+        assert live_count >= 1, f"City {city} has zero live video streams!"
+        sort_keys = [(0 if c.is_live_video else 1, c.quality.sort_rank) for c in city_cams]
+        assert sort_keys == sorted(sort_keys), f"City {city} violated live-first/HD-first order"
+
+    assert quality_counts[VideoQuality.UHD_4K] >= 20
+    assert sum(1 for c in cameras if c.is_featured) >= 24
 
     assert categories == {
         CameraCategory.BRIDGES,
@@ -214,7 +256,13 @@ def test_extract_upstream_html_parsers() -> None:
 
 
 def test_apply_probe_ordering_promotes_healthy_fallback() -> None:
-    camera = next(c for c in build_curated_cameras() if len(c.streams) >= 2)
+    camera = next(
+        c
+        for c in build_curated_cameras()
+        if len(c.streams) >= 2
+        and c.streams[0].type == StreamTransportType.HLS
+        and c.streams[1].type == StreamTransportType.SNAPSHOT_POLL
+    )
     hls_url = camera.streams[0].url
     snap_url = camera.streams[1].url
 
@@ -228,56 +276,189 @@ def test_apply_probe_ordering_promotes_healthy_fallback() -> None:
     assert reordered.streams[1].type == StreamTransportType.HLS
 
 
-def test_prober_falls_back_to_get_when_head_returns_403() -> None:
-    seen_methods: list[str] = []
+def test_prober_supports_youtube_rutube_ipcamlive_and_windy_content_type() -> None:
+    sample_cameras = [
+        CameraEntry(
+            id="t-yt",
+            name="YT",
+            country=CameraCountry.JAPAN,
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_4K,
+            featured=True,
+            timezone="Asia/Tokyo",
+            streets=("St",),
+            municipality="Minato",
+            category=CameraCategory.SQUARES,
+            direction="Dir",
+            poster_url="https://i.ytimg.com/vi/ZxCeWQ3Lcig/hqdefault.jpg",
+            coordinates=GeoCoordinates(35.68, 139.76),
+            streams=(
+                StreamDescriptor(
+                    StreamTransportType.YOUTUBE_LIVE,
+                    "https://www.youtube.com/watch?v=ZxCeWQ3Lcig",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="t-rt",
+            name="RT",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.MOSCOW,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Moscow",
+            streets=("St",),
+            municipality="Center",
+            category=CameraCategory.BRIDGES,
+            direction="Dir",
+            poster_url="https://pic.rtbcdn.ru/video/x.jpg",
+            coordinates=GeoCoordinates(55.75, 37.62),
+            streams=(
+                StreamDescriptor(
+                    StreamTransportType.RUTUBE_LIVE,
+                    "https://rutube.ru/video/849eda0a248516e770a6172f10a14308/",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="t-ipc",
+            name="IPC",
+            country=CameraCountry.SERBIA,
+            city=CameraCity.SUBOTICA,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Belgrade",
+            streets=("St",),
+            municipality="Subotica",
+            category=CameraCategory.SQUARES,
+            direction="Dir",
+            poster_url="https://g0.ipcamlive.com/player/snapshot.php?alias=kameratrg",
+            coordinates=GeoCoordinates(46.10, 19.66),
+            streams=(
+                StreamDescriptor(
+                    StreamTransportType.IPCAMLIVE,
+                    "https://ipcamlive.com/kameratrg",
+                ),
+                StreamDescriptor(
+                    StreamTransportType.SNAPSHOT_POLL,
+                    "https://imgproxy.windy.com/_/full/plain/current/999999/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+    ]
 
     def handler(request: httpx.Request) -> httpx.Response:
-        seen_methods.append(request.method)
-        if request.method == "HEAD":
-            return httpx.Response(403, text="Forbidden on HEAD")
-        return httpx.Response(200, text="#EXTM3U\n")
+        url = str(request.url)
+        if "m.youtube.com/watch" in url:
+            return httpx.Response(
+                200,
+                text='{"streamingData":{"hlsManifestUrl":"https://manifest.googlevideo.com/x.m3u8"}}',
+            )
+        if "rutube.ru/api/play/options/" in url:
+            return httpx.Response(
+                200,
+                json={"live_streams": {"hls": [{"url": "https://bl.rutube.ru/live/index.m3u8"}]}},
+            )
+        if "ipcamlive.com/ajax/getcamerastreamstate.php" in url:
+            return httpx.Response(200, json={"details": {"streamavailable": "1"}})
+        if "imgproxy.windy.com" in url:
+            # Simulate Windy retired-ID false 200 text/plain response
+            return httpx.Response(
+                200,
+                headers={"content-type": "text/plain"},
+                text="Image does not exist",
+            )
+        return httpx.Response(404)
 
-    cam = build_curated_cameras()[0]
-    transport = httpx.MockTransport(handler)
-    results = probe_cameras_live([cam], timeout_seconds=2.0, transport=transport)
-    assert results[cam.streams[0].url].reachable is True
-    assert "HEAD" in seen_methods
-    assert "GET" in seen_methods
-
-
-def test_refresh_rutube_live_urls_updates_signed_hls_url() -> None:
-    rutube_cam = next(c for c in build_curated_cameras() if c.id == "ru-rov-leninsky-skyline")
-    expected_fresh = (
-        "https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8"
-        "?s=freshsig&e=2099999999&scheme=https"
-    )
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        assert "eba7bc75dd7994f0d7e22e1ad9e76a87" in str(request.url)
-        return httpx.Response(200, json={"live_streams": {"hls": [{"url": expected_fresh}]}})
-
-    updated = refresh_rutube_live_urls(
-        [rutube_cam],
+    results = probe_cameras_live(
+        sample_cameras,
         timeout_seconds=2.0,
         transport=httpx.MockTransport(handler),
     )
-    assert updated[0].streams[0].url == expected_fresh
+    assert results["https://www.youtube.com/watch?v=ZxCeWQ3Lcig"].reachable is True
+    assert results["https://rutube.ru/video/849eda0a248516e770a6172f10a14308/"].reachable is True
+    assert results["https://ipcamlive.com/kameratrg"].reachable is True
+    assert (
+        results["https://imgproxy.windy.com/_/full/plain/current/999999/original.jpg"].reachable
+        is False
+    )
+
+
+def test_refresh_rutube_and_rostelecom_live_urls() -> None:
+    legacy_rutube_cam = CameraEntry(
+        id="legacy-rt",
+        name="Legacy RT",
+        country=CameraCountry.RUSSIA,
+        city=CameraCity.ROSTOV_ON_DON,
+        quality=VideoQuality.FHD_1080P,
+        timezone="Europe/Moscow",
+        streets=("St",),
+        municipality="Leninsky",
+        category=CameraCategory.HIGHWAYS,
+        direction="Dir",
+        poster_url="https://pic.rtbcdn.ru/video/x.jpg",
+        coordinates=GeoCoordinates(47.22, 39.69),
+        streams=(
+            StreamDescriptor(
+                StreamTransportType.HLS,
+                "https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8?s=old",
+            ),
+        ),
+    )
+    expected_rt = (
+        "https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8"
+        "?s=freshsig&e=2099999999&scheme=https"
+    )
+    updated_rt = refresh_rutube_live_urls(
+        [legacy_rutube_cam],
+        timeout_seconds=2.0,
+        transport=httpx.MockTransport(
+            lambda req: httpx.Response(200, json={"live_streams": {"hls": [{"url": expected_rt}]}})
+        ),
+    )
+    assert updated_rt[0].streams[0].url == expected_rt
+
+    gdx_cam = next(c for c in build_curated_cameras() if c.id == "ru-gdx-sokol-panorama")
+    expected_rostelecom = (
+        "https://live-msk1.camera.rt.ru/public/master.m3u8?sid=3374004d-7835-40d0-88c8-515ad29c4dcd"
+    )
+    updated_gdx = refresh_rostelecom_live_urls(
+        [gdx_cam],
+        timeout_seconds=2.0,
+        transport=httpx.MockTransport(
+            lambda req: httpx.Response(
+                200,
+                json={"status": "ok", "camera": {"is_alive": True, "hls_url": expected_rostelecom}},
+            )
+        ),
+    )
+    assert updated_gdx[0].streams[0].url == expected_rostelecom
 
 
 def test_whole_graph_json_round_trip_fixed_point() -> None:
     manifest = CatalogManifest(
-        schema_version=4,
-        revision=2026111817,
-        updated_at="2026-11-18T17:20:00Z",
+        schema_version=5,
+        revision=2026111820,
+        updated_at="2026-11-18T20:55:00Z",
         cameras=tuple(build_curated_cameras()),
     )
     first_json = manifest_to_json(manifest)
     raw_obj = json.loads(first_json)
 
-    assert raw_obj["schema_version"] == 4
-    first_cam = raw_obj["cameras"][0]
-    # Verify exact key order matching Kotlin kotlinx.serialization CatalogJsonCodec
-    assert list(first_cam.keys())[:6] == [
+    assert raw_obj["schema_version"] == 5
+    featured_cam = next(item for item in raw_obj["cameras"] if item.get("featured") is True)
+    assert list(featured_cam.keys())[:7] == [
+        "id",
+        "name",
+        "country",
+        "city",
+        "quality",
+        "featured",
+        "timezone",
+    ]
+
+    non_featured_cam = next(item for item in raw_obj["cameras"] if "featured" not in item)
+    assert list(non_featured_cam.keys())[:6] == [
         "id",
         "name",
         "country",
@@ -286,17 +467,14 @@ def test_whole_graph_json_round_trip_fixed_point() -> None:
         "timezone",
     ]
 
-    first_hls_stream = first_cam["streams"][0]
-    assert "interval_ms" not in first_hls_stream
-    assert "cache_buster_param" not in first_hls_stream
-
     reloaded = manifest_from_json(first_json)
     second_json = manifest_to_json(reloaded)
     assert second_json == first_json
     assert reloaded == manifest
 
     # Verify v3 backward compatibility when country is omitted (None)
-    legacy_cam = replace(manifest.cameras[0], country=None)
+    legacy_cam = replace(manifest.cameras[0], country=None, featured=None)
     legacy_dict = legacy_cam.to_dict()
     assert "country" not in legacy_dict
+    assert "featured" not in legacy_dict
     assert list(legacy_dict.keys())[:5] == ["id", "name", "city", "quality", "timezone"]

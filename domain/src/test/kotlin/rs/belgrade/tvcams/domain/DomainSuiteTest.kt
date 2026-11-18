@@ -14,7 +14,9 @@ import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogClient
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogResult
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
+import rs.belgrade.tvcams.domain.favorites.PerformanceMode
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
+import rs.belgrade.tvcams.domain.favorites.TransportFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
@@ -34,6 +36,7 @@ import rs.belgrade.tvcams.domain.solar.SolarWindow
 import rs.belgrade.tvcams.domain.stream.FailoverDecision
 import rs.belgrade.tvcams.domain.stream.SnapshotUrlBuilder
 import rs.belgrade.tvcams.domain.stream.StreamFailoverTracker
+import rs.belgrade.tvcams.domain.stream.StreamPayloadParsers
 import rs.belgrade.tvcams.domain.time.CameraClockFormatter
 import rs.belgrade.tvcams.domain.tv.HomeChannelSelector
 import rs.belgrade.tvcams.domain.tv.OverlayMode
@@ -748,9 +751,32 @@ class DomainSuiteTest {
             favoriteIds = emptySet(),
             maxItems = 12,
         )
-        assertEquals("World live cams — Featured", featured.channelTitle)
-        assertEquals(CameraCountry.entries.toSet(), featured.cameras.map { it.resolvedCountry }.toSet())
-        assertEquals(CameraCity.entries.toSet(), featured.cameras.map { it.city }.toSet())
+        assertEquals("World Live Cams — Featured", featured.channelTitle)
+        assertEquals(
+            setOf(
+                CameraCountry.SERBIA,
+                CameraCountry.RUSSIA,
+                CameraCountry.SPAIN,
+                CameraCountry.ROMANIA,
+            ),
+            featured.cameras.map { it.resolvedCountry }.toSet(),
+        )
+        assertEquals(
+            setOf(
+                CameraCity.BELGRADE,
+                CameraCity.ZEMUN,
+                CameraCity.NOVI_SAD,
+                CameraCity.SUBOTICA,
+                CameraCity.NIS,
+                CameraCity.SAINT_PETERSBURG,
+                CameraCity.ROSTOV_ON_DON,
+                CameraCity.TOMSK,
+                CameraCity.BARCELONA,
+                CameraCity.MADRID,
+                CameraCity.BUCHAREST,
+            ),
+            featured.cameras.map { it.city }.toSet(),
+        )
 
         val firstEncode = CatalogJsonCodec.encode(decoded)
         val reDecoded = CatalogJsonCodec.decode(firstEncode)
@@ -818,7 +844,13 @@ class DomainSuiteTest {
         assertEquals(CameraCountry.RUSSIA, state.selectedStripCountry)
         assertEquals(listOf("spb-hd", "tof-sd"), state.stripCameras.map { it.id })
         assertEquals(
-            listOf(CameraCity.SAINT_PETERSBURG, CameraCity.ROSTOV_ON_DON, CameraCity.TOMSK),
+            listOf(
+                CameraCity.MOSCOW,
+                CameraCity.SAINT_PETERSBURG,
+                CameraCity.ROSTOV_ON_DON,
+                CameraCity.TOMSK,
+                CameraCity.MAGADAN,
+            ),
             CameraCity.citiesFor(CameraCountry.RUSSIA),
         )
 
@@ -847,5 +879,157 @@ class DomainSuiteTest {
 
         state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
         assertEquals(ZapScope.ALL, state.zapScope)
+    }
+
+    @Test
+    fun `stream payload parsers extract YouTube Live, Rutube, and IPCamLive HLS manifests accurately`() {
+        assertEquals(
+            "https://m.youtube.com/watch?v=dfVK7ld38Ys",
+            StreamPayloadParsers.normalizeYouTubeLiveWatchUrl("dfVK7ld38Ys"),
+        )
+        assertEquals(
+            "https://m.youtube.com/watch?v=ZxCeWQ3Lcig",
+            StreamPayloadParsers.normalizeYouTubeLiveWatchUrl("https://www.youtube.com/watch?v=ZxCeWQ3Lcig&ab_channel=EarthCam"),
+        )
+        assertEquals(
+            "https://m.youtube.com/@MadridSkyLive/live",
+            StreamPayloadParsers.normalizeYouTubeLiveWatchUrl("https://www.youtube.com/@MadridSkyLive/live"),
+        )
+
+        val ytWatchHtml = """
+            {"streamingData":{"expiresInSeconds":"21540","hlsManifestUrl":"https:\/\/manifest.googlevideo.com\/api\/manifest\/hls_variant\/id\/dfVK7ld38Ys.5\/file\/index.m3u8\u0026keepalive=yes"}}
+        """.trimIndent()
+        assertEquals(
+            "https://manifest.googlevideo.com/api/manifest/hls_variant/id/dfVK7ld38Ys.5/file/index.m3u8&keepalive=yes",
+            StreamPayloadParsers.extractYouTubeHlsUrl(ytWatchHtml),
+        )
+
+        val rutubeJson = """
+            {"live_streams":{"hls":[{"url":"https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8?s=sig123&e=2090000000"}]}}
+        """.trimIndent()
+        assertEquals(
+            "eba7bc75dd7994f0d7e22e1ad9e76a87",
+            StreamPayloadParsers.extractRutubeVideoId("https://rutube.ru/video/eba7bc75dd7994f0d7e22e1ad9e76a87/"),
+        )
+        assertEquals(
+            "https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8?s=sig123&e=2090000000",
+            StreamPayloadParsers.extractRutubeHlsUrl(rutubeJson),
+        )
+
+        val ipCamLiveJson = """
+            {"details":{"alias":"kameratrg","streamavailable":"1","streamid":"6eawzkcys3di59czx","address":"http:\/\/s110.ipcamlive.com\/"},"streaminfo":{"live":{"levels":[{"url":"stream.m3u8"}]}}}
+        """.trimIndent()
+        assertEquals(
+            "kameratrg",
+            StreamPayloadParsers.extractIpCamLiveAlias("https://www.ipcamlive.com/player/player.php?alias=kameratrg"),
+        )
+        assertEquals(
+            "https://s110.ipcamlive.com/streams/6eawzkcys3di59czx/stream.m3u8",
+            StreamPayloadParsers.extractIpCamLiveHlsUrl(ipCamLiveJson),
+        )
+    }
+
+    @Test
+    fun `live video sorts ahead of snapshots, transport filter and popular tab scope cleanly, and performance mode adapts to low-RAM TVs`() {
+        val snapshot4k = sampleCamera(
+            id = "tyo-snap-4k",
+            name = "Tokyo Snapshot 4K",
+            city = CameraCity.TOKYO,
+            quality = VideoQuality.UHD_4K,
+        ).copy(
+            featured = false,
+            streams = listOf(
+                StreamDescriptor(
+                    type = StreamTransportType.SNAPSHOT_POLL,
+                    url = "https://imgproxy.windy.com/_/full/plain/current/1/original.jpg",
+                ),
+            ),
+        )
+        val live1080 = sampleCamera(
+            id = "tyo-live-1080",
+            name = "Shibuya Scramble Live",
+            city = CameraCity.TOKYO,
+            quality = VideoQuality.FHD_1080P,
+        ).copy(
+            featured = true,
+            streams = listOf(
+                StreamDescriptor(
+                    type = StreamTransportType.YOUTUBE_LIVE,
+                    url = "dfVK7ld38Ys",
+                ),
+            ),
+        )
+
+        assertFalse(snapshot4k.isLiveVideo)
+        assertTrue(live1080.isLiveVideo)
+        assertTrue(live1080.isFeatured)
+        assertEquals("4K UHD", snapshot4k.resolvedQuality.shortBadgeLabel())
+
+        var state = TvStageState.initial(
+            cameras = listOf(snapshot4k, live1080),
+            initialCameraId = "tyo-snap-4k",
+        )
+
+        // Live video sorts ahead of snapshot within the same country even when snapshot has higher static resolution
+        assertEquals(listOf("tyo-live-1080", "tyo-snap-4k"), state.stripCameras.map { it.id })
+        assertEquals(1, state.liveVideoTotalCount)
+        assertEquals(1, state.snapshotTotalCount)
+
+        // Popular filter surfaces featured cameras
+        state = TvStageReducer.reduce(state, TvRemoteAction.SelectStripFilter(StripFilter.Popular)).state
+        assertEquals(listOf("tyo-live-1080"), state.stripCameras.map { it.id })
+
+        // Reset strip filter to All and cycle TransportFilter: ALL -> LIVE_VIDEO_ONLY -> SNAPSHOT_ONLY -> ALL
+        state = TvStageReducer.reduce(state, TvRemoteAction.SelectStripFilter(StripFilter.All)).state
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleTransportFilter).state
+        assertEquals(TransportFilter.LIVE_VIDEO_ONLY, state.transportFilter)
+        assertEquals("tyo-live-1080", state.activeCameraId)
+        assertEquals(listOf("tyo-live-1080"), state.stripCameras.map { it.id })
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleTransportFilter).state
+        assertEquals(TransportFilter.SNAPSHOT_ONLY, state.transportFilter)
+        assertEquals("tyo-snap-4k", state.activeCameraId)
+        assertEquals(listOf("tyo-snap-4k"), state.stripCameras.map { it.id })
+
+        // Performance mode cycling & low-RAM surface / resolution cap decisions
+        assertEquals(PerformanceMode.AUTO, state.performanceMode)
+        assertTrue(PerformanceMode.AUTO.shouldUseLowSpecSurface(isLowRamDevice = true))
+        assertFalse(PerformanceMode.AUTO.shouldUseLowSpecSurface(isLowRamDevice = false))
+        assertEquals(1080, PerformanceMode.AUTO.maxVideoHeightPx(displayHeightPx = 1080, isLowRamDevice = false))
+        assertEquals(720, PerformanceMode.LOW_SPEC.maxVideoHeightPx(displayHeightPx = 2160, isLowRamDevice = false))
+        assertEquals(2160, PerformanceMode.MAX_QUALITY.maxVideoHeightPx(displayHeightPx = 1080, isLowRamDevice = true))
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CyclePerformanceMode).state
+        assertEquals(PerformanceMode.LOW_SPEC, state.performanceMode)
+        assertEquals("Performance: Low-spec", state.noticeMessage)
+    }
+
+    @Test
+    fun `whole-graph round trip of v5 world catalog preserves 13 countries, 22 cities, and live video in every city`() {
+        val catalogV5Path = System.getProperty("belgrade.catalog.v5.path")
+        assertNotNull(catalogV5Path, "System property belgrade.catalog.v5.path must be set")
+        val rawDiskJson = File(catalogV5Path).readText(Charsets.UTF_8)
+        val decoded = CatalogJsonCodec.decode(rawDiskJson)
+
+        assertEquals(5, decoded.schemaVersion)
+        assertEquals(225, decoded.cameras.size)
+        assertEquals(CameraCountry.entries.toSet(), decoded.cameras.map { it.resolvedCountry }.toSet())
+        assertEquals(CameraCity.entries.toSet(), decoded.cameras.map { it.city }.toSet())
+
+        CameraCity.entries.forEach { city ->
+            val cityCams = decoded.cameras.filter { it.city == city }
+            assertTrue(
+                cityCams.any { it.isLiveVideo },
+                "City $city must retain at least 1 primary live video camera after probing",
+            )
+        }
+
+        val firstEncode = CatalogJsonCodec.encode(decoded)
+        val reDecoded = CatalogJsonCodec.decode(firstEncode)
+        val secondEncode = CatalogJsonCodec.encode(reDecoded)
+
+        assertEquals(decoded, reDecoded)
+        assertEquals(firstEncode, secondEncode)
+        assertEquals(rawDiskJson, firstEncode)
     }
 }

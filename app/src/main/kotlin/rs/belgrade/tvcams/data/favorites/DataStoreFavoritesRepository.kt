@@ -13,7 +13,9 @@ import kotlinx.coroutines.flow.map
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
+import rs.belgrade.tvcams.domain.favorites.PerformanceMode
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
+import rs.belgrade.tvcams.domain.favorites.TransportFilter
 import rs.belgrade.tvcams.domain.favorites.ViewerPreferences
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 
@@ -37,6 +39,24 @@ class DataStoreFavoritesRepository(
                 if (rawQualityFilter != null) QualityFilter.valueOf(rawQualityFilter) else QualityFilter.ALL
             }.getOrDefault(QualityFilter.ALL)
 
+            val rawTransportFilter = prefs[KEY_TRANSPORT_FILTER]
+            val transportFilter = runCatching {
+                if (rawTransportFilter != null) {
+                    TransportFilter.valueOf(rawTransportFilter)
+                } else {
+                    TransportFilter.ALL
+                }
+            }.getOrDefault(TransportFilter.ALL)
+
+            val rawPerformanceMode = prefs[KEY_PERFORMANCE_MODE]
+            val performanceMode = runCatching {
+                if (rawPerformanceMode != null) {
+                    PerformanceMode.valueOf(rawPerformanceMode)
+                } else {
+                    PerformanceMode.AUTO
+                }
+            }.getOrDefault(PerformanceMode.AUTO)
+
             val rawAutoRotate = prefs[KEY_AUTO_ROTATE_INTERVAL]
             val autoRotateInterval = runCatching {
                 if (rawAutoRotate != null) AutoRotateInterval.valueOf(rawAutoRotate) else AutoRotateInterval.OFF
@@ -56,6 +76,8 @@ class DataStoreFavoritesRepository(
                 lastCameraId = prefs[KEY_LAST_CAMERA_ID],
                 zapScope = scope,
                 qualityFilter = qualityFilter,
+                transportFilter = transportFilter,
+                performanceMode = performanceMode,
                 autoRotateInterval = autoRotateInterval,
                 infoPanelPosition = infoPanelPosition,
                 autoHideHud = prefs[KEY_AUTO_HIDE_HUD] ?: true,
@@ -88,6 +110,18 @@ class DataStoreFavoritesRepository(
     override suspend fun setQualityFilter(filter: QualityFilter) {
         appContext.viewerPreferencesDataStore.edit { prefs ->
             prefs[KEY_QUALITY_FILTER] = filter.name
+        }
+    }
+
+    override suspend fun setTransportFilter(filter: TransportFilter) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_TRANSPORT_FILTER] = filter.name
+        }
+    }
+
+    override suspend fun setPerformanceMode(mode: PerformanceMode) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_PERFORMANCE_MODE] = mode.name
         }
     }
 
@@ -138,6 +172,8 @@ class DataStoreFavoritesRepository(
         val KEY_LAST_CAMERA_ID = stringPreferencesKey("last_camera_id")
         val KEY_ZAP_SCOPE = stringPreferencesKey("zap_scope")
         val KEY_QUALITY_FILTER = stringPreferencesKey("quality_filter")
+        val KEY_TRANSPORT_FILTER = stringPreferencesKey("transport_filter")
+        val KEY_PERFORMANCE_MODE = stringPreferencesKey("performance_mode")
         val KEY_AUTO_ROTATE_INTERVAL = stringPreferencesKey("auto_rotate_interval")
         val KEY_INFO_PANEL_POSITION = stringPreferencesKey("info_panel_position")
         val KEY_AUTO_HIDE_HUD = booleanPreferencesKey("auto_hide_hud")

@@ -89,6 +89,7 @@ def _ott_24sedam_camera(
     ott_slug: str,
     poster_url: str,
     fallback_jpg_num: int | None = None,
+    featured: bool | None = None,
 ) -> CameraEntry:
     streams: list[StreamDescriptor] = [
         StreamDescriptor(
@@ -112,6 +113,7 @@ def _ott_24sedam_camera(
         name=name,
         city=city,
         quality=VideoQuality.UHD_2K,
+        featured=featured,
         streets=streets,
         municipality=municipality,
         category=category,
@@ -264,15 +266,31 @@ def _rutube_live_camera(
     direction: str,
     lat: float,
     lon: float,
-    hls_url: str,
+    video_id: str,
     poster_url: str,
+    youtube_fallback_id: str | None = None,
+    featured: bool | None = None,
 ) -> CameraEntry:
+    streams: list[StreamDescriptor] = [
+        StreamDescriptor(
+            type=StreamTransportType.RUTUBE_LIVE,
+            url=f"https://rutube.ru/video/{video_id}/",
+        ),
+    ]
+    if youtube_fallback_id is not None:
+        streams.append(
+            StreamDescriptor(
+                type=StreamTransportType.YOUTUBE_LIVE,
+                url=f"https://www.youtube.com/watch?v={youtube_fallback_id}",
+            )
+        )
     return CameraEntry(
         id=cam_id,
         name=name,
         country=city.default_country,
         city=city,
         quality=VideoQuality.FHD_1080P,
+        featured=featured,
         timezone=timezone,
         streets=streets,
         municipality=municipality,
@@ -280,10 +298,147 @@ def _rutube_live_camera(
         direction=direction,
         poster_url=poster_url,
         coordinates=GeoCoordinates(lat=lat, lon=lon),
+        streams=tuple(streams),
+    )
+
+
+def _youtube_live_camera(
+    *,
+    cam_id: str,
+    name: str,
+    city: CameraCity,
+    quality: VideoQuality,
+    timezone: str,
+    streets: tuple[str, ...],
+    municipality: str,
+    category: CameraCategory,
+    direction: str,
+    lat: float,
+    lon: float,
+    video_id: str,
+    secondary_video_id: str | None = None,
+    windy_fallback_id: str | None = None,
+    featured: bool | None = None,
+) -> CameraEntry:
+    streams: list[StreamDescriptor] = [
+        StreamDescriptor(
+            type=StreamTransportType.YOUTUBE_LIVE,
+            url=f"https://www.youtube.com/watch?v={video_id}",
+        ),
+    ]
+    if secondary_video_id is not None:
+        streams.append(
+            StreamDescriptor(
+                type=StreamTransportType.YOUTUBE_LIVE,
+                url=f"https://www.youtube.com/watch?v={secondary_video_id}",
+            )
+        )
+    if windy_fallback_id is not None:
+        streams.append(
+            StreamDescriptor(
+                type=StreamTransportType.SNAPSHOT_POLL,
+                url=f"https://imgproxy.windy.com/_/full/plain/current/{windy_fallback_id}/original.jpg",
+                interval_ms=60000,
+                cache_buster_param="v",
+            )
+        )
+    return CameraEntry(
+        id=cam_id,
+        name=name,
+        country=city.default_country,
+        city=city,
+        quality=quality,
+        featured=featured,
+        timezone=timezone,
+        streets=streets,
+        municipality=municipality,
+        category=category,
+        direction=direction,
+        poster_url=f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+        coordinates=GeoCoordinates(lat=lat, lon=lon),
+        streams=tuple(streams),
+    )
+
+
+def _ipcamlive_camera(
+    *,
+    cam_id: str,
+    name: str,
+    city: CameraCity,
+    quality: VideoQuality,
+    timezone: str,
+    streets: tuple[str, ...],
+    municipality: str,
+    category: CameraCategory,
+    direction: str,
+    lat: float,
+    lon: float,
+    alias: str,
+    poster_url: str | None = None,
+    featured: bool | None = None,
+) -> CameraEntry:
+    snap_url = f"https://g0.ipcamlive.com/player/snapshot.php?alias={alias}"
+    return CameraEntry(
+        id=cam_id,
+        name=name,
+        country=city.default_country,
+        city=city,
+        quality=quality,
+        featured=featured,
+        timezone=timezone,
+        streets=streets,
+        municipality=municipality,
+        category=category,
+        direction=direction,
+        poster_url=poster_url if poster_url is not None else snap_url,
+        coordinates=GeoCoordinates(lat=lat, lon=lon),
         streams=(
             StreamDescriptor(
-                type=StreamTransportType.HLS,
-                url=hls_url,
+                type=StreamTransportType.IPCAMLIVE,
+                url=f"https://ipcamlive.com/{alias}",
+            ),
+            StreamDescriptor(
+                type=StreamTransportType.SNAPSHOT_POLL,
+                url=snap_url,
+                interval_ms=5000,
+                cache_buster_param="t",
+            ),
+        ),
+    )
+
+
+def _tfl_jamcam_camera(
+    *,
+    cam_id: str,
+    name: str,
+    streets: tuple[str, ...],
+    municipality: str,
+    category: CameraCategory,
+    direction: str,
+    lat: float,
+    lon: float,
+    jamcam_id: str,
+) -> CameraEntry:
+    snap_url = f"https://s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk/{jamcam_id}.jpg"
+    return CameraEntry(
+        id=cam_id,
+        name=name,
+        country=CameraCountry.UK,
+        city=CameraCity.LONDON,
+        quality=VideoQuality.SD,
+        timezone="Europe/London",
+        streets=streets,
+        municipality=municipality,
+        category=category,
+        direction=direction,
+        poster_url=snap_url,
+        coordinates=GeoCoordinates(lat=lat, lon=lon),
+        streams=(
+            StreamDescriptor(
+                type=StreamTransportType.SNAPSHOT_POLL,
+                url=snap_url,
+                interval_ms=15000,
+                cache_buster_param="_",
             ),
         ),
     )
@@ -421,24 +576,9 @@ def _tomsk_snapshot_camera(
 
 def build_curated_cameras() -> list[CameraEntry]:
     country_order: dict[CameraCountry, int] = {
-        CameraCountry.SERBIA: 0,
-        CameraCountry.RUSSIA: 1,
-        CameraCountry.SPAIN: 2,
-        CameraCountry.ROMANIA: 3,
+        country: idx for idx, country in enumerate(CameraCountry)
     }
-    city_order: dict[CameraCity, int] = {
-        CameraCity.BELGRADE: 0,
-        CameraCity.ZEMUN: 1,
-        CameraCity.NOVI_SAD: 2,
-        CameraCity.SUBOTICA: 3,
-        CameraCity.NIS: 4,
-        CameraCity.SAINT_PETERSBURG: 5,
-        CameraCity.ROSTOV_ON_DON: 6,
-        CameraCity.TOMSK: 7,
-        CameraCity.BARCELONA: 8,
-        CameraCity.MADRID: 9,
-        CameraCity.BUCHAREST: 10,
-    }
+    city_order: dict[CameraCity, int] = {city: idx for idx, city in enumerate(CameraCity)}
     raw_cameras = [
         # =========================================================================
         # BELGRADE (40 cameras: 21 HD [11 2K QHD + 10 720p] + 19 SD)
@@ -507,6 +647,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             ott_slug="adamost-mkonak",
             poster_url="https://kamere.24sedam.rs/js/cameras/adamost-mkonak.webp",
             fallback_jpg_num=4,
+            featured=True,
         ),
         _naxi_camera(
             cam_id="bg-pancevacki-most",
@@ -559,6 +700,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             lon=20.4638,
             ott_slug="london-2",
             poster_url="https://kamere.24sedam.rs/js/cameras/london-2.webp",
+            featured=True,
         ),
         _ott_24sedam_camera(
             cam_id="bg-kneza-milosa-london",
@@ -1142,6 +1284,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             lon=19.8576,
             ott_slug="petrovaradin",
             poster_url="https://kamere.24sedam.rs/js/cameras/petrovaradin.webp",
+            featured=True,
         ),
         _ott_24sedam_camera(
             cam_id="ns-miseluk",
@@ -1214,6 +1357,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             name="Subotica — Gradski trg & Narodno pozorište",
             city=SerbiaCity.SUBOTICA,
             quality=VideoQuality.FHD_1080P,
+            featured=True,
             streets=("Trg slobode", "Korzo", "Trg republike"),
             municipality="Centar, Subotica",
             category=CameraCategory.SQUARES,
@@ -1224,6 +1368,10 @@ def build_curated_cameras() -> list[CameraEntry]:
             poster_url="https://kameresrbije.rs/thumbnails/subotica-gradski-trg-58.webp",
             coordinates=GeoCoordinates(lat=46.1003, lon=19.6656),
             streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.IPCAMLIVE,
+                    url="https://ipcamlive.com/kameratrg",
+                ),
                 StreamDescriptor(
                     type=StreamTransportType.SNAPSHOT_POLL,
                     url="https://g0.ipcamlive.com/player/snapshot.php?alias=kameratrg",
@@ -1509,7 +1657,130 @@ def build_curated_cameras() -> list[CameraEntry]:
             poster_slug="gradina-55",
         ),
         # =========================================================================
-        # SAINT PETERSBURG, RUSSIA (12 cameras: 10 live 1080p HLS + 2 live HD snaps)
+        # MOSCOW, RUSSIA (7 cameras: 4 live 1080p video + 3 snapshots, Europe/Moscow)
+        # =========================================================================
+        CameraEntry(
+            id="ru-mow-kremlin-earthcam",
+            name="Moscow Kremlin, St. Basil's & Moskva River",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.MOSCOW,
+            quality=VideoQuality.FHD_1080P,
+            featured=True,
+            timezone="Europe/Moscow",
+            streets=("Sofiyskaya Embankment", "Bolshoy Moskvoretsky Bridge", "Red Square"),
+            municipality="Zamoskvorechye / Tverskoy",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Live 1080p panorama over the Moskva River toward the Moscow Kremlin towers "
+                "and St. Basil's Cathedral"
+            ),
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1714911552/original.jpg",
+            coordinates=GeoCoordinates(lat=55.7478, lon=37.6258),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://videos-3.earthcam.com/fecnetwork/moscowHD1.flv/playlist.m3u8",
+                    headers={"Referer": "https://www.earthcam.com/"},
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1714911552/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-mow-nagatinsky-zaton",
+            name="Moskva River & Nagatinsky Zaton Skyline",
+            city=CameraCity.MOSCOW,
+            timezone="Europe/Moscow",
+            streets=("Nagatinskaya Embankment", "Moskva River Bend", "Prospekt Andropova"),
+            municipality="Nagatinsky Zaton / Danilovsky",
+            category=CameraCategory.BRIDGES,
+            direction="Elevated riverfront skyline view over the southern bend of the Moskva River",
+            lat=55.7089,
+            lon=37.6584,
+            video_id="849eda0a248516e770a6172f10a14308",
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-07-22/c8/0b/c80bdc97f8f66d775f6bdd2a295544be.jpg"
+            ),
+            featured=True,
+        ),
+        _rutube_live_camera(
+            cam_id="ru-mow-taganskaya",
+            name="Taganskaya & Marksistskaya Avenue",
+            city=CameraCity.MOSCOW,
+            timezone="Europe/Moscow",
+            streets=("Marksistskaya Street", "Taganskaya Square", "Garden Ring"),
+            municipality="Tagansky District",
+            category=CameraCategory.BOULEVARDS,
+            direction="High-angle view along Marksistskaya Street near Taganskaya Square",
+            lat=55.7408,
+            lon=37.6565,
+            video_id="817a76e99fa3deb8fd82d42c2cac2000",
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-08-07/59/33/59333f133647082c0c4e02c558d009ab.jpg"
+            ),
+        ),
+        _youtube_live_camera(
+            cam_id="ru-mow-novokosino",
+            name="Novokosino — East Moscow Panorama",
+            city=CameraCity.MOSCOW,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Moscow",
+            streets=("Nosovikhinskoye Highway", "Novokosinskaya Street", "MKAD East"),
+            municipality="Novokosino District",
+            category=CameraCategory.HIGHWAYS,
+            direction="Wide eastern Moscow horizon and arterial traffic across Novokosino",
+            lat=55.7410,
+            lon=37.8640,
+            video_id="mFOFyCzV8wM",
+        ),
+        _windy_snapshot_camera(
+            cam_id="ru-mow-city-skyscrapers",
+            name="Moscow-City (MIBC) Financial Skyscrapers",
+            city=CameraCity.MOSCOW,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Moscow",
+            streets=("Presnenskaya Embankment", "Kutuzovsky Prospekt", "Third Ring Road"),
+            municipality="Presnensky District",
+            category=CameraCategory.SQUARES,
+            direction="Panorama of the Moscow International Business Center supertall towers",
+            lat=55.7470,
+            lon=37.5390,
+            windy_id="1714911552",
+        ),
+        _windy_snapshot_camera(
+            cam_id="ru-mow-krestyanskaya",
+            name="Krestyanskaya Zastava Square",
+            city=CameraCity.MOSCOW,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Moscow",
+            streets=("Krestyanskaya Zastava Square", "Volgogradsky Prospekt", "abelmanovskaya"),
+            municipality="Tagansky / Yuzhnoportovy",
+            category=CameraCategory.SQUARES,
+            direction="Major southeastern arterial junction at Krestyanskaya Zastava Square",
+            lat=55.7322,
+            lon=37.6653,
+            windy_id="1471290764",
+        ),
+        _windy_snapshot_camera(
+            cam_id="ru-mow-prospekt-mira",
+            name="Prospekt Mira & Rostokino Aqueduct Corridor",
+            city=CameraCity.MOSCOW,
+            quality=VideoQuality.SD,
+            timezone="Europe/Moscow",
+            streets=("Prospekt Mira", "Rostokino", "Yauza River"),
+            municipality="Rostokino / Alekseyevsky",
+            category=CameraCategory.HIGHWAYS,
+            direction="Multi-lane traffic corridor along Prospekt Mira in northern Moscow",
+            lat=55.8285,
+            lon=37.6615,
+            windy_id="1601472029",
+        ),
+        # =========================================================================
+        # SAINT PETERSBURG, RUSSIA (12 cameras: 10 live 1080p video + 2 live HD snaps)
         # =========================================================================
         _rutube_live_camera(
             cam_id="ru-spb-palace-bridge",
@@ -1525,13 +1796,11 @@ def build_curated_cameras() -> list[CameraEntry]:
             ),
             lat=59.9410,
             lon=30.3085,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/86e2f45785378c866d212e7f5f5447b0/index.m3u8"
-                "?s=1Px1aOQMP3RaCMhH5mZrvg&e=2095018226&scheme=https"
-            ),
+            video_id="86e2f45785378c866d212e7f5f5447b0",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-05-24/5b/c8/5bc845ae94af4fbf678737923f35631f.jpg"
             ),
+            featured=True,
         ),
         _rutube_live_camera(
             cam_id="ru-spb-admiralty",
@@ -1547,13 +1816,11 @@ def build_curated_cameras() -> list[CameraEntry]:
             ),
             lat=59.9385,
             lon=30.3056,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/af70989fe893a8bb4f16447936340e95/index.m3u8"
-                "?s=a2hnBGfscGGfhxA184wBqg&e=2095017940&scheme=https"
-            ),
+            video_id="af70989fe893a8bb4f16447936340e95",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2024-09-22/3a/97/3a9710c5ebb51907c995f62abc399b79.jpg"
             ),
+            featured=True,
         ),
         _rutube_live_camera(
             cam_id="ru-spb-spilled-blood",
@@ -1569,10 +1836,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             ),
             lat=59.9401,
             lon=30.3289,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/9dce2908a76efba4a82c2f95fa72efc6/index.m3u8"
-                "?s=sg9x2xyRLf-FMc4PnJdCtA&e=2095018227&scheme=https"
-            ),
+            video_id="9dce2908a76efba4a82c2f95fa72efc6",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-08-07/c0/ed/c0ed919e225d891155820e5ef183e5a7.jpg"
             ),
@@ -1591,10 +1855,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             ),
             lat=59.9344,
             lon=30.3323,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/1217bd14907ff59c5c64bcc4cbe1af41/index.m3u8"
-                "?s=oyxldQwKIGsKItkr-D-_DQ&e=2095018226&scheme=https"
-            ),
+            video_id="1217bd14907ff59c5c64bcc4cbe1af41",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-09-05/ba/6d/ba6dce8c3abb9eed322c61f4e3adc247.jpg"
             ),
@@ -1613,10 +1874,8 @@ def build_curated_cameras() -> list[CameraEntry]:
             ),
             lat=59.9332,
             lon=30.3430,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/a996e6508b2ff81cd523dae2d14f7bf6/index.m3u8"
-                "?s=l_MOvXl61kNKP0H3iiXueg&e=2095018227&scheme=https"
-            ),
+            video_id="a996e6508b2ff81cd523dae2d14f7bf6",
+            youtube_fallback_id="fUsJZTHeZn4",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-05-10/3c/c7/3cc7a9b9143624b88fbab52b1d3d8a05.jpg"
             ),
@@ -1632,10 +1891,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             direction="Wide boulevard view along Nevsky Prospekt toward Admiralty Spire",
             lat=59.9327,
             lon=30.3489,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/746aa7922a210086f18daff094a5e63d/index.m3u8"
-                "?s=yLRtprP8c2bx2SWjHgASDw&e=2095018308&scheme=https"
-            ),
+            video_id="746aa7922a210086f18daff094a5e63d",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-05-09/b4/22/b422cb51aae61c450e29574b06685ba1.jpg"
             ),
@@ -1651,10 +1907,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             direction="Waterway and historic embankments along the Griboyedov Canal",
             lat=59.9358,
             lon=30.3259,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/e2fae10f093223afb5376b280fcbb24a/index.m3u8"
-                "?s=8KO6AMsHSkTHHqjXRAHoVA&e=2095018227&scheme=https"
-            ),
+            video_id="e2fae10f093223afb5376b280fcbb24a",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-07-23/da/5a/da5a3a7274459f10201fa9c053489892.jpg"
             ),
@@ -1673,10 +1926,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             ),
             lat=59.9554,
             lon=30.3378,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/2c5000420be8aa08a969a21614e2d33e/index.m3u8"
-                "?s=SVasj1lIiRv6A9q64Cz0qg&e=2095018227&scheme=https"
-            ),
+            video_id="2c5000420be8aa08a969a21614e2d33e",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-05-29/1c/cd/1ccd55cd3d235f8bcd0f7bb7dc707dc3.jpg"
             ),
@@ -1692,10 +1942,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             direction="360-degree rooftop skyline over historic Saint Petersburg domes and spires",
             lat=59.9472,
             lon=30.3468,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/d7e9422167f785e111c880e44ad76428/index.m3u8"
-                "?s=KzPhUMHJIEjoD7CCWlXpdA&e=2095018308&scheme=https"
-            ),
+            video_id="d7e9422167f785e111c880e44ad76428",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2024-09-30/9c/ba/9cba3c11b2aeea2626df2b0d978843b9.jpg"
             ),
@@ -1711,10 +1958,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             direction="Street-level panorama along Zagorodny Prospekt near Five Corners",
             lat=59.9261,
             lon=30.3408,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/92e79cc0d122fb94647b79d4e7778773/index.m3u8"
-                "?s=3xjII2j4UzMhodWR-hJdYA&e=2095018308&scheme=https"
-            ),
+            video_id="92e79cc0d122fb94647b79d4e7778773",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-08-23/0b/0e/0b0e398a6f8c698fb107b1019ea997bc.jpg"
             ),
@@ -1768,7 +2012,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             windy_id="1793869112",
         ),
         # =========================================================================
-        # ROSTOV-ON-DON, RUSSIA (1 camera: 1080p HD live rooftop skyline HLS)
+        # ROSTOV-ON-DON, RUSSIA (3 cameras: 1 live 1080p video + 2 1080p outdoor snaps)
         # =========================================================================
         _rutube_live_camera(
             cam_id="ru-rov-leninsky-skyline",
@@ -1784,12 +2028,68 @@ def build_curated_cameras() -> list[CameraEntry]:
             ),
             lat=47.2194,
             lon=39.6908,
-            hls_url=(
-                "https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8"
-                "?s=ZyjH13qCcKa5iAOa33NZlw&e=2095018072&scheme=https"
-            ),
+            video_id="eba7bc75dd7994f0d7e22e1ad9e76a87",
             poster_url=(
                 "https://pic.rtbcdn.ru/video/2026-08-07/c7/35/c735cfed8162599365f1b12cba048a36.jpg"
+            ),
+            featured=True,
+        ),
+        CameraEntry(
+            id="ru-rov-orekhovaya-north",
+            name="Orekhovaya Rosha Park — Northern Promenade & Courts",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.ROSTOV_ON_DON,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Moscow",
+            streets=("Orekhovaya Rosha Park", "Volgodonskaya Street", "Severny District"),
+            municipality="Voroshilovsky District",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "1080p outdoor view across the northern recreation courts in Orekhovaya Rosha"
+            ),
+            poster_url=(
+                "https://openapi-alpha.ivideon.com/cameras/"
+                "100-h8xzCscRLk2OOuXpNXz39R:0/live_preview?op=GET&access_token=public&q=2"
+            ),
+            coordinates=GeoCoordinates(lat=47.2845, lon=39.7185),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url=(
+                        "https://openapi-alpha.ivideon.com/cameras/"
+                        "100-h8xzCscRLk2OOuXpNXz39R:0/live_preview?op=GET&access_token=public&q=2"
+                    ),
+                    interval_ms=15000,
+                    cache_buster_param="_",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="ru-rov-orekhovaya-east",
+            name="Orekhovaya Rosha Park — Eastern Grove & Courts",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.ROSTOV_ON_DON,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Moscow",
+            streets=("Orekhovaya Rosha Park", "Komarova Boulevard", "Severny District"),
+            municipality="Voroshilovsky District",
+            category=CameraCategory.SQUARES,
+            direction="1080p outdoor park view along the eastern tree line in Orekhovaya Rosha",
+            poster_url=(
+                "https://openapi-alpha.ivideon.com/cameras/"
+                "100-92kq6VTswUDDROy9MzKsh3:0/live_preview?op=GET&access_token=public&q=2"
+            ),
+            coordinates=GeoCoordinates(lat=47.2848, lon=39.7190),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url=(
+                        "https://openapi-alpha.ivideon.com/cameras/"
+                        "100-92kq6VTswUDDROy9MzKsh3:0/live_preview?op=GET&access_token=public&q=2"
+                    ),
+                    interval_ms=15000,
+                    cache_buster_param="_",
+                ),
             ),
         ),
         # =========================================================================
@@ -1801,6 +2101,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             country=CameraCountry.RUSSIA,
             city=CameraCity.TOMSK,
             quality=VideoQuality.FHD_1080P,
+            featured=True,
             timezone="Asia/Tomsk",
             streets=("Yuzhnaya Square", "Krasnoarmeyskaya Street", "Mokrushina Street"),
             municipality="Kirovsky District",
@@ -1929,14 +2230,184 @@ def build_curated_cameras() -> list[CameraEntry]:
             quality=VideoQuality.SD,
         ),
         # =========================================================================
-        # BARCELONA, SPAIN (10 cameras: 1080p 3Cat live HLS + 9 municipal/port cams)
+        # MAGADAN, RUSSIA (3 cameras: 1 live HLS + 2 live Maglan snaps, Asia/Magadan)
         # =========================================================================
+        CameraEntry(
+            id="ru-gdx-sokol-panorama",
+            name="Sokol District — Magadan Airport Approach",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.MAGADAN,
+            quality=VideoQuality.HD_720P,
+            featured=True,
+            timezone="Asia/Magadan",
+            streets=("Kolyma Federal Highway R504", "Sokol Settlement", "Gagarina Street"),
+            municipality="Magadan Urban Okrug",
+            category=CameraCategory.HIGHWAYS,
+            direction=(
+                "Live Far East camera overlooking Sokol settlement and the Kolyma R504 "
+                "approach to Magadan Airport"
+            ),
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1622614150/original.jpg",
+            coordinates=GeoCoordinates(lat=59.9110, lon=150.7205),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://live-msk2.camera.rt.ru/public/master.m3u8?sid=3374004d-7835-40d0-88c8-515ad29c4dcd",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1622614150/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="ru-gdx-sobornaya-cathedral",
+            name="Sobornaya Square & Holy Trinity Cathedral",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.MAGADAN,
+            quality=VideoQuality.HD_720P,
+            timezone="Asia/Magadan",
+            streets=("Sobornaya Square", "Prospekt Lenina", "Proletarskaya Street"),
+            municipality="Central Magadan",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Central civic plaza of Magadan looking toward the golden domes of Holy Trinity "
+                "Cathedral"
+            ),
+            poster_url="https://rec.maglan.ru/site/screenshot.html?guid=fdd1e7bfa9a2ea2f5b3b",
+            coordinates=GeoCoordinates(lat=59.5668, lon=150.8107),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://rec.maglan.ru/site/screenshot.html?guid=fdd1e7bfa9a2ea2f5b3b",
+                    interval_ms=12000,
+                    cache_buster_param="rnd",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="ru-gdx-portovoye-bay",
+            name="Portovoye Highway — Nagaev Bay Approach",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.MAGADAN,
+            quality=VideoQuality.HD_720P,
+            timezone="Asia/Magadan",
+            streets=("Portovoye Highway", "Prospekt Lenina", "Nagaev Bay"),
+            municipality="Magadan Sea Port Corridor",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Arterial descent along Portovoye Highway toward Nagaev Bay on the Sea of Okhotsk"
+            ),
+            poster_url="https://rec.maglan.ru/site/screenshot.html?guid=66f62f890e0d76418f70",
+            coordinates=GeoCoordinates(lat=59.5612, lon=150.7850),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://rec.maglan.ru/site/screenshot.html?guid=66f62f890e0d76418f70",
+                    interval_ms=12000,
+                    cache_buster_param="rnd",
+                ),
+            ),
+        ),
+        # =========================================================================
+        # BARCELONA, SPAIN (14 cameras: 5 live video + 9 municipal/port snapshots)
+        # =========================================================================
+        CameraEntry(
+            id="es-bcn-port-olimpic-garbi",
+            name="Port Olímpic — Marina & W Hotel (Garbí)",
+            country=CameraCountry.SPAIN,
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.FHD_1080P,
+            featured=True,
+            timezone="Europe/Madrid",
+            streets=("Moll de Mestral", "Port Olímpic", "Platja del Somorrostro"),
+            municipality="Sant Martí / Ciutat Vella",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Direct 1080p municipal HLS feed across Port Olímpic marina toward W Barcelona"
+            ),
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+            coordinates=GeoCoordinates(lat=41.3859, lon=2.2010),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://streamingcameresport.bsmsa.eu/videos/garbi.m3u8",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="es-bcn-port-olimpic-llevant",
+            name="Port Olímpic — Nova Icària Beach (Llevant)",
+            country=CameraCountry.SPAIN,
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Madrid",
+            streets=("Dic de Recer", "Platja de la Nova Icària", "Vila Olímpica"),
+            municipality="Sant Martí",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Eastbound live coastal HLS view over Port Olímpic breakwater and Nova Icària"
+            ),
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1616152597/original.jpg",
+            coordinates=GeoCoordinates(lat=41.3866, lon=2.2025),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://streamingcameresport.bsmsa.eu/videos/llevant.m3u8",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1616152597/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+        _youtube_live_camera(
+            cam_id="es-bcn-skyline-guinardo",
+            name="Barcelona Skyline — Baix Guinardó & Sea Horizon",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Madrid",
+            streets=("Ronda del Guinardó", "Sagrada Família Horizon", "Mediterranean Sea"),
+            municipality="Horta-Guinardó",
+            category=CameraCategory.SQUARES,
+            direction="Elevated 24/7 live panorama from Baix Guinardó across Barcelona to the sea",
+            lat=41.4126,
+            lon=2.1684,
+            video_id="nefnkjc1yVs",
+        ),
+        _ipcamlive_camera(
+            cam_id="es-bcn-sitges-platja",
+            name="Sitges Coast — Platja de la Ribera Promenade",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Madrid",
+            streets=("Passeig de la Ribera", "Platja de Sitges", "Costa del Garraf"),
+            municipality="Sitges (Barcelona Coast)",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Live beachfront promenade view along Passeig de la Ribera on the Barcelona coast"
+            ),
+            lat=41.2348,
+            lon=1.8058,
+            alias="65d33d2760353",
+        ),
         CameraEntry(
             id="es-bcn-3cat-panorama",
             name="Barcelona & Catalonia Live Panorama (3Cat)",
             country=CameraCountry.SPAIN,
             city=CameraCity.BARCELONA,
             quality=VideoQuality.FHD_1080P,
+            featured=True,
             timezone="Europe/Madrid",
             streets=("Port Olímpic", "Tibidabo", "Barcelona Coastline"),
             municipality="Barcelona / Catalunya",
@@ -2096,8 +2567,53 @@ def build_curated_cameras() -> list[CameraEntry]:
             interval_ms=30000,
         ),
         # =========================================================================
-        # MADRID, SPAIN (12 cameras: all 720p HD municipal feeds, Europe/Madrid)
+        # MADRID, SPAIN (15 cameras: 3 live 1080p video + 12 720p municipal snaps)
         # =========================================================================
+        _youtube_live_camera(
+            cam_id="es-mad-cuatro-torres",
+            name="Cuatro Torres & Paseo de la Castellana Skyline",
+            city=CameraCity.MADRID,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Madrid",
+            streets=("Paseo de la Castellana", "Cuatro Torres Business Area", "Chamartín"),
+            municipality="Fuencarral-El Pardo / Chamartín",
+            category=CameraCategory.HIGHWAYS,
+            direction=(
+                "Live 1080p skyline view of Madrid's Cuatro Torres skyscrapers and Castellana"
+            ),
+            lat=40.4775,
+            lon=-3.6875,
+            video_id="2QXqf9p-L80",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="es-mad-faro-moncloa",
+            name="Faro de Moncloa & Ciudad Universitaria Panorama",
+            city=CameraCity.MADRID,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Madrid",
+            streets=("Avenida de la Memoria", "Plaza de la Moncloa", "A-6 Northwest Gateway"),
+            municipality="Moncloa-Aravaca",
+            category=CameraCategory.SQUARES,
+            direction="Live panorama toward Faro de Moncloa observation tower and western Madrid",
+            lat=40.4381,
+            lon=-3.7220,
+            video_id="0Uk2YNT602M",
+        ),
+        _youtube_live_camera(
+            cam_id="es-mad-guadarrama-paular",
+            name="Sierra de Guadarrama — Valle de El Paular",
+            city=CameraCity.MADRID,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Madrid",
+            streets=("M-604 Mountain Pass", "Rascafría", "Parque Nacional de Guadarrama"),
+            municipality="Sierra Norte, Comunidad de Madrid",
+            category=CameraCategory.HIGHWAYS,
+            direction="Live alpine weather and valley view across Madrid's Sierra de Guadarrama",
+            lat=40.8650,
+            lon=-3.8860,
+            video_id="1w4yRcgO3vA",
+        ),
         _madrid_camera(
             cam_id="es-mad-cibeles",
             name="Plaza de Cibeles & Paseo de Recoletos",
@@ -2239,8 +2755,55 @@ def build_curated_cameras() -> list[CameraEntry]:
             cam_code="01334",
         ),
         # =========================================================================
-        # BUCHAREST, ROMANIA (5 cameras: 4 1080p HD + 1 720p HD, Europe/Bucharest)
+        # BUCHAREST, ROMANIA (8 cameras: 3 live video + 5 HD snapshots)
         # =========================================================================
+        _youtube_live_camera(
+            cam_id="ro-buh-piata-obor",
+            name="Piața Obor — Șoseaua Mihai Bravu & Colentina",
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Bucharest",
+            streets=("Piața Obor", "Șoseaua Mihai Bravu", "Șoseaua Colentina"),
+            municipality="Sector 2, Bucharest",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "24/7 live aerial view of Piața Obor civic park, tram hub, and ring boulevard"
+            ),
+            lat=44.4494,
+            lon=26.1246,
+            video_id="3l12xywF8jU",
+            featured=True,
+        ),
+        _ipcamlive_camera(
+            cam_id="ro-buh-otopeni-departures",
+            name="Henri Coandă Airport (Otopeni) — Departures Viaduct",
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Bucharest",
+            streets=("Calea Bucureștilor DN1", "Aeroportul Henri Coandă", "Otopeni"),
+            municipality="Otopeni / Bucharest North",
+            category=CameraCategory.HIGHWAYS,
+            direction=(
+                "Live terminal approach and viaduct traffic at Bucharest Henri Coandă Airport"
+            ),
+            lat=44.5755,
+            lon=26.0697,
+            alias="688a46c66ca3d",
+        ),
+        _ipcamlive_camera(
+            cam_id="ro-buh-otopeni-north",
+            name="Henri Coandă Airport (Otopeni) — DN1 North Plaza",
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Bucharest",
+            streets=("DN1 / E60", "Terminal Plaza", "Otopeni"),
+            municipality="Otopeni / Bucharest North",
+            category=CameraCategory.HIGHWAYS,
+            direction="Live forecourt and northern access road at Bucharest International Airport",
+            lat=44.5762,
+            lon=26.0710,
+            alias="688a4a74a012c",
+        ),
         _windy_snapshot_camera(
             cam_id="ro-buh-piata-romana",
             name="Piața Romană — ASE & Bulevardul Magheru",
@@ -2339,6 +2902,1264 @@ def build_curated_cameras() -> list[CameraEntry]:
                 ),
             ),
         ),
+        # =========================================================================
+        # LONDON, UNITED KINGDOM (9 cameras: 3 live 4K/1080p video + 6 TfL JamCams)
+        # =========================================================================
+        _youtube_live_camera(
+            cam_id="gb-lon-abbey-road-4k",
+            name="Abbey Road Crossing — Abbey Road Studios 4K",
+            city=CameraCity.LONDON,
+            quality=VideoQuality.UHD_4K,
+            timezone="Europe/London",
+            streets=("Abbey Road", "Grove End Road", "St John's Wood"),
+            municipality="City of Westminster",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Official 4K live crosswalk camera outside Abbey Road Studios in St John's Wood"
+            ),
+            lat=51.5320,
+            lon=-0.1773,
+            video_id="zMCea32gpmg",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="gb-lon-thames-city-4k",
+            name="River Thames — London Bridge & City Skyline 4K",
+            city=CameraCity.LONDON,
+            quality=VideoQuality.UHD_4K,
+            timezone="Europe/London",
+            streets=("River Thames", "London Bridge", "Southwark / City of London"),
+            municipality="City of London / Southwark",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "4K waterfront view across the River Thames toward the City of London skyline"
+            ),
+            lat=51.5070,
+            lon=-0.0903,
+            video_id="MXmzsjABC-U",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="gb-lon-heathrow-approach",
+            name="London Heathrow Airport — Runway Approach",
+            city=CameraCity.LONDON,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/London",
+            streets=("Bath Road A4", "Heathrow Runways 27L / 27R", "Hounslow"),
+            municipality="London Borough of Hillingdon",
+            category=CameraCategory.HIGHWAYS,
+            direction="Live 1080p aviation camera tracking widebody arrivals and departures at LHR",
+            lat=51.4700,
+            lon=-0.4543,
+            video_id="SgvpyjQX_HM",
+        ),
+        _tfl_jamcam_camera(
+            cam_id="gb-lon-parliament-square",
+            name="Parliament Square — Westminster & Whitehall",
+            streets=("Parliament Square", "Whitehall", "Bridge Street"),
+            municipality="City of Westminster",
+            category=CameraCategory.SQUARES,
+            direction="TfL live traffic view at Parliament Square beside Westminster Abbey",
+            lat=51.5011,
+            lon=-0.1263,
+            jamcam_id="00001.06501",
+        ),
+        _tfl_jamcam_camera(
+            cam_id="gb-lon-westminster-bridge",
+            name="Westminster Bridge & Victoria Embankment",
+            streets=("Westminster Bridge", "Victoria Embankment", "River Thames"),
+            municipality="Westminster / Lambeth",
+            category=CameraCategory.BRIDGES,
+            direction="Northern bridgehead of Westminster Bridge at Victoria Embankment",
+            lat=51.5009,
+            lon=-0.1176,
+            jamcam_id="00001.04502",
+        ),
+        _tfl_jamcam_camera(
+            cam_id="gb-lon-piccadilly-circus",
+            name="Piccadilly Circus — Shaftesbury Avenue",
+            streets=("Piccadilly Circus", "Regent Street", "Shaftesbury Avenue"),
+            municipality="City of Westminster (West End)",
+            category=CameraCategory.SQUARES,
+            direction="Central West End junction at Piccadilly Circus and Regent Street",
+            lat=51.5096,
+            lon=-0.1348,
+            jamcam_id="00001.07450",
+        ),
+        _tfl_jamcam_camera(
+            cam_id="gb-lon-trafalgar-square",
+            name="Trafalgar Square — Charing Cross & Whitehall",
+            streets=("Trafalgar Square", "The Strand", "Whitehall"),
+            municipality="City of Westminster",
+            category=CameraCategory.SQUARES,
+            direction="Charing Cross roundabout on the southern edge of Trafalgar Square",
+            lat=51.5074,
+            lon=-0.1277,
+            jamcam_id="00001.06502",
+        ),
+        _tfl_jamcam_camera(
+            cam_id="gb-lon-tower-bridge",
+            name="Tower Bridge — South Approach",
+            streets=("Tower Bridge Road", "Tooley Street", "South Bank"),
+            municipality="London Borough of Southwark",
+            category=CameraCategory.BRIDGES,
+            direction="Southern approach along Tower Bridge Road toward the River Thames",
+            lat=51.5039,
+            lon=-0.0814,
+            jamcam_id="00001.03505",
+        ),
+        _tfl_jamcam_camera(
+            cam_id="gb-lon-oxford-circus",
+            name="Oxford Circus & Regent Street",
+            streets=("Oxford Street", "Regent Street", "Oxford Circus"),
+            municipality="City of Westminster",
+            category=CameraCategory.BOULEVARDS,
+            direction="Flagship shopping intersection of Oxford Street and Regent Street",
+            lat=51.5147,
+            lon=-0.1472,
+            jamcam_id="00001.08860",
+        ),
+        # =========================================================================
+        # PARIS, FRANCE (8 cameras: 4 live 4K/1080p video + 4 HD snapshots)
+        # =========================================================================
+        CameraEntry(
+            id="fr-par-tour-eiffel-4k",
+            name="Tour Eiffel & Trocadéro — Palais d'Iéna 4K",
+            country=CameraCountry.FRANCE,
+            city=CameraCity.PARIS,
+            quality=VideoQuality.UHD_4K,
+            featured=True,
+            timezone="Europe/Paris",
+            streets=("Place d'Iéna", "Jardins du Trocadéro", "Pont d'Iéna"),
+            municipality="16e / 7e Arrondissement",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Direct 4K UHD rooftop stream from Palais d'Iéna overlooking the Eiffel Tower "
+                "and Seine valley"
+            ),
+            poster_url="https://s1.vision-environnement.com/live/modules/timelapse/capture/pariscese.jpg",
+            coordinates=GeoCoordinates(lat=48.8638, lon=2.2923),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url=(
+                        "https://visionenvironnement.quanteec.com/contents/encodings/live/"
+                        "6d6a84d6-1f60-4fe8-746c-7561-6665-64-8686-4c545fab07c7d/master.m3u8"
+                    ),
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://s1.vision-environnement.com/live/modules/timelapse/capture/pariscese.jpg",
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="fr-par-meudon-observatoire",
+            name="Observatoire de Paris-Meudon — Grand Panorama",
+            country=CameraCountry.FRANCE,
+            city=CameraCity.PARIS,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Paris",
+            streets=("Terrasse de l'Observatoire", "Meudon", "Seine Valley"),
+            municipality="Meudon / Grand Paris",
+            category=CameraCategory.SQUARES,
+            direction="Wide elevated 1080p panorama across all of Paris from Meudon Observatory",
+            poster_url=(
+                "https://s1.vision-environnement.com/live/modules/timelapse/capture/paris-meudon.jpg"
+            ),
+            coordinates=GeoCoordinates(lat=48.8051, lon=2.2311),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url=(
+                        "https://visionenvironnement.quanteec.com/contents/encodings/live/"
+                        "5d1460df-b9c7-41e9-746c-7561-6665-64-a275-272e18c1c37bd/master.m3u8"
+                    ),
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url=(
+                        "https://s1.vision-environnement.com/live/modules/timelapse/capture/"
+                        "paris-meudon.jpg"
+                    ),
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        _youtube_live_camera(
+            cam_id="fr-par-sacre-coeur",
+            name="Basilique du Sacré-Cœur de Montmartre",
+            city=CameraCity.PARIS,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Paris",
+            streets=("Parvis du Sacré-Cœur", "Butte Montmartre", "Rue du Chevalier de la Barre"),
+            municipality="18e Arrondissement (Montmartre)",
+            category=CameraCategory.SQUARES,
+            direction="Live view of the white travertine domes and steps of Sacré-Cœur Basilica",
+            lat=48.8867,
+            lon=2.3431,
+            video_id="-xzg3wujOVM",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="fr-par-skyline-montparnasse",
+            name="Paris Skyline — Tour Eiffel & Tour Montparnasse",
+            city=CameraCity.PARIS,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Paris",
+            streets=("Champ de Mars Horizon", "Montparnasse", "Boulogne-Billancourt"),
+            municipality="Ouest Parisien",
+            category=CameraCategory.BOULEVARDS,
+            direction="24/7 live skyline view framing the Eiffel Tower and Montparnasse Tower",
+            lat=48.8448,
+            lon=2.2278,
+            video_id="QI-PPEW2Bgc",
+        ),
+        _windy_snapshot_camera(
+            cam_id="fr-par-seine-cygnes",
+            name="Seine River — Beaugrenelle & Île aux Cygnes",
+            city=CameraCity.PARIS,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Paris",
+            streets=("Pont de Bir-Hakeim", "Île aux Cygnes", "Quai André Citroën"),
+            municipality="15e / 16e Arrondissement",
+            category=CameraCategory.BRIDGES,
+            direction="Riverfront view along the Seine past Île aux Cygnes toward central Paris",
+            lat=48.8501,
+            lon=2.2818,
+            windy_id="1721599175",
+        ),
+        CameraEntry(
+            id="fr-par-port-arsenal",
+            name="Quai de la Rapée & Port de l'Arsenal (Bastille)",
+            country=CameraCountry.FRANCE,
+            city=CameraCity.PARIS,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Paris",
+            streets=("Port de l'Arsenal", "Pont d'Austerlitz", "Place de la Bastille"),
+            municipality="12e / 4e Arrondissement",
+            category=CameraCategory.BRIDGES,
+            direction="Canal marina at Port de l'Arsenal where Canal Saint-Martin meets the Seine",
+            poster_url="https://filmssite.viewsurf.com/pariscam6_live.stream/media.jpg",
+            coordinates=GeoCoordinates(lat=48.8471, lon=2.3658),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://filmssite.viewsurf.com/pariscam6_live.stream/media.jpg",
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        _windy_snapshot_camera(
+            cam_id="fr-par-saint-germain",
+            name="Saint-Germain-des-Prés Zinc Rooftops",
+            city=CameraCity.PARIS,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Paris",
+            streets=("Boulevard Saint-Germain", "Rue de Rennes", "Saint-Sulpice"),
+            municipality="6e Arrondissement",
+            category=CameraCategory.SQUARES,
+            direction="Left Bank Haussmannian rooftops across Saint-Germain-des-Prés",
+            lat=48.8539,
+            lon=2.3338,
+            windy_id="1515017464",
+        ),
+        _windy_snapshot_camera(
+            cam_id="fr-par-la-defense",
+            name="La Défense Financial District Skyline",
+            city=CameraCity.PARIS,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Paris",
+            streets=("Esplanade de La Défense", "Grande Arche", "Axe Historique"),
+            municipality="Puteaux / Courbevoie (Grand Paris)",
+            category=CameraCategory.HIGHWAYS,
+            direction="High-rise towers along the western extension of the Parisian Axe Historique",
+            lat=48.8918,
+            lon=2.2386,
+            windy_id="1299660563",
+        ),
+        # =========================================================================
+        # AMSTERDAM, NETHERLANDS (8 cameras: 7 live 4K/2K/1080p video + 1 HD snap)
+        # =========================================================================
+        _youtube_live_camera(
+            cam_id="nl-ams-dam-square-4k",
+            name="Dam Square & Royal Palace 4K",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.UHD_4K,
+            timezone="Europe/Amsterdam",
+            streets=("De Dam", "Paleis op de Dam", "Rokin", "Damrak"),
+            municipality="Centrum, Amsterdam",
+            category=CameraCategory.SQUARES,
+            direction="4K UHD live view over Dam Square, Royal Palace, and Nieuwe Kerk",
+            lat=52.3731,
+            lon=4.8926,
+            video_id="Gd9d4q6WvUY",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="nl-ams-damrak-4k",
+            name="Damrak Canal & Beurs van Berlage 4K",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.UHD_4K,
+            timezone="Europe/Amsterdam",
+            streets=("Damrak", "Beursplein", "Oudezijds Voorburgwal"),
+            municipality="Centrum, Amsterdam",
+            category=CameraCategory.BRIDGES,
+            direction="4K UHD view of canal boats, trams, and cyclists along Damrak waterfront",
+            lat=52.3749,
+            lon=4.8960,
+            video_id="43qH0tDA6lM",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="nl-ams-sixhaven-2k",
+            name="IJ Waterfront — Sixhaven Marina & Ferries 2K",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.UHD_2K,
+            timezone="Europe/Amsterdam",
+            streets=("Het IJ", "Sixhavenweg", "A'DAM Toren Horizon"),
+            municipality="Amsterdam-Noord",
+            category=CameraCategory.BRIDGES,
+            direction="2K QHD harbor view across Het IJ shipping lane and Noord ferry crossings",
+            lat=52.3827,
+            lon=4.9041,
+            video_id="3gTHiUWrCAE",
+        ),
+        _youtube_live_camera(
+            cam_id="nl-ams-centraal-ij",
+            name="Amsterdam Centraal & Eastern Docklands",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Amsterdam",
+            streets=("Piet Heinkade", "Oosterdok", "Amsterdam Centraal"),
+            municipality="Centrum / Oost",
+            category=CameraCategory.BRIDGES,
+            direction="Live maritime and rail corridor east of Amsterdam Centraal along Het IJ",
+            lat=52.3783,
+            lon=4.9136,
+            video_id="9Pm6Ji6tm7s",
+        ),
+        _youtube_live_camera(
+            cam_id="nl-ams-stationseiland",
+            name="Stationseiland & Open Havenfront Canal",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Amsterdam",
+            streets=("Stationsplein", "Prins Hendrikkade", "Open Havenfront"),
+            municipality="Centrum, Amsterdam",
+            category=CameraCategory.BOULEVARDS,
+            direction="Trams, canal cruisers, and bicycles outside Amsterdam Centraal Station",
+            lat=52.3779,
+            lon=4.8998,
+            video_id="1phWWCgzXgM",
+        ),
+        _youtube_live_camera(
+            cam_id="nl-ams-ij-haven",
+            name="IJ-Haven & Java-eiland Quays",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Amsterdam",
+            streets=("Javakade", "IJ-Haven", "Jan Schaeferbrug"),
+            municipality="Oostelijk Havengebied",
+            category=CameraCategory.BRIDGES,
+            direction="Wide harbor basin view along Java-eiland and Jan Schaefer Bridge",
+            lat=52.3780,
+            lon=4.9150,
+            video_id="qdDuqfzEhjQ",
+        ),
+        _youtube_live_camera(
+            cam_id="nl-ams-amstelkwartier",
+            name="Amstel River — Amstelkwartier & Omval",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Amsterdam",
+            streets=("Amstel", "Spaklerweg", "Rembrandt Tower"),
+            municipality="Amsterdam-Oost",
+            category=CameraCategory.BRIDGES,
+            direction="Southern bend of the Amstel River at Amstelkwartier marina",
+            lat=52.3375,
+            lon=4.9221,
+            video_id="ddOktSWPHj8",
+        ),
+        _windy_snapshot_camera(
+            cam_id="nl-ams-havenkantoor",
+            name="Port of Amsterdam — Havengebouw & Muziekgebouw",
+            city=CameraCity.AMSTERDAM,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Amsterdam",
+            streets=("De Ruijterkade", "Westerdoksdijk", "Het IJ"),
+            municipality="Centrum / Westerdok",
+            category=CameraCategory.BRIDGES,
+            direction="Elevated Port of Amsterdam view eastward across Het IJ and Centraal",
+            lat=52.3817,
+            lon=4.8958,
+            windy_id="1508623861",
+        ),
+        # =========================================================================
+        # BERLIN, GERMANY (8 cameras: 5 live 2K/1080p/720p video + 3 HD snapshots)
+        # =========================================================================
+        CameraEntry(
+            id="de-ber-alexanderplatz-2k",
+            name="Alexanderplatz & Fernsehturm Panorama 2K",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.UHD_2K,
+            featured=True,
+            timezone="Europe/Berlin",
+            streets=("Alexanderplatz", "Panoramastraße", "Karl-Liebknecht-Straße"),
+            municipality="Berlin-Mitte",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Direct 2K QHD HLS skyline stream framing the Berlin TV Tower (Fernsehturm), "
+                "Rotes Rathaus, and Berliner Dom"
+            ),
+            poster_url="https://cdn.livespotting.com/vpu/ehlpzb4g/nkw9elfh.jpg",
+            coordinates=GeoCoordinates(lat=52.5229, lon=13.4133),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://cdn.livespotting.com/vpu/ehlpzb4g/nkw9elfh.m3u8",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://cdn.livespotting.com/vpu/ehlpzb4g/nkw9elfh.jpg",
+                    interval_ms=15000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="de-ber-tiergarten-skyline",
+            name="Tiergarten & City West Skyline",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Berlin",
+            streets=("Straße des 17. Juni", "Großer Tiergarten", "Breitscheidplatz"),
+            municipality="Tiergarten / Charlottenburg",
+            category=CameraCategory.BOULEVARDS,
+            direction="Direct 1080p HLS panorama across Tiergarten canopy and City West high-rises",
+            poster_url="https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
+            coordinates=GeoCoordinates(lat=52.5137, lon=13.3323),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://cdn.livespotting.com/vpu/h8ga2o1s/w6wqy7il.m3u8",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        _youtube_live_camera(
+            cam_id="de-ber-olympiastadion",
+            name="Olympiastadion & West Berlin Horizon",
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Berlin",
+            streets=("Olympischer Platz", "Heerstraße", "Grunewald"),
+            municipality="Charlottenburg-Wilmersdorf",
+            category=CameraCategory.SQUARES,
+            direction="Live western Berlin weather and skyline panorama near Olympiastadion",
+            lat=52.5097,
+            lon=13.2441,
+            video_id="tw9PIVnDbbA",
+            windy_fallback_id="1360420099",
+        ),
+        _youtube_live_camera(
+            cam_id="de-ber-spandau-havel",
+            name="Spandau Citadel & Havel River Waterway",
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Berlin",
+            streets=("Am Juliusturm", "Havel", "Spree Confluence"),
+            municipality="Berlin-Spandau",
+            category=CameraCategory.BRIDGES,
+            direction="Live river view along the Havel waterway in western Berlin",
+            lat=52.5435,
+            lon=13.2144,
+            video_id="0VOK5ieFU3U",
+        ),
+        CameraEntry(
+            id="de-ber-mueggelsee-harbor",
+            name="Großer Müggelsee — Friedrichshagen Pier",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Berlin",
+            streets=("Müggelseedamm", "Großer Müggelsee", "Friedrichshagen"),
+            municipality="Treptow-Köpenick",
+            category=CameraCategory.BRIDGES,
+            direction="Direct HLS waterfront feed on Berlin's largest lake, Großer Müggelsee",
+            poster_url="https://cdn.livespotting.com/vpu/k4s2mr06/cc225eef.jpg",
+            coordinates=GeoCoordinates(lat=52.4461, lon=13.6492),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://cdn.livespotting.com/vpu/k4s2mr06/cc225eef.m3u8",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://cdn.livespotting.com/vpu/k4s2mr06/cc225eef.jpg",
+                    interval_ms=15000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="de-ber-brandenburg-gate",
+            name="Brandenburg Gate & Pariser Platz",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Berlin",
+            streets=("Pariser Platz", "Unter den Linden", "Brandenburger Tor"),
+            municipality="Berlin-Mitte",
+            category=CameraCategory.SQUARES,
+            direction="1080p view of the Brandenburg Gate quadriga at the head of Unter den Linden",
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1666966383/original.jpg",
+            coordinates=GeoCoordinates(lat=52.5161, lon=13.3798),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1666966383/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://wtvpict.feratel.com/picture/37/3385.jpeg",
+                    interval_ms=60000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="de-ber-berliner-dom",
+            name="Berliner Dom, Humboldt Forum & Spree Island",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Berlin",
+            streets=("Schloßplatz", "Unter den Linden", "Museumsinsel"),
+            municipality="Berlin-Mitte",
+            category=CameraCategory.SQUARES,
+            direction="RBB rooftop view over Berliner Dom, Humboldt Forum, and Museum Island",
+            poster_url="https://www.rbb24.de/include/webcam/rathaus/hugesize_logo.jpg",
+            coordinates=GeoCoordinates(lat=52.5186, lon=13.4081),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://www.rbb24.de/include/webcam/rathaus/hugesize_logo.jpg",
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="de-ber-funkturm",
+            name="Theodor-Heuss-Platz & Messe Funkturm",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Berlin",
+            streets=("Theodor-Heuss-Platz", "Kaiserdamm", "Messedamm"),
+            municipality="Berlin-Westend",
+            category=CameraCategory.HIGHWAYS,
+            direction="RBB Haus des Rundfunks view over Theodor-Heuss-Platz and Berlin Funkturm",
+            poster_url="https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
+            coordinates=GeoCoordinates(lat=52.5077, lon=13.2767),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        # =========================================================================
+        # TBILISI, GEORGIA (4 cameras: 3 live 1080p HLS + 1 1080p snapshot, Asia/Tbilisi)
+        # =========================================================================
+        CameraEntry(
+            id="ge-tbs-mtkvari-narikala",
+            name="Old Tbilisi — Mtkvari River, Narikala & TV Tower",
+            country=CameraCountry.GEORGIA,
+            city=CameraCity.TBILISI,
+            quality=VideoQuality.FHD_1080P,
+            featured=True,
+            timezone="Asia/Tbilisi",
+            streets=("Metekhi Cliff", "Europe Square", "Bridge of Peace", "Narikala"),
+            municipality="Old Tbilisi (Dzveli Tbilisi)",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Live 1080p panorama over the Mtkvari (Kura) River, Narikala Fortress, "
+                "and Mtatsminda TV Tower"
+            ),
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1793900338/original.jpg",
+            coordinates=GeoCoordinates(lat=41.6911, lon=44.8162),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://videos-3.earthcam.com/fecnetwork/22237.flv/playlist.m3u8",
+                    headers={"Referer": "https://www.earthcam.com/"},
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1793900338/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="ge-tbs-rustaveli-rustavi",
+            name="Tbilisi Metro (Rustavi) — Shota Rustaveli Square",
+            country=CameraCountry.GEORGIA,
+            city=CameraCity.TBILISI,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tbilisi",
+            streets=("Shota Rustaveli Street", "Kostava Avenue", "Rustavi Bridgehead"),
+            municipality="Rustavi (Tbilisi Metro SE)",
+            category=CameraCategory.SQUARES,
+            direction="Direct 1080p HLS view of Shota Rustaveli roundabout in Greater Tbilisi",
+            poster_url="https://i.ytimg.com/vi/-0zttkXFWvE/hqdefault.jpg",
+            coordinates=GeoCoordinates(lat=41.5495, lon=44.9932),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://streaming-hls1.televizia.org/hls/rustavi-city1.m3u8",
+                    headers={"Referer": "https://www.kamerebi.live/rustavi/"},
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.YOUTUBE_LIVE,
+                    url="https://www.youtube.com/watch?v=-0zttkXFWvE",
+                ),
+            ),
+        ),
+        CameraEntry(
+            id="ge-tbs-megobroba-rustavi",
+            name="Tbilisi Metro (Rustavi) — Megobroba Avenue",
+            country=CameraCountry.GEORGIA,
+            city=CameraCity.TBILISI,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tbilisi",
+            streets=("Megobroba Avenue", "S4 Tbilisi–Red Bridge Corridor"),
+            municipality="Rustavi (Tbilisi Metro SE)",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Direct 1080p HLS boulevard stream along Megobroba Avenue southeast of Tbilisi"
+            ),
+            poster_url="https://i.ytimg.com/vi/E22Y2NWbtGU/hqdefault.jpg",
+            coordinates=GeoCoordinates(lat=41.5435, lon=44.9856),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://streaming-hls1.televizia.org/hls/rustavi-city2.m3u8",
+                    headers={"Referer": "https://www.kamerebi.live/rustavi/"},
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.YOUTUBE_LIVE,
+                    url="https://www.youtube.com/watch?v=E22Y2NWbtGU",
+                ),
+            ),
+        ),
+        _windy_snapshot_camera(
+            cam_id="ge-tbs-saburtalo",
+            name="Saburtalo Skyline — University High-Rise District",
+            city=CameraCity.TBILISI,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tbilisi",
+            streets=("University Street", "Vazha-Pshavela Avenue", "Saburtalo"),
+            municipality="Vake-Saburtalo, Tbilisi",
+            category=CameraCategory.BOULEVARDS,
+            direction="1080p skyline view across western Tbilisi's Saburtalo hills",
+            lat=41.7186,
+            lon=44.7403,
+            windy_id="1793900338",
+        ),
+        # =========================================================================
+        # YEREVAN, ARMENIA (3 cameras: all live 1080p video, Asia/Yerevan)
+        # =========================================================================
+        _youtube_live_camera(
+            cam_id="am-evn-skyline-ararat",
+            name="Yerevan City Skyline — Arabkir & Mount Ararat Horizon",
+            city=CameraCity.YEREVAN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Yerevan",
+            streets=("Orbeli Brothers Street", "Marshal Baghramyan Avenue", "Hrazdan Gorge"),
+            municipality="Arabkir / Kentron, Yerevan",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Live 1080p panorama over central Yerevan rooftops looking south toward "
+                "snow-capped Mount Ararat"
+            ),
+            lat=40.1937,
+            lon=44.4927,
+            video_id="Y4G5H53X7Tw",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="am-evn-sevan-gateway",
+            name="Yerevan Northern Gateway — M4 Sevan Highway",
+            city=CameraCity.YEREVAN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Yerevan",
+            streets=("M4 Yerevan–Sevan Highway", "Tbilisyan Highway", "Abovyan Approach"),
+            municipality="Avan / Northern Yerevan",
+            category=CameraCategory.HIGHWAYS,
+            direction="Live multi-lane highway traffic at the northern M4 entrance to Yerevan",
+            lat=40.2409,
+            lon=44.5695,
+            video_id="-Uq9P6xOi6s",
+        ),
+        _youtube_live_camera(
+            cam_id="am-evn-tsaghkadzor-ropeway",
+            name="Tsaghkadzor Mountain Ropeway — Greater Yerevan Alps",
+            city=CameraCity.YEREVAN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Yerevan",
+            streets=("Mount Teghenis", "Tsaghkadzor Ropeway", "Kotayk Highlands"),
+            municipality="Tsaghkadzor / Kotayk",
+            category=CameraCategory.HIGHWAYS,
+            direction="Live mountain weather and chairlift station above the Armenian highlands",
+            lat=40.5335,
+            lon=44.7031,
+            video_id="1m4YG719KoM",
+        ),
+        # =========================================================================
+        # NEW YORK, USA (13 cameras: 10 live 4K/1080p video + 3 1080p snapshots)
+        # =========================================================================
+        _youtube_live_camera(
+            cam_id="us-nyc-times-square-4k",
+            name="Times Square North — Broadway & 7th Avenue 4K",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.UHD_4K,
+            timezone="America/New_York",
+            streets=("Broadway", "7th Avenue", "W 43rd–47th Streets"),
+            municipality="Midtown Manhattan",
+            category=CameraCategory.SQUARES,
+            direction="Official EarthCam 4K UHD live stream overlooking Times Square billboards",
+            lat=40.7564,
+            lon=-73.9865,
+            video_id="ZxCeWQ3Lcig",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-brooklyn-bridge-4k",
+            name="Brooklyn Bridge, Manhattan Bridge & Skyline 4K",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.UHD_4K,
+            timezone="America/New_York",
+            streets=("East River", "Brooklyn Bridge", "Manhattan Bridge", "Williamsburg"),
+            municipality="Brooklyn / Lower Manhattan",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "4K UHD waterfront panorama across the East River suspension bridges and "
+                "Manhattan skyline"
+            ),
+            lat=40.7080,
+            lon=-73.9692,
+            video_id="obqnslJKrxc",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-times-square-duffy",
+            name="Times Square Crossroads — Father Duffy Square",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("Father Duffy Square", "Broadway", "W 46th Street"),
+            municipality="Midtown Manhattan",
+            category=CameraCategory.SQUARES,
+            direction="Street-level live camera facing the red TKTS steps in Times Square",
+            lat=40.7580,
+            lon=-73.9855,
+            video_id="KHy_n-EMWY8",
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-statue-of-liberty",
+            name="Statue of Liberty & New York Harbor",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("Liberty Island", "Upper New York Bay", "Battery Park Horizon"),
+            municipality="New York Harbor, Manhattan",
+            category=CameraCategory.BRIDGES,
+            direction="Torch-cam and harbor panorama from Liberty Island toward Lower Manhattan",
+            lat=40.6892,
+            lon=-74.0445,
+            video_id="o5Ie_LpZ9uk",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-one-wtc",
+            name="One World Trade Center & Lower Manhattan",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("Fulton Street", "West Street", "Financial District"),
+            municipality="Lower Manhattan",
+            category=CameraCategory.SQUARES,
+            direction="Live skyline view of One World Trade Center and Lower Manhattan towers",
+            lat=40.7115,
+            lon=-74.0134,
+            video_id="ZYQlLQHz2Mg",
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-midtown-empire",
+            name="Midtown Skyline — Empire State & Chrysler Buildings",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("East River", "E 42nd Street", "5th Avenue Skyline"),
+            municipality="Midtown Manhattan / Long Island City",
+            category=CameraCategory.BRIDGES,
+            direction="Panoramic view across the East River toward the Empire State Building",
+            lat=40.7450,
+            lon=-73.9585,
+            video_id="_-elt-iymj0",
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-summit-vanderbilt",
+            name="SUMMIT One Vanderbilt — Midtown Observation Deck",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("One Vanderbilt", "E 42nd Street", "Grand Central Terminal"),
+            municipality="Midtown East, Manhattan",
+            category=CameraCategory.SQUARES,
+            direction="Supertall observation deck view from SUMMIT One Vanderbilt above Midtown",
+            lat=40.7530,
+            lon=-73.9785,
+            video_id="2_PDaUJbfuI",
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-bryant-park",
+            name="Bryant Park & New York Public Library",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("6th Avenue", "W 40th–42nd Streets", "5th Avenue"),
+            municipality="Midtown Manhattan",
+            category=CameraCategory.SQUARES,
+            direction="Live park lawn and seasonal rink behind the New York Public Library",
+            lat=40.7536,
+            lon=-73.9832,
+            video_id="hMWSUCXkj6w",
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-dumbo-promenade",
+            name="Brooklyn Bridge Promenade — DUMBO Waterfront",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("Brooklyn Bridge Park", "Furman Street", "East River"),
+            municipality="Brooklyn Heights / DUMBO",
+            category=CameraCategory.BRIDGES,
+            direction="Waterfront promenade looking across the East River to Wall Street",
+            lat=40.7033,
+            lon=-73.9934,
+            video_id="tErYxn2UM5Y",
+        ),
+        _youtube_live_camera(
+            cam_id="us-nyc-hudson-lincoln",
+            name="Hudson River & Midtown West Skyline",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("Hudson River", "Hudson Yards", "12th Avenue"),
+            municipality="Midtown West / Hudson River",
+            category=CameraCategory.BRIDGES,
+            direction="Wide west-side skyline view over the Hudson River and Hudson Yards",
+            lat=40.7602,
+            lon=-74.0185,
+            video_id="sixP_dAJ8D4",
+        ),
+        _windy_snapshot_camera(
+            cam_id="us-nyc-downtown-heliport",
+            name="Downtown Manhattan Heliport & East River Pier 6",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("Pier 6", "FDR Drive", "South Street"),
+            municipality="Financial District, Manhattan",
+            category=CameraCategory.HIGHWAYS,
+            direction="1080p harbor aviation view from Downtown Manhattan Heliport at Pier 6",
+            lat=40.7020,
+            lon=-74.0096,
+            windy_id="1793902326",
+        ),
+        _windy_snapshot_camera(
+            cam_id="us-nyc-sixth-avenue",
+            name="Midtown — 6th Avenue (Avenue of the Americas)",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("6th Avenue", "W 53rd Street", "Rockefeller Center North"),
+            municipality="Midtown Manhattan",
+            category=CameraCategory.BOULEVARDS,
+            direction="Canyon of skyscrapers along Avenue of the Americas in Midtown",
+            lat=40.7620,
+            lon=-73.9798,
+            windy_id="1793910950",
+        ),
+        _windy_snapshot_camera(
+            cam_id="us-nyc-union-square-north",
+            name="14th Street — Midtown North Horizon",
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("E 14th Street", "3rd Avenue", "Union Square East"),
+            municipality="East Village / Gramercy",
+            category=CameraCategory.BOULEVARDS,
+            direction="Northbound Manhattan skyline view from 14th Street toward Midtown",
+            lat=40.7319,
+            lon=-73.9835,
+            windy_id="1285780579",
+        ),
+        # =========================================================================
+        # SEOUL, SOUTH KOREA (10 cameras: 9 live 4K UHD + 1 live 1080p, Asia/Seoul)
+        # =========================================================================
+        _youtube_live_camera(
+            cam_id="kr-sel-banpo-bridge-4k",
+            name="Hangang River — Banpo Bridge Rainbow Fountain 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Banpodaegyo Bridge", "Olympic-daero", "Sebitseom Floating Islands"),
+            municipality="Seocho-gu / Yongsan-gu",
+            category=CameraCategory.BRIDGES,
+            direction="4K UHD live stream of Banpo Double-Deck Bridge and Hangang River waterfront",
+            lat=37.5126,
+            lon=126.9959,
+            video_id="RVvYQghFCXk",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-namsan-tower-4k",
+            name="Namsan Seoul Tower & Hannam Bridge 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Namsan Mountain", "Hannamdaegyo Bridge", "Gangbyeonbuk-ro"),
+            municipality="Yongsan-gu / Jung-gu",
+            category=CameraCategory.BRIDGES,
+            direction="4K UHD skyline view of N Seoul Tower on Namsan above the Hangang River",
+            lat=37.5512,
+            lon=126.9882,
+            video_id="Q6WKC4vDsUU",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-gwanghwamun-4k",
+            name="Gwanghwamun Square & Sejong-daero 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Gwanghwamun Square", "Sejong-daero", "Gyeongbokgung Palace"),
+            municipality="Jongno-gu, Seoul",
+            category=CameraCategory.SQUARES,
+            direction="4K UHD civic boulevard view along Sejong-daero and Gwanghwamun Square",
+            lat=37.5725,
+            lon=126.9769,
+            video_id="536M1XZGzIs",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-lotte-tower-4k",
+            name="Jamsil — Lotte World Tower & Seokchon Lake 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Olympic-ro", "Seokchonhosu Lake", "Lotte World Tower (555 m)"),
+            municipality="Songpa-gu, Seoul",
+            category=CameraCategory.SQUARES,
+            direction="4K UHD view of 123-story Lotte World Tower rising above Seokchon Lake",
+            lat=37.5125,
+            lon=127.1025,
+            video_id="G1oHv3PyNLc",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-ddp-dongdaemun-4k",
+            name="Dongdaemun Design Plaza (DDP) & Euljiro 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Eulji-ro", "Jangchungdan-ro", "Dongdaemun History & Culture Park"),
+            municipality="Jung-gu, Seoul",
+            category=CameraCategory.SQUARES,
+            direction="4K UHD view over Zaha Hadid's futuristic Dongdaemun Design Plaza",
+            lat=37.5665,
+            lon=127.0092,
+            video_id="VWDvJ_WFIVg",
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-yeouido-mapo-4k",
+            name="Hangang River — Yeouido Skyline & Mapo Bridge 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Mapodaegyo Bridge", "Yeoui-daero", "Parc1 & IFC Seoul"),
+            municipality="Yeongdeungpo-gu / Mapo-gu",
+            category=CameraCategory.BRIDGES,
+            direction="4K UHD financial skyline of Yeouido Island and Mapo Bridge",
+            lat=37.5326,
+            lon=126.9352,
+            video_id="vk5BHoDxXf0",
+            windy_fallback_id="1689176350",
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-seogang-bridge-4k",
+            name="Hangang River — Seogang Bridge & Bamseom Islets 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Seogangdaegyo Bridge", "Bamseom Ecological Island", "Sogang"),
+            municipality="Mapo-gu / Yeouido",
+            category=CameraCategory.BRIDGES,
+            direction="4K UHD arch span of Seogang Bridge crossing Bamseom on the Hangang River",
+            lat=37.5414,
+            lon=126.9279,
+            video_id="Hr3wOOZSaeg",
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-hongdae-crossing-4k",
+            name="Hongdae — Hongik Univ. Station & Yanghwa-ro 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Yanghwa-ro", "Hongik-ro", "Gyeongui Line Forest Park"),
+            municipality="Mapo-gu, Seoul",
+            category=CameraCategory.BOULEVARDS,
+            direction="4K UHD pedestrian and transit hub at Hongik University Station in Hongdae",
+            lat=37.5575,
+            lon=126.9245,
+            video_id="Lq8kJfy2mrk",
+            windy_fallback_id="1701618298",
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-samcheong-bukchon-4k",
+            name="Samcheong-dong, Bukchon Hanok & Bugaksan 4K",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Seoul",
+            streets=("Samcheong-ro", "Bukchon-ro", "Bugaksan Mountain"),
+            municipality="Jongno-gu, Seoul",
+            category=CameraCategory.SQUARES,
+            direction="4K UHD view over historic Jongno rooftops and forested Bugaksan peaks",
+            lat=37.5805,
+            lon=126.9818,
+            video_id="sVrpfQ-sjs0",
+        ),
+        _youtube_live_camera(
+            cam_id="kr-sel-seoul-station",
+            name="Seoul Station Plaza — Hangang-daero & Seoullo 7017",
+            city=CameraCity.SEOUL,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Seoul",
+            streets=("Hangang-daero", "Tongil-ro", "Seoullo 7017 Skygarden"),
+            municipality="Yongsan-gu / Jung-gu",
+            category=CameraCategory.HIGHWAYS,
+            direction="Central KTX rail terminal plaza and arterial bus lanes at Seoul Station",
+            lat=37.5559,
+            lon=126.9723,
+            video_id="C3hW1VrwmNc",
+        ),
+        # =========================================================================
+        # TOKYO, JAPAN (12 cameras: all live 4K/2K/1080p video, Asia/Tokyo)
+        # =========================================================================
+        _youtube_live_camera(
+            cam_id="jp-tyo-shinjuku-kabukicho-4k",
+            name="Shinjuku — Kabukicho Neon Crossing 4K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Tokyo",
+            streets=("Yasukuni-dori", "Kabukicho Ichiban-gai", "Higashi-Shinjuku"),
+            municipality="Shinjuku-ku, Tokyo",
+            category=CameraCategory.SQUARES,
+            direction="24/7 4K UHD street-level view at the entrance to Shinjuku Kabukicho",
+            lat=35.6938,
+            lon=139.7010,
+            video_id="ErHJBXTmm2Q",
+            windy_fallback_id="1349760603",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-shinjuku-east-4k",
+            name="Shinjuku Station East Exit — Cross Shinjuku Plaza 4K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Tokyo",
+            streets=("Shinjuku-dori", "Alta Vision Plaza", "3D Cat Billboard"),
+            municipality="Shinjuku-ku, Tokyo",
+            category=CameraCategory.SQUARES,
+            direction="4K UHD live camera facing the world's busiest rail hub at Shinjuku East",
+            lat=35.6924,
+            lon=139.7012,
+            video_id="Zhmmh7l6KEw",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-skytree-sumida-4k",
+            name="Tokyo Skytree & Sumida River Panorama 4K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Tokyo",
+            streets=("Sumida River", "Oshiage", "Asakusa Bridges"),
+            municipality="Sumida-ku / Taito-ku",
+            category=CameraCategory.BRIDGES,
+            direction="4K UHD skyline broadcast framing the 634 m Tokyo Skytree and Sumida bridges",
+            lat=35.7101,
+            lon=139.8107,
+            video_id="iycgnGq-h14",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-rainbow-bridge-4k",
+            name="Odaiba — Rainbow Bridge & Tokyo Bay Harbor 4K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Tokyo",
+            streets=("Rainbow Bridge", "Metropolitan Expressway Route 11", "Tokyo Bay"),
+            municipality="Minato-ku, Tokyo",
+            category=CameraCategory.BRIDGES,
+            direction="4K UHD maritime panorama of Rainbow Bridge and illuminated Tokyo Bay",
+            lat=35.6366,
+            lon=139.7634,
+            video_id="_k-5U7IeK8g",
+            windy_fallback_id="1793916441",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-akihabara-4k",
+            name="Akihabara Electric Town — Chuo-dori Boulevard 4K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Tokyo",
+            streets=("Chuo-dori", "Kanda Myojin-dori", "Soto-Kanda"),
+            municipality="Chiyoda-ku, Tokyo",
+            category=CameraCategory.BOULEVARDS,
+            direction="4K UHD live street view along neon-lit Chuo-dori in Akihabara Electric Town",
+            lat=35.6986,
+            lon=139.7711,
+            video_id="aKyf7cKa650",
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-shiodome-shinkansen-4k",
+            name="Shiodome & Shimbashi — Shinkansen Rail Corridor 4K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_4K,
+            timezone="Asia/Tokyo",
+            streets=("Tokaido Shinkansen", "Yamanote Line", "Shiodome Sio-Site"),
+            municipality="Minato-ku, Tokyo",
+            category=CameraCategory.HIGHWAYS,
+            direction=(
+                "4K UHD railfan view of Tokaido Shinkansen bullet trains and 10+ parallel "
+                "JR/Yurikamome tracks"
+            ),
+            lat=35.6628,
+            lon=139.7597,
+            video_id="VM18f-IIUTw",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-tokyo-tower-2k",
+            name="Tokyo Tower — Shiba Park & Minato Skyline 2K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_2K,
+            timezone="Asia/Tokyo",
+            streets=("Shibakoen", "Sakurada-dori", "Azabudai Hills"),
+            municipality="Minato-ku, Tokyo",
+            category=CameraCategory.SQUARES,
+            direction="2K QHD live view of red-and-white Tokyo Tower and central Minato towers",
+            lat=35.6586,
+            lon=139.7454,
+            video_id="nu6NE55_X7A",
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-shibuya-scramble",
+            name="Shibuya Scramble Crossing & Hachiko Square",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tokyo",
+            streets=("Dogenzaka", "Center-gai", "Koen-dori", "Shibuya Station"),
+            municipality="Shibuya-ku, Tokyo",
+            category=CameraCategory.SQUARES,
+            direction="Iconic overhead view of Shibuya Scramble pedestrian crossing in Tokyo",
+            lat=35.6595,
+            lon=139.7005,
+            video_id="dfVK7ld38Ys",
+            secondary_video_id="5B4LmH4JbnY",
+            windy_fallback_id="1586454316",
+            featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-tokyo-station",
+            name="Tokyo Station — Marunouchi Brick Facade & Plaza",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tokyo",
+            streets=("Gyoko-dori", "Marunouchi Central Plaza", "Chiyoda"),
+            municipality="Chiyoda-ku, Tokyo",
+            category=CameraCategory.SQUARES,
+            direction="Historic 1914 Marunouchi red-brick station esplanade in central Tokyo",
+            lat=35.6812,
+            lon=139.7649,
+            video_id="ZN4gh5IOowM",
+            windy_fallback_id="1793916374",
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-tsukiji-sumida",
+            name="Tsukiji & Kachidoki Bridge — Sumida River Mouth",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tokyo",
+            streets=("Harumi-dori", "Kachidokibashi Bridge", "Sumida River"),
+            municipality="Chuo-ku, Tokyo",
+            category=CameraCategory.BRIDGES,
+            direction="Waterfront view over Kachidoki drawbridge where the Sumida meets Tokyo Bay",
+            lat=35.6645,
+            lon=139.7695,
+            video_id="bKVGdsMVuMA",
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-haneda-airport",
+            name="Tokyo Haneda Airport — Runway & Tokyo Bay",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tokyo",
+            streets=("Haneda Runways 34R / 16L", "Tokyo Bay", "Ota-ku"),
+            municipality="Ota-ku, Tokyo",
+            category=CameraCategory.HIGHWAYS,
+            direction="24/7 aviation broadcast from Haneda Terminal 2 observation deck",
+            lat=35.5512,
+            lon=139.7882,
+            video_id="Pmdk2kHf-l8",
+            windy_fallback_id="1586457854",
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-asakusa-sensoji",
+            name="Asakusa Senso-ji Temple — Hozomon & Pagoda",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tokyo",
+            streets=("Nakamise-dori", "Senso-ji Precinct", "Asakusa"),
+            municipality="Taito-ku, Tokyo",
+            category=CameraCategory.SQUARES,
+            direction="Live precinct view of Tokyo's oldest Buddhist temple, Senso-ji in Asakusa",
+            lat=35.7142,
+            lon=139.7967,
+            video_id="NsFHt76uwh8",
+        ),
     ]
     enriched = [
         replace(cam, country=cam.resolved_country) if cam.country is None else cam
@@ -2349,6 +4170,7 @@ def build_curated_cameras() -> list[CameraEntry]:
         key=lambda cam: (
             country_order[cam.resolved_country],
             city_order[cam.city],
+            0 if cam.is_live_video else 1,
             cam.quality.sort_rank,
         ),
     )

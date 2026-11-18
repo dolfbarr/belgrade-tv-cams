@@ -2,12 +2,19 @@ package rs.belgrade.tvcams.domain.tv
 
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
+import rs.belgrade.tvcams.domain.favorites.PerformanceMode
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
+import rs.belgrade.tvcams.domain.favorites.TransportFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
 import rs.belgrade.tvcams.domain.model.CameraCity
 import rs.belgrade.tvcams.domain.model.CameraCountry
+
+private val CAMERA_DISPLAY_COMPARATOR: Comparator<Camera> =
+    compareBy<Camera> { it.resolvedCountry.ordinal }
+        .thenByDescending { it.isLiveVideo }
+        .thenBy { it.resolvedQuality.sortRank }
 
 enum class OverlayMode {
     HUD_VISIBLE,
@@ -17,6 +24,7 @@ enum class OverlayMode {
 
 sealed interface StripFilter {
     data object All : StripFilter
+    data object Popular : StripFilter
     data object Favorites : StripFilter
     data class Country(val country: CameraCountry) : StripFilter
     data class City(val city: CameraCity) : StripFilter
@@ -41,6 +49,8 @@ sealed interface TvRemoteAction {
     data object OpenQuickStrip : TvRemoteAction
     data object ToggleZapScope : TvRemoteAction
     data object CycleQualityFilter : TvRemoteAction
+    data object CycleTransportFilter : TvRemoteAction
+    data object CyclePerformanceMode : TvRemoteAction
     data object CycleAutoRotate : TvRemoteAction
     data object CycleInfoPanelPosition : TvRemoteAction
     data object ToggleClockOverlay : TvRemoteAction
@@ -62,6 +72,8 @@ data class TvStageState(
     val favoriteIds: Set<String>,
     val zapScope: ZapScope,
     val qualityFilter: QualityFilter,
+    val transportFilter: TransportFilter = TransportFilter.ALL,
+    val performanceMode: PerformanceMode = PerformanceMode.AUTO,
     val autoRotateInterval: AutoRotateInterval,
     val infoPanelPosition: InfoPanelPosition = InfoPanelPosition.BOTTOM_CENTER,
     val overlayMode: OverlayMode,
@@ -89,9 +101,21 @@ data class TvStageState(
     val sdTotalCount: Int
         get() = cameras.count { !it.resolvedQuality.isHd }
 
+    val liveVideoTotalCount: Int
+        get() = cameras.count { it.isLiveVideo }
+
+    val snapshotTotalCount: Int
+        get() = cameras.count { !it.isLiveVideo }
+
+    val featuredTotalCount: Int
+        get() = qualityFilteredCameras.count { it.isFeatured }
+
     val qualityFilteredCameras: List<Camera>
         get() = cameras
-            .filter { qualityFilter.matches(it.resolvedQuality) }
+            .filter {
+                qualityFilter.matches(it.resolvedQuality) &&
+                    transportFilter.matches(it.isLiveVideo)
+            }
             .ifEmpty { cameras }
 
     val zapPlaylist: List<Camera>
@@ -117,10 +141,7 @@ data class TvStageState(
                 }
                 ZapScope.FAVORITES -> pool.filter { favoriteIds.contains(it.id) }.ifEmpty { pool }
             }
-            return scoped.sortedWith(
-                compareBy<Camera> { it.resolvedCountry.ordinal }
-                    .thenBy { it.resolvedQuality.sortRank },
-            )
+            return scoped.sortedWith(CAMERA_DISPLAY_COMPARATOR)
         }
 
     val activeZapPositionOneBased: Int
@@ -134,24 +155,29 @@ data class TvStageState(
         get() = when (val currentFilter = stripFilter) {
             is StripFilter.Country -> currentFilter.country
             is StripFilter.City -> currentFilter.city.country
-            StripFilter.All, StripFilter.Favorites, is StripFilter.Category -> null
+            StripFilter.All,
+            StripFilter.Popular,
+            StripFilter.Favorites,
+            is StripFilter.Category,
+            -> null
         }
 
     val stripCameras: List<Camera>
         get() {
             val filtered = when (val currentFilter = stripFilter) {
                 StripFilter.All -> cameras
+                StripFilter.Popular -> cameras.filter { it.isFeatured }
                 StripFilter.Favorites -> cameras.filter { favoriteIds.contains(it.id) }
                 is StripFilter.Country -> cameras.filter { it.resolvedCountry == currentFilter.country }
                 is StripFilter.City -> cameras.filter { it.city == currentFilter.city }
                 is StripFilter.Category -> cameras.filter { it.category == currentFilter.category }
             }
             return filtered
-                .filter { qualityFilter.matches(it.resolvedQuality) }
-                .sortedWith(
-                    compareBy<Camera> { it.resolvedCountry.ordinal }
-                        .thenBy { it.resolvedQuality.sortRank },
-                )
+                .filter {
+                    qualityFilter.matches(it.resolvedQuality) &&
+                        transportFilter.matches(it.isLiveVideo)
+                }
+                .sortedWith(CAMERA_DISPLAY_COMPARATOR)
         }
 
     val hdStripCameras: List<Camera>
@@ -184,6 +210,8 @@ data class TvStageState(
             initialCameraId: String? = null,
             zapScope: ZapScope = ZapScope.ALL,
             qualityFilter: QualityFilter = QualityFilter.ALL,
+            transportFilter: TransportFilter = TransportFilter.ALL,
+            performanceMode: PerformanceMode = PerformanceMode.AUTO,
             autoRotateInterval: AutoRotateInterval = AutoRotateInterval.OFF,
             infoPanelPosition: InfoPanelPosition = InfoPanelPosition.BOTTOM_CENTER,
             showClockOverlay: Boolean = true,
@@ -199,11 +227,11 @@ data class TvStageState(
                 zapScope
             }
             val matchingPool = cameras
-                .filter { qualityFilter.matches(it.resolvedQuality) }
-                .sortedWith(
-                    compareBy<Camera> { it.resolvedCountry.ordinal }
-                        .thenBy { it.resolvedQuality.sortRank },
-                )
+                .filter {
+                    qualityFilter.matches(it.resolvedQuality) &&
+                        transportFilter.matches(it.isLiveVideo)
+                }
+                .sortedWith(CAMERA_DISPLAY_COMPARATOR)
                 .ifEmpty { cameras }
             val resolvedId = initialCameraId
                 ?.takeIf { id -> matchingPool.any { it.id == id } }
@@ -214,6 +242,8 @@ data class TvStageState(
                 favoriteIds = favoriteIds.toSet(),
                 zapScope = effectiveScope,
                 qualityFilter = qualityFilter,
+                transportFilter = transportFilter,
+                performanceMode = performanceMode,
                 autoRotateInterval = autoRotateInterval,
                 infoPanelPosition = infoPanelPosition,
                 overlayMode = initialOverlayMode,
@@ -360,10 +390,7 @@ object TvStageReducer {
                     } else {
                         val favCams = pool
                             .filter { state.favoriteIds.contains(it.id) }
-                            .sortedWith(
-                                compareBy<Camera> { it.resolvedCountry.ordinal }
-                                    .thenBy { it.resolvedQuality.sortRank },
-                            )
+                            .sortedWith(CAMERA_DISPLAY_COMPARATOR)
                             .ifEmpty { pool }
                         val nextActiveId = state.activeCameraId?.takeIf { id -> favCams.any { it.id == id } }
                             ?: favCams.firstOrNull()?.id
@@ -393,11 +420,11 @@ object TvStageReducer {
         TvRemoteAction.CycleQualityFilter -> {
             val nextFilter = state.qualityFilter.next()
             val matching = state.cameras
-                .filter { nextFilter.matches(it.resolvedQuality) }
-                .sortedWith(
-                    compareBy<Camera> { it.resolvedCountry.ordinal }
-                        .thenBy { it.resolvedQuality.sortRank },
-                )
+                .filter {
+                    nextFilter.matches(it.resolvedQuality) &&
+                        state.transportFilter.matches(it.isLiveVideo)
+                }
+                .sortedWith(CAMERA_DISPLAY_COMPARATOR)
             if (matching.isEmpty()) {
                 TvStageTransition(
                     state.copy(
@@ -426,6 +453,54 @@ object TvStageReducer {
                     ),
                 )
             }
+        }
+
+        TvRemoteAction.CycleTransportFilter -> {
+            val nextTransport = state.transportFilter.next()
+            val matching = state.cameras
+                .filter {
+                    state.qualityFilter.matches(it.resolvedQuality) &&
+                        nextTransport.matches(it.isLiveVideo)
+                }
+                .sortedWith(CAMERA_DISPLAY_COMPARATOR)
+            if (matching.isEmpty()) {
+                TvStageTransition(
+                    state.copy(
+                        transportFilter = TransportFilter.ALL,
+                        noticeMessage = "No ${nextTransport.displayLabel()} cameras available",
+                    ),
+                )
+            } else {
+                val activeCam = state.activeCamera
+                val nextActiveId = if (activeCam != null && nextTransport.matches(activeCam.isLiveVideo)) {
+                    activeCam.id
+                } else {
+                    val sameCityMatch = activeCam?.city?.let { city ->
+                        matching.firstOrNull { it.city == city }
+                    }
+                    val sameCountryMatch = activeCam?.resolvedCountry?.let { country ->
+                        matching.firstOrNull { it.resolvedCountry == country }
+                    }
+                    (sameCityMatch ?: sameCountryMatch ?: matching.first()).id
+                }
+                TvStageTransition(
+                    state.copy(
+                        transportFilter = nextTransport,
+                        activeCameraId = nextActiveId,
+                        noticeMessage = "Stream: ${nextTransport.displayLabel()} (${matching.size})",
+                    ),
+                )
+            }
+        }
+
+        TvRemoteAction.CyclePerformanceMode -> {
+            val nextMode = state.performanceMode.next()
+            TvStageTransition(
+                state.copy(
+                    performanceMode = nextMode,
+                    noticeMessage = "Performance: ${nextMode.displayLabel()}",
+                ),
+            )
         }
 
         TvRemoteAction.CycleAutoRotate -> {
@@ -508,10 +583,16 @@ object TvStageReducer {
                 } else {
                     QualityFilter.ALL
                 }
+                val updatedTransportFilter = if (state.transportFilter.matches(target.isLiveVideo)) {
+                    state.transportFilter
+                } else {
+                    TransportFilter.ALL
+                }
                 TvStageTransition(
                     state.copy(
                         activeCameraId = target.id,
                         qualityFilter = updatedQualityFilter,
+                        transportFilter = updatedTransportFilter,
                         overlayMode = OverlayMode.HUD_VISIBLE,
                         hudPinned = false,
                     ),
@@ -578,10 +659,7 @@ object TvStageReducer {
         val scopedPlaylist = state.zapPlaylist
         val playlist = if (preserveOverlay && scopedPlaylist.size <= 1) {
             state.qualityFilteredCameras
-                .sortedWith(
-                    compareBy<Camera> { it.resolvedCountry.ordinal }
-                        .thenBy { it.resolvedQuality.sortRank },
-                )
+                .sortedWith(CAMERA_DISPLAY_COMPARATOR)
                 .ifEmpty { scopedPlaylist }
         } else {
             scopedPlaylist

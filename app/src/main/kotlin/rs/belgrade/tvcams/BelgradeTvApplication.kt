@@ -1,17 +1,24 @@
 package rs.belgrade.tvcams
 
+import android.app.ActivityManager
 import android.app.Application
+import android.content.Context
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
+import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import coil3.request.allowRgb565
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okio.Path.Companion.toOkioPath
 import rs.belgrade.tvcams.data.airquality.OpenMeteoAirQualityClient
 import rs.belgrade.tvcams.data.catalog.AssetCatalogSeedSource
 import rs.belgrade.tvcams.data.catalog.FileCatalogCacheStore
 import rs.belgrade.tvcams.data.catalog.OkHttpRemoteCatalogClient
 import rs.belgrade.tvcams.data.favorites.DataStoreFavoritesRepository
+import rs.belgrade.tvcams.data.stream.OkHttpStreamUrlResolver
 import rs.belgrade.tvcams.data.weather.OpenMeteoWeatherClient
 import rs.belgrade.tvcams.domain.airquality.AirQualityRepository
 import rs.belgrade.tvcams.domain.airquality.GridCachedAirQualityRepository
@@ -36,6 +43,11 @@ class AppContainer(application: Application) {
     val mediaHttpClient: OkHttpClient = httpClient.newBuilder()
         .protocols(listOf(Protocol.HTTP_1_1))
         .build()
+
+    val streamUrlResolver: OkHttpStreamUrlResolver = OkHttpStreamUrlResolver(
+        generalHttpClient = httpClient,
+        mediaHttpClient = mediaHttpClient,
+    )
 
     val favoritesRepository: FavoritesRepository = DataStoreFavoritesRepository(
         appContext = application.applicationContext,
@@ -72,10 +84,26 @@ class BelgradeTvApplication : Application(), SingletonImageLoader.Factory {
         container = AppContainer(this)
     }
 
-    override fun newImageLoader(context: PlatformContext): ImageLoader =
-        ImageLoader.Builder(context)
+    override fun newImageLoader(context: PlatformContext): ImageLoader {
+        val isLowRam = (getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager)
+            ?.isLowRamDevice == true
+        val memPercent = if (isLowRam) 0.12 else 0.18
+        return ImageLoader.Builder(context)
+            .allowRgb565(true)
+            .memoryCache {
+                MemoryCache.Builder()
+                    .maxSizePercent(context, memPercent)
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(cacheDir.resolve("coil_poster_cache").toOkioPath())
+                    .maxSizeBytes(48L * 1024L * 1024L)
+                    .build()
+            }
             .components {
                 add(OkHttpNetworkFetcherFactory(callFactory = { container.mediaHttpClient }))
             }
             .build()
+    }
 }

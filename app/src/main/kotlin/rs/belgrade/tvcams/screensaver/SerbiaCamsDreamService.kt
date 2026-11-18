@@ -135,6 +135,7 @@ class SerbiaCamsDreamService : DreamService() {
                         currentWeather = currentWeather,
                         currentAirQuality = currentAirQuality,
                         httpClient = appContainer.mediaHttpClient,
+                        streamResolver = appContainer.streamUrlResolver,
                         onAction = stageViewModel::dispatch,
                         onTelemetryChanged = stageViewModel::updateTelemetry,
                         enableBackHandler = false,
