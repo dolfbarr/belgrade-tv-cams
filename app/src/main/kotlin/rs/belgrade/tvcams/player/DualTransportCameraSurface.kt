@@ -3,6 +3,7 @@ package rs.belgrade.tvcams.player
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -218,7 +219,7 @@ private fun HlsStreamRenderer(
         factory = { viewContext ->
             (LayoutInflater.from(viewContext).inflate(
                 R.layout.player_view_texture,
-                null,
+                FrameLayout(viewContext),
                 false,
             ) as PlayerView).apply {
                 useController = false

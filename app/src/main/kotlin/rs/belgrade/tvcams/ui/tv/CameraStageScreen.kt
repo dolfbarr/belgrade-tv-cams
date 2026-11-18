@@ -125,9 +125,7 @@ fun CameraStageScreen(
                     repeatCount = keyEvent.nativeKeyEvent.repeatCount,
                     overlayMode = state.overlayMode,
                 )
-                if (decision.action != null) {
-                    onAction(decision.action)
-                }
+                decision.action?.let(onAction)
                 decision.consumed
             }
             .focusRequester(stageFocusRequester)
