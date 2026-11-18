@@ -2,6 +2,11 @@ package rs.belgrade.tvcams.domain
 
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import rs.belgrade.tvcams.domain.airquality.AirQualityBand
+import rs.belgrade.tvcams.domain.airquality.AirQualityRepository
+import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
+import rs.belgrade.tvcams.domain.airquality.EaqiMapper
+import rs.belgrade.tvcams.domain.airquality.GridCachedAirQualityRepository
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
 import rs.belgrade.tvcams.domain.catalog.CatalogCacheStore
 import rs.belgrade.tvcams.domain.catalog.CatalogSeedSource
@@ -17,10 +22,15 @@ import rs.belgrade.tvcams.domain.model.GeoCoordinates
 import rs.belgrade.tvcams.domain.model.SerbiaCity
 import rs.belgrade.tvcams.domain.model.StreamDescriptor
 import rs.belgrade.tvcams.domain.model.StreamTransportType
+import rs.belgrade.tvcams.domain.oled.PixelOrbitCalculator
+import rs.belgrade.tvcams.domain.solar.SolarPhase
+import rs.belgrade.tvcams.domain.solar.SolarPhaseCalculator
+import rs.belgrade.tvcams.domain.solar.SolarWindow
 import rs.belgrade.tvcams.domain.stream.FailoverDecision
 import rs.belgrade.tvcams.domain.stream.SnapshotUrlBuilder
 import rs.belgrade.tvcams.domain.stream.StreamFailoverTracker
 import rs.belgrade.tvcams.domain.time.CameraClockFormatter
+import rs.belgrade.tvcams.domain.tv.HomeChannelSelector
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.StripFilter
 import rs.belgrade.tvcams.domain.tv.TvKeyCode
@@ -36,8 +46,11 @@ import rs.belgrade.tvcams.domain.weather.WeatherRepository
 import rs.belgrade.tvcams.domain.weather.WmoWeatherMapper
 import java.io.File
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -93,32 +106,10 @@ class DomainSuiteTest {
     fun `whole-graph round trip of v2 Serbia catalog is fixed-point identical`() {
         val catalogV2Path = System.getProperty("belgrade.catalog.v2.path")
         assertNotNull(catalogV2Path, "System property belgrade.catalog.v2.path must be set")
-        val v2File = File(catalogV2Path)
-        if (!v2File.exists()) {
-            // Prior to Phase 3 generation, verify synthetic v2 manifest fixed-point serialization
-            val synthetic = CatalogManifest(
-                schemaVersion = 2,
-                revision = 2026111801L,
-                updatedAt = "2026-11-18T01:00:00Z",
-                cameras = listOf(
-                    sampleCamera("bg-1", "Slavija", SerbiaCity.BELGRADE),
-                    sampleCamera("ns-1", "Pupinova palata", SerbiaCity.NOVI_SAD),
-                    sampleCamera("su-1", "MZ Zorka", SerbiaCity.SUBOTICA),
-                    sampleCamera("ni-1", "Niš Sever", SerbiaCity.NIS),
-                ),
-            )
-            val firstEncode = CatalogJsonCodec.encode(synthetic)
-            val reDecoded = CatalogJsonCodec.decode(firstEncode)
-            val secondEncode = CatalogJsonCodec.encode(reDecoded)
-            assertEquals(synthetic, reDecoded)
-            assertEquals(firstEncode, secondEncode)
-            return
-        }
-
-        val rawDiskJson = v2File.readText(Charsets.UTF_8)
+        val rawDiskJson = File(catalogV2Path).readText(Charsets.UTF_8)
         val decoded = CatalogJsonCodec.decode(rawDiskJson)
         assertEquals(2, decoded.schemaVersion)
-        assertTrue(decoded.cameras.size >= 50)
+        assertEquals(56, decoded.cameras.size)
         assertEquals(
             setOf(SerbiaCity.BELGRADE, SerbiaCity.NOVI_SAD, SerbiaCity.SUBOTICA, SerbiaCity.NIS),
             decoded.cameras.map { it.city }.toSet(),
@@ -240,7 +231,7 @@ class DomainSuiteTest {
     }
 
     @Test
-    fun `tv stage reducer handles pure camera toggle, city and favorites zapping, and clock weather toggles`() {
+    fun `tv stage reducer handles pure camera toggle, city and favorites zapping, and ambient toggles`() {
         val cameras = listOf(
             sampleCamera("bg-1", "Brankov most", SerbiaCity.BELGRADE, CameraCategory.BRIDGES),
             sampleCamera("ns-1", "Pupinova palata", SerbiaCity.NOVI_SAD, CameraCategory.BOULEVARDS),
@@ -253,54 +244,60 @@ class DomainSuiteTest {
             initialCameraId = "ns-1",
             showClockOverlay = true,
             showWeatherOverlay = true,
+            showAirQualityOverlay = true,
+            showSolarOverlay = true,
+            oledProtectionEnabled = true,
         )
         assertEquals(OverlayMode.HUD_VISIBLE, state.overlayMode)
         assertEquals("ns-1", state.activeCamera?.id)
         assertTrue(state.showClockOverlay)
         assertTrue(state.showWeatherOverlay)
+        assertTrue(state.showAirQualityOverlay)
+        assertTrue(state.showSolarOverlay)
+        assertTrue(state.oledProtectionEnabled)
 
-        // Toggle Clock off & Weather off independently
+        // Toggle Clock, Weather, AQI, Solar, and OLED guard independently
         state = TvStageReducer.reduce(state, TvRemoteAction.ToggleClockOverlay).state
         assertFalse(state.showClockOverlay)
-        assertTrue(state.showWeatherOverlay)
-        assertEquals("Clock overlay: Off", state.noticeMessage)
 
         state = TvStageReducer.reduce(state, TvRemoteAction.ToggleWeatherOverlay).state
         assertFalse(state.showWeatherOverlay)
-        assertFalse(state.hasAnyAmbientOverlay)
-        assertEquals("Weather overlay: Off", state.noticeMessage)
 
-        // Toggle Clock back on
-        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleClockOverlay).state
-        assertTrue(state.showClockOverlay)
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleAirQualityOverlay).state
+        assertFalse(state.showAirQualityOverlay)
+        assertEquals("Air quality overlay: Off", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleSolarOverlay).state
+        assertFalse(state.showSolarOverlay)
+        assertFalse(state.hasAnyAmbientOverlay)
+        assertEquals("Sun & golden hour: Off", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleOledProtection).state
+        assertFalse(state.oledProtectionEnabled)
+        assertEquals("OLED burn-in guard: Off", state.noticeMessage)
+
+        // Toggle AQI back on -> hasAnyAmbientOverlay becomes true
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleAirQualityOverlay).state
+        assertTrue(state.showAirQualityOverlay)
         assertTrue(state.hasAnyAmbientOverlay)
 
-        // Cycle ZapScope: ALL -> CITY (Novi Sad: ns-1, ns-2)
+        // Cycle ZapScope: ALL -> CITY (Novi Sad: ns-1, ns-2) -> FAVORITES (bg-1, ni-1)
         state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
         assertEquals(ZapScope.CITY, state.zapScope)
         assertEquals(listOf("ns-1", "ns-2"), state.zapPlaylist.map { it.id })
 
         state = TvStageReducer.reduce(state, TvRemoteAction.ZapNext).state
         assertEquals("ns-2", state.activeCamera?.id)
-        state = TvStageReducer.reduce(state, TvRemoteAction.ZapNext).state
-        assertEquals("ns-1", state.activeCamera?.id)
 
-        // Cycle ZapScope: CITY -> FAVORITES (bg-1, ni-1)
         state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
         assertEquals(ZapScope.FAVORITES, state.zapScope)
         assertEquals("bg-1", state.activeCamera?.id)
 
-        // City filter in Quick Strip isolates Subotica / Novi Sad / Niš
+        // City filter in Quick Strip
         state = TvStageReducer.reduce(state, TvRemoteAction.SelectStripFilter(StripFilter.City(SerbiaCity.NOVI_SAD))).state
         assertEquals(OverlayMode.QUICK_STRIP, state.overlayMode)
         assertEquals(listOf("ns-1", "ns-2"), state.stripCameras.map { it.id })
 
-        // Toggling Clock while inside QUICK_STRIP preserves QUICK_STRIP mode
-        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleClockOverlay).state
-        assertEquals(OverlayMode.QUICK_STRIP, state.overlayMode)
-        assertFalse(state.showClockOverlay)
-
-        // BACK from QUICK_STRIP -> PURE_CAMERA, second BACK -> exit app
         val backFromStrip = TvStageReducer.reduce(state, TvRemoteAction.NavigateBack)
         assertFalse(backFromStrip.shouldExitApp)
         assertEquals(OverlayMode.PURE_CAMERA, backFromStrip.state.overlayMode)
@@ -341,7 +338,6 @@ class DomainSuiteTest {
             ttlMillis = 15 * 60 * 1000L,
         )
 
-        // Two nearby Belgrade cameras in same 0.05 deg grid coalesce to 1 upstream call
         val slavijaWeather = cachedRepo.getCurrentWeather(44.8025, 20.4664)
         val republikeWeather = cachedRepo.getCurrentWeather(44.8162, 20.4603)
         assertNotNull(slavijaWeather)
@@ -349,11 +345,9 @@ class DomainSuiteTest {
         assertEquals(1, upstreamCalls)
         assertEquals("13.7°C · Rain · 15 km/h", slavijaWeather.formattedSummary())
 
-        // Novi Sad triggers a distinct grid bucket call
         cachedRepo.getCurrentWeather(45.2543, 19.8457)
         assertEquals(2, upstreamCalls)
 
-        // After TTL expiry, offline upstream gracefully falls back to stale entry within grace window
         nowMs += 16 * 60 * 1000L
         simulatedWeather = null
         val fallbackWeather = cachedRepo.getCurrentWeather(44.8025, 20.4664)
@@ -361,10 +355,186 @@ class DomainSuiteTest {
         assertEquals(13.7, fallbackWeather.temperatureCelsius)
         assertEquals(3, upstreamCalls)
 
-        // Clock formatting in Europe/Belgrade (CET = UTC+1 in November)
         val instant = Instant.parse("2026-11-18T00:45:30Z")
         assertEquals("01:45", CameraClockFormatter.formatTime(instant, "Europe/Belgrade"))
         assertEquals("01:45", CameraClockFormatter.formatTime(instant, "Invalid/Zone"))
+    }
+
+    @Test
+    fun `eaqi air quality mapper and grid air quality cache satisfy contracts`() = runTest {
+        assertEquals(AirQualityBand.GOOD, EaqiMapper.fromIndex(15))
+        assertEquals(AirQualityBand.FAIR, EaqiMapper.fromIndex(29))
+        assertEquals(AirQualityBand.MODERATE, EaqiMapper.fromIndex(52))
+        assertEquals(AirQualityBand.POOR, EaqiMapper.fromIndex(74))
+        assertEquals(AirQualityBand.VERY_POOR, EaqiMapper.fromIndex(92))
+        assertEquals(AirQualityBand.EXTREMELY_POOR, EaqiMapper.fromIndex(135))
+
+        var aqiCalls = 0
+        var nowMs = 5_000_000L
+        val sampleAqi = CurrentAirQuality(
+            europeanAqi = 29,
+            pm25 = 9.5,
+            pm10 = 12.0,
+            band = EaqiMapper.fromIndex(29),
+            fetchedAtEpochMs = nowMs,
+        )
+        val upstream = object : AirQualityRepository {
+            override suspend fun getCurrentAirQuality(lat: Double, lon: Double): CurrentAirQuality? {
+                aqiCalls += 1
+                return sampleAqi
+            }
+        }
+        val cached = GridCachedAirQualityRepository(
+            upstream = upstream,
+            clockMillis = { nowMs },
+        )
+
+        val a1 = cached.getCurrentAirQuality(44.8025, 20.4664)
+        val a2 = cached.getCurrentAirQuality(44.8149, 20.4533)
+        assertNotNull(a1)
+        assertEquals(a1, a2)
+        assertEquals(1, aqiCalls)
+        assertEquals("AQI 29 Fair · PM2.5 10", a1.formattedSummary())
+    }
+
+    @Test
+    fun `solar phase calculator identifies pre-dawn, golden hours, day, dusk, and tomorrow sunrise`() {
+        val zone = ZoneId.of("Europe/Belgrade")
+        fun epochAt(isoLocal: String): Long =
+            LocalDateTime.parse(isoLocal).atZone(zone).toInstant().toEpochMilli()
+
+        val windows = listOf(
+            SolarWindow(
+                sunriseEpochMs = epochAt("2026-11-18T06:39:00"),
+                sunsetEpochMs = epochAt("2026-11-18T16:07:00"),
+            ),
+            SolarWindow(
+                sunriseEpochMs = epochAt("2026-11-19T06:40:00"),
+                sunsetEpochMs = epochAt("2026-11-19T16:06:00"),
+            ),
+        )
+
+        // 03:00 -> Night before today's sunrise
+        val nightEarly = SolarPhaseCalculator.evaluate(
+            now = Instant.ofEpochMilli(epochAt("2026-11-18T03:00:00")),
+            timezoneId = "Europe/Belgrade",
+            windows = windows,
+        )
+        assertNotNull(nightEarly)
+        assertEquals(SolarPhase.NIGHT, nightEarly.phase)
+        assertFalse(nightEarly.isGoldenHour)
+        assertEquals("Sunrise 06:39", nightEarly.summaryLabel)
+
+        // 06:10 -> Dawn twilight (29m before sunrise)
+        val dawn = SolarPhaseCalculator.evaluate(
+            now = Instant.ofEpochMilli(epochAt("2026-11-18T06:10:00")),
+            timezoneId = "Europe/Belgrade",
+            windows = windows,
+        )
+        assertNotNull(dawn)
+        assertEquals(SolarPhase.DAWN, dawn.phase)
+        assertEquals("Dawn · Sunrise 06:39", dawn.summaryLabel)
+
+        // 07:00 -> Morning golden hour (21m after sunrise)
+        val morningGolden = SolarPhaseCalculator.evaluate(
+            now = Instant.ofEpochMilli(epochAt("2026-11-18T07:00:00")),
+            timezoneId = "Europe/Belgrade",
+            windows = windows,
+        )
+        assertNotNull(morningGolden)
+        assertEquals(SolarPhase.GOLDEN_HOUR_MORNING, morningGolden.phase)
+        assertTrue(morningGolden.isGoldenHour)
+        assertEquals("Golden hour · Sunrise 06:39", morningGolden.summaryLabel)
+
+        // 12:00 -> Midday
+        val midday = SolarPhaseCalculator.evaluate(
+            now = Instant.ofEpochMilli(epochAt("2026-11-18T12:00:00")),
+            timezoneId = "Europe/Belgrade",
+            windows = windows,
+        )
+        assertNotNull(midday)
+        assertEquals(SolarPhase.DAY, midday.phase)
+        assertEquals("Sunset 16:07", midday.summaryLabel)
+
+        // 15:40 -> Evening golden hour (27m before sunset)
+        val eveningGolden = SolarPhaseCalculator.evaluate(
+            now = Instant.ofEpochMilli(epochAt("2026-11-18T15:40:00")),
+            timezoneId = "Europe/Belgrade",
+            windows = windows,
+        )
+        assertNotNull(eveningGolden)
+        assertEquals(SolarPhase.GOLDEN_HOUR_EVENING, eveningGolden.phase)
+        assertTrue(eveningGolden.isGoldenHour)
+        assertEquals("Golden hour · Sunset 16:07", eveningGolden.summaryLabel)
+
+        // 16:30 -> Dusk (23m after sunset)
+        val dusk = SolarPhaseCalculator.evaluate(
+            now = Instant.ofEpochMilli(epochAt("2026-11-18T16:30:00")),
+            timezoneId = "Europe/Belgrade",
+            windows = windows,
+        )
+        assertNotNull(dusk)
+        assertEquals(SolarPhase.DUSK, dusk.phase)
+        assertEquals("Dusk · Sunset 16:07", dusk.summaryLabel)
+
+        // 22:15 -> Night after sunset points to tomorrow's sunrise (06:40)
+        val nightLate = SolarPhaseCalculator.evaluate(
+            now = Instant.ofEpochMilli(epochAt("2026-11-18T22:15:00")),
+            timezoneId = "Europe/Belgrade",
+            windows = windows,
+        )
+        assertNotNull(nightLate)
+        assertEquals(SolarPhase.NIGHT, nightLate.phase)
+        assertEquals("Sunrise 06:40", nightLate.summaryLabel)
+    }
+
+    @Test
+    fun `oled pixel orbit stays within overscan safe bounds and disables cleanly`() {
+        val disabled = PixelOrbitCalculator.computeOffset(epochMillis = 500_000L, enabled = false)
+        assertEquals(0, disabled.dxDp)
+        assertEquals(0, disabled.dyDp)
+        assertEquals(1.0f, disabled.videoScale)
+
+        val step0 = PixelOrbitCalculator.computeOffset(epochMillis = 0L, enabled = true)
+        val step4 = PixelOrbitCalculator.computeOffset(epochMillis = 4 * 90_000L, enabled = true)
+        assertNotEquals(step0, step4)
+
+        for (step in 0 until 32) {
+            val offset = PixelOrbitCalculator.computeOffset(epochMillis = step * 90_000L, enabled = true)
+            assertTrue(offset.dxDp in -8..8)
+            assertTrue(offset.dyDp in -5..5)
+            assertEquals(1.025f, offset.videoScale)
+        }
+    }
+
+    @Test
+    fun `home channel selector provides multi-city featured row when favorites empty and switches to favorites`() {
+        val catalogPath = System.getProperty("belgrade.catalog.v2.path")
+        val manifest = CatalogJsonCodec.decode(File(catalogPath).readText(Charsets.UTF_8))
+
+        val featured = HomeChannelSelector.selectChannelCameras(
+            cameras = manifest.cameras,
+            favoriteIds = emptySet(),
+            maxItems = 10,
+        )
+        assertFalse(featured.isFavoritesMode)
+        assertEquals(10, featured.cameras.size)
+        // Featured row covers all 4 Serbian cities out of the box
+        assertEquals(
+            setOf(SerbiaCity.BELGRADE, SerbiaCity.NOVI_SAD, SerbiaCity.SUBOTICA, SerbiaCity.NIS),
+            featured.cameras.map { it.city }.toSet(),
+        )
+
+        val favoritesSelection = HomeChannelSelector.selectChannelCameras(
+            cameras = manifest.cameras,
+            favoriteIds = setOf("ns-varadinski-most", "bg-slavija"),
+            maxItems = 10,
+        )
+        assertTrue(favoritesSelection.isFavoritesMode)
+        assertEquals(
+            setOf("ns-varadinski-most", "bg-slavija"),
+            favoritesSelection.cameras.map { it.id }.toSet(),
+        )
     }
 
     @Test

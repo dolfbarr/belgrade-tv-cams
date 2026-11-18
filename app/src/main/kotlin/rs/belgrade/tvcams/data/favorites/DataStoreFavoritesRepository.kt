@@ -36,6 +36,9 @@ class DataStoreFavoritesRepository(
                 autoHideHud = prefs[KEY_AUTO_HIDE_HUD] ?: true,
                 showClockOverlay = prefs[KEY_SHOW_CLOCK_OVERLAY] ?: true,
                 showWeatherOverlay = prefs[KEY_SHOW_WEATHER_OVERLAY] ?: true,
+                showAirQualityOverlay = prefs[KEY_SHOW_AIR_QUALITY_OVERLAY] ?: true,
+                showSolarOverlay = prefs[KEY_SHOW_SOLAR_OVERLAY] ?: true,
+                oledProtectionEnabled = prefs[KEY_OLED_PROTECTION_ENABLED] ?: true,
             )
         }
 
@@ -69,6 +72,24 @@ class DataStoreFavoritesRepository(
         }
     }
 
+    override suspend fun setShowAirQualityOverlay(enabled: Boolean) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_SHOW_AIR_QUALITY_OVERLAY] = enabled
+        }
+    }
+
+    override suspend fun setShowSolarOverlay(enabled: Boolean) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_SHOW_SOLAR_OVERLAY] = enabled
+        }
+    }
+
+    override suspend fun setOledProtectionEnabled(enabled: Boolean) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_OLED_PROTECTION_ENABLED] = enabled
+        }
+    }
+
     private companion object {
         val KEY_FAVORITE_IDS = stringSetPreferencesKey("favorite_camera_ids")
         val KEY_LAST_CAMERA_ID = stringPreferencesKey("last_camera_id")
@@ -76,5 +97,8 @@ class DataStoreFavoritesRepository(
         val KEY_AUTO_HIDE_HUD = booleanPreferencesKey("auto_hide_hud")
         val KEY_SHOW_CLOCK_OVERLAY = booleanPreferencesKey("show_clock_overlay")
         val KEY_SHOW_WEATHER_OVERLAY = booleanPreferencesKey("show_weather_overlay")
+        val KEY_SHOW_AIR_QUALITY_OVERLAY = booleanPreferencesKey("show_air_quality_overlay")
+        val KEY_SHOW_SOLAR_OVERLAY = booleanPreferencesKey("show_solar_overlay")
+        val KEY_OLED_PROTECTION_ENABLED = booleanPreferencesKey("oled_protection_enabled")
     }
 }

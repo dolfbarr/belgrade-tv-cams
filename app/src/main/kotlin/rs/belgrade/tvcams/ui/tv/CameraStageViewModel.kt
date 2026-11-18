@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import rs.belgrade.tvcams.domain.airquality.AirQualityRepository
+import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
 import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
@@ -34,14 +36,24 @@ import rs.belgrade.tvcams.domain.tv.TvStageState
 import rs.belgrade.tvcams.domain.weather.CurrentWeather
 import rs.belgrade.tvcams.domain.weather.WeatherRepository
 import rs.belgrade.tvcams.player.PlaybackTelemetry
+import rs.belgrade.tvcams.tvchannel.TvHomeChannelSynchronizer
 
 class CameraStageViewModel(
     private val catalogCoordinator: CatalogBootstrapCoordinator,
     private val favoritesRepository: FavoritesRepository,
     private val weatherRepository: WeatherRepository,
+    private val airQualityRepository: AirQualityRepository,
+    private val homeChannelSynchronizer: TvHomeChannelSynchronizer? = null,
+    private val initialDeepLinkCameraId: String? = null,
+    private val isScreensaverMode: Boolean = false,
 ) : ViewModel() {
 
-    private val _stageState = MutableStateFlow(TvStageState.initial(cameras = emptyList()))
+    private val _stageState = MutableStateFlow(
+        TvStageState.initial(
+            cameras = emptyList(),
+            initialOverlayMode = if (isScreensaverMode) OverlayMode.PURE_CAMERA else OverlayMode.HUD_VISIBLE,
+        ),
+    )
     val stageState: StateFlow<TvStageState> = _stageState.asStateFlow()
 
     private val _telemetry = MutableStateFlow<PlaybackTelemetry>(
@@ -51,6 +63,9 @@ class CameraStageViewModel(
 
     private val _currentWeather = MutableStateFlow<CurrentWeather?>(null)
     val currentWeather: StateFlow<CurrentWeather?> = _currentWeather.asStateFlow()
+
+    private val _currentAirQuality = MutableStateFlow<CurrentAirQuality?>(null)
+    val currentAirQuality: StateFlow<CurrentAirQuality?> = _currentAirQuality.asStateFlow()
 
     private val _exitEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val exitEvents = _exitEvents.asSharedFlow()
@@ -70,10 +85,16 @@ class CameraStageViewModel(
     private var noticeDismissJob: Job? = null
     private var autoHideEnabled: Boolean = true
     private var lastWeatherCity: SerbiaCity? = null
+    private var lastAqiCity: SerbiaCity? = null
+    private var pendingDeepLinkCameraId: String? = initialDeepLinkCameraId
 
     init {
         bootstrap()
         observeActiveCameraWeather()
+        observeActiveCameraAirQuality()
+        if (isScreensaverMode) {
+            startScreensaverAutoTour()
+        }
     }
 
     private fun bootstrap() {
@@ -82,19 +103,40 @@ class CameraStageViewModel(
             autoHideEnabled = prefs.autoHideHud
 
             val initialManifest = catalogCoordinator.loadInitial()
+            val targetCameraId = pendingDeepLinkCameraId ?: prefs.lastCameraId
+            pendingDeepLinkCameraId = null
+
             _stageState.value = TvStageState.initial(
                 cameras = initialManifest.cameras,
                 favoriteIds = prefs.favoriteIds,
-                initialCameraId = prefs.lastCameraId,
+                initialCameraId = targetCameraId,
                 zapScope = prefs.zapScope,
                 showClockOverlay = prefs.showClockOverlay,
                 showWeatherOverlay = prefs.showWeatherOverlay,
+                showAirQualityOverlay = prefs.showAirQualityOverlay,
+                showSolarOverlay = prefs.showSolarOverlay,
+                oledProtectionEnabled = prefs.oledProtectionEnabled,
+                initialOverlayMode = if (isScreensaverMode) OverlayMode.PURE_CAMERA else OverlayMode.HUD_VISIBLE,
             )
             scheduleAutoHideIfEligible()
 
+            if (!isScreensaverMode) {
+                homeChannelSynchronizer?.syncChannel(
+                    cameras = initialManifest.cameras,
+                    favoriteIds = prefs.favoriteIds,
+                )
+            }
+
             when (val sync = catalogCoordinator.syncRemote(initialManifest.revision)) {
                 is CatalogSyncOutcome.Applied -> {
-                    dispatch(TvRemoteAction.CatalogRefreshed(sync.manifest.cameras))
+                    val freshCameras = sync.manifest.cameras
+                    dispatch(TvRemoteAction.CatalogRefreshed(freshCameras))
+                    if (!isScreensaverMode) {
+                        homeChannelSynchronizer?.syncChannel(
+                            cameras = freshCameras,
+                            favoriteIds = _stageState.value.favoriteIds,
+                        )
+                    }
                 }
                 CatalogSyncOutcome.UpToDate,
                 is CatalogSyncOutcome.Rejected,
@@ -108,11 +150,11 @@ class CameraStageViewModel(
         viewModelScope.launch {
             combine(
                 _stageState.map { it.activeCamera }.distinctUntilChanged { a, b -> a?.id == b?.id },
-                _stageState.map { it.showWeatherOverlay }.distinctUntilChanged(),
-            ) { cam, showWeather ->
-                cam to showWeather
-            }.collectLatest { (cam, showWeather) ->
-                if (!showWeather || cam == null) {
+                _stageState.map { it.showWeatherOverlay || it.showSolarOverlay }.distinctUntilChanged(),
+            ) { cam, needed ->
+                cam to needed
+            }.collectLatest { (cam, needed) ->
+                if (!needed || cam == null) {
                     return@collectLatest
                 }
                 val camCity = cam.city
@@ -132,6 +174,54 @@ class CameraStageViewModel(
         }
     }
 
+    private fun observeActiveCameraAirQuality() {
+        viewModelScope.launch {
+            combine(
+                _stageState.map { it.activeCamera }.distinctUntilChanged { a, b -> a?.id == b?.id },
+                _stageState.map { it.showAirQualityOverlay }.distinctUntilChanged(),
+            ) { cam, showAqi ->
+                cam to showAqi
+            }.collectLatest { (cam, showAqi) ->
+                if (!showAqi || cam == null) {
+                    return@collectLatest
+                }
+                val camCity = cam.city
+                if (lastAqiCity != null && lastAqiCity != camCity) {
+                    _currentAirQuality.value = null
+                }
+                val coords = cam.coordinates
+                while (isActive) {
+                    val fetched = airQualityRepository.getCurrentAirQuality(coords.lat, coords.lon)
+                    if (fetched != null) {
+                        lastAqiCity = camCity
+                        _currentAirQuality.value = fetched
+                    }
+                    delay(AIR_QUALITY_POLL_MS)
+                }
+            }
+        }
+    }
+
+    private fun startScreensaverAutoTour() {
+        viewModelScope.launch {
+            while (isActive) {
+                delay(SCREENSAVER_TOUR_INTERVAL_MS)
+                if (_stageState.value.overlayMode == OverlayMode.PURE_CAMERA) {
+                    dispatch(TvRemoteAction.ZapNextSilent)
+                }
+            }
+        }
+    }
+
+    fun selectDeepLinkedCamera(cameraId: String) {
+        val currentCameras = _stageState.value.cameras
+        if (currentCameras.isEmpty()) {
+            pendingDeepLinkCameraId = cameraId
+        } else {
+            dispatch(TvRemoteAction.SelectCamera(cameraId))
+        }
+    }
+
     fun dispatch(action: TvRemoteAction) {
         val previous = _stageState.value
         val transition = TvStageReducer.reduce(previous, action)
@@ -148,15 +238,22 @@ class CameraStageViewModel(
             val nextPrimaryTransport = next.activeCamera?.streams?.firstOrNull()?.type
                 ?: StreamTransportType.HLS
             _telemetry.value = PlaybackTelemetry.Connecting(nextPrimaryTransport)
-            viewModelScope.launch {
-                favoritesRepository.setLastCamera(nextCameraId)
+            if (!isScreensaverMode) {
+                viewModelScope.launch {
+                    favoritesRepository.setLastCamera(nextCameraId)
+                }
             }
         }
 
         if (next.favoriteIds != previous.favoriteIds) {
             val updatedFavorites = next.favoriteIds
+            val currentCameras = next.cameras
             viewModelScope.launch {
                 favoritesRepository.setFavorites(updatedFavorites)
+                homeChannelSynchronizer?.syncChannel(
+                    cameras = currentCameras,
+                    favoriteIds = updatedFavorites,
+                )
             }
         }
 
@@ -178,6 +275,27 @@ class CameraStageViewModel(
             val showWeather = next.showWeatherOverlay
             viewModelScope.launch {
                 favoritesRepository.setShowWeatherOverlay(showWeather)
+            }
+        }
+
+        if (next.showAirQualityOverlay != previous.showAirQualityOverlay) {
+            val showAqi = next.showAirQualityOverlay
+            viewModelScope.launch {
+                favoritesRepository.setShowAirQualityOverlay(showAqi)
+            }
+        }
+
+        if (next.showSolarOverlay != previous.showSolarOverlay) {
+            val showSolar = next.showSolarOverlay
+            viewModelScope.launch {
+                favoritesRepository.setShowSolarOverlay(showSolar)
+            }
+        }
+
+        if (next.oledProtectionEnabled != previous.oledProtectionEnabled) {
+            val oledEnabled = next.oledProtectionEnabled
+            viewModelScope.launch {
+                favoritesRepository.setOledProtectionEnabled(oledEnabled)
             }
         }
 
@@ -217,6 +335,10 @@ class CameraStageViewModel(
         private val catalogCoordinator: CatalogBootstrapCoordinator,
         private val favoritesRepository: FavoritesRepository,
         private val weatherRepository: WeatherRepository,
+        private val airQualityRepository: AirQualityRepository,
+        private val homeChannelSynchronizer: TvHomeChannelSynchronizer? = null,
+        private val initialDeepLinkCameraId: String? = null,
+        private val isScreensaverMode: Boolean = false,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -225,6 +347,10 @@ class CameraStageViewModel(
                 catalogCoordinator = catalogCoordinator,
                 favoritesRepository = favoritesRepository,
                 weatherRepository = weatherRepository,
+                airQualityRepository = airQualityRepository,
+                homeChannelSynchronizer = homeChannelSynchronizer,
+                initialDeepLinkCameraId = initialDeepLinkCameraId,
+                isScreensaverMode = isScreensaverMode,
             ) as T
         }
     }
@@ -234,5 +360,7 @@ class CameraStageViewModel(
         const val HUD_AUTO_HIDE_MS = 5_000L
         const val NOTICE_VISIBLE_MS = 2_800L
         const val WEATHER_POLL_MS = 15L * 60L * 1_000L
+        const val AIR_QUALITY_POLL_MS = 30L * 60L * 1_000L
+        const val SCREENSAVER_TOUR_INTERVAL_MS = 45L * 1_000L
     }
 }

@@ -8,15 +8,20 @@ import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import rs.belgrade.tvcams.domain.solar.SolarWindow
 import rs.belgrade.tvcams.domain.weather.CurrentWeather
 import rs.belgrade.tvcams.domain.weather.WeatherRepository
 import rs.belgrade.tvcams.domain.weather.WmoWeatherMapper
 import java.io.IOException
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Locale
 
 @Serializable
 private data class OpenMeteoForecastPayload(
+    val timezone: String? = null,
     val current: OpenMeteoCurrentBlock? = null,
+    val daily: OpenMeteoDailyBlock? = null,
 )
 
 @Serializable
@@ -31,6 +36,12 @@ private data class OpenMeteoCurrentBlock(
     val windSpeed10m: Double? = null,
     @SerialName("is_day")
     val isDay: Int? = null,
+)
+
+@Serializable
+private data class OpenMeteoDailyBlock(
+    val sunrise: List<String>? = null,
+    val sunset: List<String>? = null,
 )
 
 class OpenMeteoWeatherClient(
@@ -51,6 +62,8 @@ class OpenMeteoWeatherClient(
                     "current",
                     "temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day",
                 )
+                .addQueryParameter("daily", "sunrise,sunset")
+                .addQueryParameter("forecast_days", "2")
                 .addQueryParameter("timezone", "auto")
                 .build()
 
@@ -71,6 +84,25 @@ class OpenMeteoWeatherClient(
                     val block = decoded.current ?: return@withContext null
                     val temp = block.temperature2m ?: return@withContext null
                     val code = block.weatherCode ?: 0
+                    val zone = runCatching { ZoneId.of(decoded.timezone ?: "Europe/Belgrade") }
+                        .getOrElse { ZoneId.of("Europe/Belgrade") }
+
+                    val sunrises = decoded.daily?.sunrise.orEmpty()
+                    val sunsets = decoded.daily?.sunset.orEmpty()
+                    val pairCount = minOf(sunrises.size, sunsets.size)
+                    val windows = ArrayList<SolarWindow>(pairCount)
+                    for (idx in 0 until pairCount) {
+                        val srEpoch = runCatching {
+                            LocalDateTime.parse(sunrises[idx]).atZone(zone).toInstant().toEpochMilli()
+                        }.getOrNull()
+                        val ssEpoch = runCatching {
+                            LocalDateTime.parse(sunsets[idx]).atZone(zone).toInstant().toEpochMilli()
+                        }.getOrNull()
+                        if (srEpoch != null && ssEpoch != null) {
+                            windows.add(SolarWindow(sunriseEpochMs = srEpoch, sunsetEpochMs = ssEpoch))
+                        }
+                    }
+
                     CurrentWeather(
                         temperatureCelsius = temp,
                         apparentTemperatureCelsius = block.apparentTemperature ?: temp,
@@ -78,6 +110,7 @@ class OpenMeteoWeatherClient(
                         condition = WmoWeatherMapper.fromCode(code),
                         isDay = (block.isDay ?: 1) == 1,
                         fetchedAtEpochMs = System.currentTimeMillis(),
+                        solarWindows = windows,
                     )
                 }
             } catch (_: IOException) {

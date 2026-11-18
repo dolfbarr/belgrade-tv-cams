@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Serbia live cams</string>
-    <string name="scope_all">All cameras</string>
-    <string name="scope_city">Current city</string>
-    <string name="scope_favorites">Favorites</string>
+    <string name="screensaver_name">Serbia live cams</string>
     <string name="category_all">All Serbia</string>
     <string name="category_favorites">Favorites</string>
     <string name="city_belgrade">Belgrade</string>
@@ -18,12 +16,16 @@
     <string name="toggle_clock_off">Clock: Off</string>
     <string name="toggle_weather_on">Weather: On</string>
     <string name="toggle_weather_off">Weather: Off</string>
+    <string name="toggle_aqi_on">AQI: On</string>
+    <string name="toggle_aqi_off">AQI: Off</string>
+    <string name="toggle_solar_on">Sun: On</string>
+    <string name="toggle_solar_off">Sun: Off</string>
+    <string name="toggle_oled_on">OLED guard: On</string>
+    <string name="toggle_oled_off">OLED guard: Off</string>
     <string name="badge_live_hls">Live HLS</string>
     <string name="badge_snapshot">Live snapshot</string>
     <string name="status_connecting">Connecting to camera…</string>
     <string name="status_retrying">Stream unreachable — retrying…</string>
-    <string name="notice_added_favorite">Added to Favorites</string>
-    <string name="notice_removed_favorite">Removed from Favorites</string>
     <string name="empty_favorites_heading">No favorite cameras yet</string>
     <string name="empty_favorites_body">Press and hold OK while watching any street camera to pin it here</string>
     <string name="empty_favorites_action">Browse all Serbia cameras</string>

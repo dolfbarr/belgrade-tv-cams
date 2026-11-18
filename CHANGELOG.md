@@ -5,17 +5,24 @@ All notable user-visible changes to this project are documented in this file.
 ## [Unreleased]
 
 ### Added
-- Toggleable **Current Time** (`Europe/Belgrade` `HH:mm` with tabular numerals `tnum`) and **Current Weather** ([Open-Meteo](https://open-meteo.com/en/docs) temperature, condition, and wind speed with `15-minute` `0.05°` grid caching) ambient corner pill, persisted in DataStore and visible across both HUD and Pure Camera modes when enabled.
-- Expanded verified Serbia camera catalog (`catalog.v2.json`, **56 live cameras**): **Belgrade (40)** including 13 newly added 2K QHD (`2560x1440`) urban streams (*Kralja Milana — London*, *Kneza Miloša*, *Kraljice Marije — Poštanska štedionica*, *Južni bulevar*, *Autokomanda — Franš*, *Most na Adi — Topčider*, *Sava Centar*, *Jurija Gagarina — Belville & Ada*, *Zmaj*, *Lakat — Nova Galenika*, *Patrijarha Pavla — Košutnjak*, *Trgovačka — Žarkovo*), **Novi Sad (6)** (*Pupinova palata*, *SNP & Centar*, *Varadinski most / Duga*, *Mišeluk*, *Novi Sad Jug Ulaz/Izlaz*), **Subotica (6)** (*MZ Zorka*, *Subotica Jug Ulaz/Izlaz*, *GP Kelebija Ulaz/Izlaz*, *GP Horgoš Ulaz*), and **Niš (4)** (*Niš Sever Ulaz/Izlaz*, *Niš Jug Ulaz/Izlaz*).
-- City filter tabs (`All Serbia`, `Belgrade`, `Novi Sad`, `Subotica`, `Niš`) and overlay/zap control chips (`Clock: On/Off`, `Weather: On/Off`, `Zap: All / Current city / Favorites`) inside the Quick Strip drawer.
-- Deterministic `app/debug.keystore` signing configuration so local and CI debug APK builds share an identical signature across ADB upgrades.
+- **Android TV System Screensaver (`DreamService`):** Registerable under `Settings -> Device Preferences -> Screen saver` (`Serbia live cams`), launching directly into Pure Camera Mode with active ambient overlays and automatic `45-second` camera patrol across the selected scope.
+- **Live Air Quality (`EAQI` / `PM2.5` / `PM10`) Overlay:** Toggleable `[AQI: On/Off]` chip powered by the Open-Meteo Air Quality API (`0.05°` grid `30-min` cache) with semantic European Air Quality Index status indicator.
+- **Sunrise, Sunset & Golden Hour Overlay:** Toggleable `[Sun: On/Off]` chip computing Dawn, Morning Golden Hour, Daytime Sunset countdown, Evening Golden Hour, Dusk, and Next-Day Sunrise per camera timezone.
+- **Zero-Black-Flash Channel Zapping:** Persistent street poster underlay inside `DualTransportCameraSurface` held visible until `ExoPlayer` outputs its first decoded video frame (`onRenderedFirstFrame`), eliminating black flashes when switching cameras.
+- **OLED / Panel Burn-In Protection:** Toggleable `[OLED guard: On/Off]` deterministic 16-step diamond pixel orbit (`±8.dp` x `±5.dp` every `90s`) paired with `1.025x` video surface overscan pan to shift both app pills and upstream burned-in camera watermarks across physical pixels.
+- **Android TV Home Screen Channel Row:** Publishes saved Favorites (or a 12-camera multi-city Featured lineup across Belgrade, Novi Sad, Subotica, and Niš when Favorites is empty) directly onto the Android TV Home Launcher via `androidx.tvprovider`, with instant `serbiatvcams://camera/{id}` deep-linking.
+- **Branded `320x180dp` Leanback TV Banner & Adaptive Launcher Icon:** Multi-density `SERBIA LIVE CAMS` Leanback home banner (`xhdpi` / `xxhdpi` / `mdpi`) and cable-stayed bridge adaptive icon.
+
+## [0.2.0] - 2026-11-18
+
+### Added
+- Toggleable **Current Time** (`Europe/Belgrade` `HH:mm` tabular `tnum`) and **Current Weather** (Open-Meteo `0.05°` grid `15-min` cache) ambient corner pill.
+- Expanded verified Serbia camera catalog (`catalog.v2.json`, **56 live cameras**) across **Belgrade (40)**, **Novi Sad (6)**, **Subotica (6)**, and **Niš (4)**, plus Quick Strip city tabs and deterministic debug APK signing.
 
 ### Changed
-- Renamed Android TV launcher label from `Belgrade live cams` to **`Serbia live cams`** while retaining `applicationId = "rs.belgrade.tvcams"` to preserve user Favorites and preferences.
+- Renamed Android TV launcher label from `Belgrade live cams` to **`Serbia live cams`**.
 
 ## [0.1.0] - 2026-11-17
 
 ### Added
 - Initial Android TV live camera viewer covering 27 public traffic, bridge, square, boulevard, and highway-approach feeds across Belgrade, Serbia.
-- Dual-transport media engine supporting hardware-decoded HLS (`.m3u8`) playback via Media3 ExoPlayer with automatic zero-flicker fallback to double-buffered HTTP JPEG snapshot polling.
-- Remote D-pad channel zapping (`Left`/`Right` and `CH+`/`CH-`), bottom Quick Strip carousel, Street Info HUD, Pure Camera Mode (`OK`), and DataStore Favorites (`Hold OK`).

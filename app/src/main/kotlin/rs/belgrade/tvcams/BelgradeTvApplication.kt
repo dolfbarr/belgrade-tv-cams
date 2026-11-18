@@ -6,15 +6,19 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import okhttp3.OkHttpClient
+import rs.belgrade.tvcams.data.airquality.OpenMeteoAirQualityClient
 import rs.belgrade.tvcams.data.catalog.AssetCatalogSeedSource
 import rs.belgrade.tvcams.data.catalog.FileCatalogCacheStore
 import rs.belgrade.tvcams.data.catalog.OkHttpRemoteCatalogClient
 import rs.belgrade.tvcams.data.favorites.DataStoreFavoritesRepository
 import rs.belgrade.tvcams.data.weather.OpenMeteoWeatherClient
+import rs.belgrade.tvcams.domain.airquality.AirQualityRepository
+import rs.belgrade.tvcams.domain.airquality.GridCachedAirQualityRepository
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.weather.GridCachedWeatherRepository
 import rs.belgrade.tvcams.domain.weather.WeatherRepository
+import rs.belgrade.tvcams.tvchannel.TvHomeChannelSynchronizer
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -32,6 +36,14 @@ class AppContainer(application: Application) {
 
     val weatherRepository: WeatherRepository = GridCachedWeatherRepository(
         upstream = OpenMeteoWeatherClient(httpClient = httpClient),
+    )
+
+    val airQualityRepository: AirQualityRepository = GridCachedAirQualityRepository(
+        upstream = OpenMeteoAirQualityClient(httpClient = httpClient),
+    )
+
+    val homeChannelSynchronizer: TvHomeChannelSynchronizer = TvHomeChannelSynchronizer(
+        appContext = application.applicationContext,
     )
 
     val catalogCoordinator: CatalogBootstrapCoordinator = CatalogBootstrapCoordinator(

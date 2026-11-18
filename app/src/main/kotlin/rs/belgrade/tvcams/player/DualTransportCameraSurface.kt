@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,12 +21,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -35,6 +41,10 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import coil3.compose.AsyncImage
+import coil3.network.NetworkHeaders
+import coil3.network.httpHeaders
+import coil3.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -45,6 +55,7 @@ import rs.belgrade.tvcams.R
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.StreamDescriptor
 import rs.belgrade.tvcams.domain.model.StreamTransportType
+import rs.belgrade.tvcams.domain.oled.PixelOrbitOffset
 import rs.belgrade.tvcams.domain.stream.FailoverDecision
 import rs.belgrade.tvcams.domain.stream.SnapshotUrlBuilder
 import rs.belgrade.tvcams.domain.stream.StreamFailoverTracker
@@ -66,10 +77,12 @@ private val CLOCK_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH
 fun DualTransportCameraSurface(
     camera: Camera?,
     httpClient: OkHttpClient,
+    oledOrbitOffset: PixelOrbitOffset,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hostView = LocalView.current
+    val context = LocalContext.current
     DisposableEffect(hostView, camera != null) {
         val previous = hostView.keepScreenOn
         hostView.keepScreenOn = camera != null
@@ -81,21 +94,50 @@ fun DualTransportCameraSurface(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(Color.Black)
+            .clipToBounds()
+            .graphicsLayer {
+                scaleX = oledOrbitOffset.videoScale
+                scaleY = oledOrbitOffset.videoScale
+                translationX = oledOrbitOffset.dxDp.dp.toPx()
+                translationY = oledOrbitOffset.dyDp.dp.toPx()
+            },
         contentAlignment = Alignment.Center,
     ) {
         if (camera == null || camera.streams.isEmpty()) return@Box
 
-        val tracker = remember(camera.id, camera.streams) {
-            StreamFailoverTracker(camera.streams)
+        val camId = camera.id
+        val posterUrl = camera.posterUrl
+        val posterHeaders = camera.posterHeaders
+        val camStreams = camera.streams
+
+        var hasRenderedLiveFrame by remember(camId) { mutableStateOf(false) }
+        val posterAlpha by animateFloatAsState(
+            targetValue = if (hasRenderedLiveFrame) 0f else 1f,
+            animationSpec = tween(durationMillis = 240),
+            label = "posterUnderlayAlpha",
+        )
+
+        val posterRequest = remember(posterUrl, posterHeaders) {
+            val networkHeaders = NetworkHeaders.Builder().apply {
+                posterHeaders.orEmpty().forEach { (k, v) -> set(k, v) }
+            }.build()
+            ImageRequest.Builder(context)
+                .data(posterUrl)
+                .httpHeaders(networkHeaders)
+                .build()
         }
-        var activeStream by remember(camera.id, camera.streams) {
+
+        val tracker = remember(camId, camStreams) {
+            StreamFailoverTracker(camStreams)
+        }
+        var activeStream by remember(camId, camStreams) {
             mutableStateOf(tracker.currentStream())
         }
-        var attemptNonce by remember(camera.id) { mutableIntStateOf(0) }
-        var pendingBackoffMs by remember(camera.id) { mutableStateOf<Long?>(null) }
+        var attemptNonce by remember(camId) { mutableIntStateOf(0) }
+        var pendingBackoffMs by remember(camId) { mutableStateOf<Long?>(null) }
 
-        LaunchedEffect(camera.id, pendingBackoffMs, attemptNonce) {
+        LaunchedEffect(camId, pendingBackoffMs, attemptNonce) {
             val waitMs = pendingBackoffMs ?: return@LaunchedEffect
             onTelemetryChanged(PlaybackTelemetry.DegradedRetrying(waitMs))
             delay(waitMs)
@@ -116,12 +158,28 @@ fun DualTransportCameraSurface(
             }
         }
 
+        // Zero-black-flash poster underlay stays visible until hardware decoder outputs frame 1
+        if (posterAlpha > 0.01f) {
+            AsyncImage(
+                model = posterRequest,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(posterAlpha),
+            )
+        }
+
         if (pendingBackoffMs == null) {
             when (activeStream.type) {
                 StreamTransportType.HLS -> HlsStreamRenderer(
                     stream = activeStream,
                     attemptKey = attemptNonce,
                     httpClient = httpClient,
+                    isVisible = hasRenderedLiveFrame,
+                    onFirstFrame = {
+                        hasRenderedLiveFrame = true
+                    },
                     onHealthy = {
                         tracker.onPlaybackHealthy()
                         onTelemetryChanged(PlaybackTelemetry.PlayingLive(StreamTransportType.HLS))
@@ -137,6 +195,7 @@ fun DualTransportCameraSurface(
                     attemptKey = attemptNonce,
                     httpClient = httpClient,
                     onFrameRendered = { clock ->
+                        hasRenderedLiveFrame = true
                         tracker.onPlaybackHealthy()
                         onTelemetryChanged(
                             PlaybackTelemetry.PlayingLive(
@@ -163,6 +222,8 @@ private fun HlsStreamRenderer(
     stream: StreamDescriptor,
     attemptKey: Int,
     httpClient: OkHttpClient,
+    isVisible: Boolean,
+    onFirstFrame: () -> Unit,
     onHealthy: () -> Unit,
     onConnecting: () -> Unit,
     onError: () -> Unit,
@@ -184,6 +245,11 @@ private fun HlsStreamRenderer(
     DisposableEffect(exoPlayer, stream.url, stream.headers, attemptKey) {
         onConnecting()
         val listener = object : Player.Listener {
+            override fun onRenderedFirstFrame() {
+                onFirstFrame()
+                onHealthy()
+            }
+
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
                     onHealthy()
@@ -215,7 +281,9 @@ private fun HlsStreamRenderer(
     }
 
     AndroidView(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(if (isVisible) 1f else 0f),
         factory = { viewContext ->
             (LayoutInflater.from(viewContext).inflate(
                 R.layout.player_view_texture,
@@ -271,7 +339,6 @@ private fun DoubleBufferedSnapshotRenderer(
                 return@LaunchedEffect
             }
 
-            // Atomic front-buffer swap: old frame remains visible until new bitmap is ready
             displayedBitmap = frame
             onFrameRendered(LocalTime.now().format(CLOCK_FORMATTER))
             delay(pollInterval)

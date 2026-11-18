@@ -21,12 +21,16 @@ sealed interface StripFilter {
 sealed interface TvRemoteAction {
     data object ZapNext : TvRemoteAction
     data object ZapPrevious : TvRemoteAction
+    data object ZapNextSilent : TvRemoteAction
     data object ToggleInfoOrSelect : TvRemoteAction
     data object ToggleFavoriteCurrent : TvRemoteAction
     data object OpenQuickStrip : TvRemoteAction
     data object ToggleZapScope : TvRemoteAction
     data object ToggleClockOverlay : TvRemoteAction
     data object ToggleWeatherOverlay : TvRemoteAction
+    data object ToggleAirQualityOverlay : TvRemoteAction
+    data object ToggleSolarOverlay : TvRemoteAction
+    data object ToggleOledProtection : TvRemoteAction
     data class SelectCamera(val cameraId: String) : TvRemoteAction
     data class SelectStripFilter(val filter: StripFilter) : TvRemoteAction
     data object NavigateBack : TvRemoteAction
@@ -45,6 +49,9 @@ data class TvStageState(
     val stripFilter: StripFilter,
     val showClockOverlay: Boolean,
     val showWeatherOverlay: Boolean,
+    val showAirQualityOverlay: Boolean,
+    val showSolarOverlay: Boolean,
+    val oledProtectionEnabled: Boolean,
     val noticeMessage: String?,
 ) {
     val activeCamera: Camera?
@@ -54,7 +61,7 @@ data class TvStageState(
         get() = activeCamera?.id?.let { favoriteIds.contains(it) } ?: false
 
     val hasAnyAmbientOverlay: Boolean
-        get() = showClockOverlay || showWeatherOverlay
+        get() = showClockOverlay || showWeatherOverlay || showAirQualityOverlay || showSolarOverlay
 
     val zapPlaylist: List<Camera>
         get() = when (zapScope) {
@@ -93,6 +100,10 @@ data class TvStageState(
             zapScope: ZapScope = ZapScope.ALL,
             showClockOverlay: Boolean = true,
             showWeatherOverlay: Boolean = true,
+            showAirQualityOverlay: Boolean = true,
+            showSolarOverlay: Boolean = true,
+            oledProtectionEnabled: Boolean = true,
+            initialOverlayMode: OverlayMode = OverlayMode.HUD_VISIBLE,
         ): TvStageState {
             val effectiveScope = if (zapScope == ZapScope.FAVORITES && favoriteIds.isEmpty()) {
                 ZapScope.ALL
@@ -106,11 +117,14 @@ data class TvStageState(
                 activeCameraId = resolvedId,
                 favoriteIds = favoriteIds.toSet(),
                 zapScope = effectiveScope,
-                overlayMode = OverlayMode.HUD_VISIBLE,
+                overlayMode = initialOverlayMode,
                 hudPinned = false,
                 stripFilter = StripFilter.All,
                 showClockOverlay = showClockOverlay,
                 showWeatherOverlay = showWeatherOverlay,
+                showAirQualityOverlay = showAirQualityOverlay,
+                showSolarOverlay = showSolarOverlay,
+                oledProtectionEnabled = oledProtectionEnabled,
                 noticeMessage = null,
             )
         }
@@ -127,8 +141,9 @@ object TvStageReducer {
         state: TvStageState,
         action: TvRemoteAction,
     ): TvStageTransition = when (action) {
-        TvRemoteAction.ZapNext -> TvStageTransition(zapBy(state, step = 1))
-        TvRemoteAction.ZapPrevious -> TvStageTransition(zapBy(state, step = -1))
+        TvRemoteAction.ZapNext -> TvStageTransition(zapBy(state, step = 1, preserveOverlay = false))
+        TvRemoteAction.ZapPrevious -> TvStageTransition(zapBy(state, step = -1, preserveOverlay = false))
+        TvRemoteAction.ZapNextSilent -> TvStageTransition(zapBy(state, step = 1, preserveOverlay = true))
 
         TvRemoteAction.ToggleInfoOrSelect -> when (state.overlayMode) {
             OverlayMode.HUD_VISIBLE -> TvStageTransition(
@@ -262,6 +277,36 @@ object TvStageReducer {
             )
         }
 
+        TvRemoteAction.ToggleAirQualityOverlay -> {
+            val nextAqi = !state.showAirQualityOverlay
+            TvStageTransition(
+                state.copy(
+                    showAirQualityOverlay = nextAqi,
+                    noticeMessage = if (nextAqi) "Air quality overlay: On" else "Air quality overlay: Off",
+                ),
+            )
+        }
+
+        TvRemoteAction.ToggleSolarOverlay -> {
+            val nextSolar = !state.showSolarOverlay
+            TvStageTransition(
+                state.copy(
+                    showSolarOverlay = nextSolar,
+                    noticeMessage = if (nextSolar) "Sun & golden hour: On" else "Sun & golden hour: Off",
+                ),
+            )
+        }
+
+        TvRemoteAction.ToggleOledProtection -> {
+            val nextOled = !state.oledProtectionEnabled
+            TvStageTransition(
+                state.copy(
+                    oledProtectionEnabled = nextOled,
+                    noticeMessage = if (nextOled) "OLED burn-in guard: On" else "OLED burn-in guard: Off",
+                ),
+            )
+        }
+
         is TvRemoteAction.SelectCamera -> {
             val exists = state.cameras.any { it.id == action.cameraId }
             if (!exists) {
@@ -328,7 +373,11 @@ object TvStageReducer {
         }
     }
 
-    private fun zapBy(state: TvStageState, step: Int): TvStageState {
+    private fun zapBy(
+        state: TvStageState,
+        step: Int,
+        preserveOverlay: Boolean,
+    ): TvStageState {
         val playlist = state.zapPlaylist
         if (playlist.isEmpty()) return state
 
@@ -338,7 +387,7 @@ object TvStageReducer {
         val nextIndex = Math.floorMod(currentIndex + step, playlist.size)
         return state.copy(
             activeCameraId = playlist[nextIndex].id,
-            overlayMode = OverlayMode.HUD_VISIBLE,
+            overlayMode = if (preserveOverlay) state.overlayMode else OverlayMode.HUD_VISIBLE,
             hudPinned = false,
         )
     }

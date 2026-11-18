@@ -3,6 +3,7 @@ package rs.belgrade.tvcams.domain.weather
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
+import rs.belgrade.tvcams.domain.solar.SolarWindow
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -54,6 +55,7 @@ data class CurrentWeather(
     val condition: WeatherCondition,
     val isDay: Boolean,
     val fetchedAtEpochMs: Long,
+    val solarWindows: List<SolarWindow> = emptyList(),
 ) {
     fun formattedSummary(): String = String.format(
         Locale.US,
@@ -89,7 +91,6 @@ class GridCachedWeatherRepository(
     private val entries = HashMap<GridKey, CacheEntry>()
 
     override suspend fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather? {
-        // 0.05-degree (~5.5 km) grid cell coalesces urban cameras within the same city
         val key = GridKey(
             latBucket = (lat * 20.0).roundToInt(),
             lonBucket = (lon * 20.0).roundToInt(),

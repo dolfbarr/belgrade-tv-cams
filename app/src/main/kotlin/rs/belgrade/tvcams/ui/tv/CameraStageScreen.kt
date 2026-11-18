@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -66,11 +67,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import okhttp3.OkHttpClient
 import rs.belgrade.tvcams.R
+import rs.belgrade.tvcams.domain.airquality.AirQualityBand
+import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
 import rs.belgrade.tvcams.domain.model.SerbiaCity
 import rs.belgrade.tvcams.domain.model.StreamTransportType
+import rs.belgrade.tvcams.domain.oled.PixelOrbitCalculator
+import rs.belgrade.tvcams.domain.oled.PixelOrbitOffset
+import rs.belgrade.tvcams.domain.solar.SolarPhaseCalculator
+import rs.belgrade.tvcams.domain.solar.SolarStatus
+import rs.belgrade.tvcams.domain.solar.SolarWindow
 import rs.belgrade.tvcams.domain.time.CameraClockFormatter
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.StripFilter
@@ -94,6 +102,12 @@ private val PillBorder = Color(0x3394A3B8)
 private val AccentSky = Color(0xFF38BDF8)
 private val AccentAmber = Color(0xFFFBBF24)
 private val AccentLive = Color(0xFFEF4444)
+private val AqiGood = Color(0xFF22C55E)
+private val AqiFair = Color(0xFF84CC16)
+private val AqiModerate = Color(0xFFFBBF24)
+private val AqiPoor = Color(0xFFF97316)
+private val AqiVeryPoor = Color(0xFFEF4444)
+private val AqiExtreme = Color(0xFFA855F7)
 private val TextPrimary = Color(0xFFF8FAFC)
 private val TextSecondary = Color(0xFFCBD5E1)
 private val TextMuted = Color(0xFF94A3B8)
@@ -106,20 +120,30 @@ fun CameraStageScreen(
     streamCamera: Camera?,
     telemetry: PlaybackTelemetry,
     currentWeather: CurrentWeather?,
+    currentAirQuality: CurrentAirQuality?,
     httpClient: OkHttpClient,
     onAction: (TvRemoteAction) -> Unit,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
+    enableBackHandler: Boolean = true,
 ) {
     val stageFocusRequester = remember { FocusRequester() }
     val keyRouter = remember { TvKeyRouter() }
     val activeCam = state.activeCamera
     val timezoneId = activeCam?.timezone ?: "Europe/Belgrade"
+
     val clockState = rememberCameraClockText(
         timezoneId = timezoneId,
         enabled = state.showClockOverlay,
     )
+    val solarWindows = currentWeather?.solarWindows.orEmpty()
+    val solarState = rememberSolarStatus(
+        timezoneId = timezoneId,
+        windows = solarWindows,
+        enabled = state.showSolarOverlay,
+    )
+    val oledOrbit = rememberPixelOrbitOffset(enabled = state.oledProtectionEnabled).value
 
-    BackHandler(enabled = true) {
+    BackHandler(enabled = enableBackHandler) {
         onAction(TvRemoteAction.NavigateBack)
     }
 
@@ -134,13 +158,20 @@ fun CameraStageScreen(
             .fillMaxSize()
             .background(Color.Black)
             .onPreviewKeyEvent { keyEvent ->
+                val nativeCode = keyEvent.nativeKeyEvent.keyCode
+                if (!enableBackHandler && nativeCode == KeyEvent.KEYCODE_BACK) {
+                    if (keyEvent.type == KeyEventType.KeyUp) {
+                        onAction(TvRemoteAction.NavigateBack)
+                    }
+                    return@onPreviewKeyEvent true
+                }
                 val phase = when (keyEvent.type) {
                     KeyEventType.KeyDown -> TvKeyPhase.DOWN
                     KeyEventType.KeyUp -> TvKeyPhase.UP
                     else -> return@onPreviewKeyEvent false
                 }
                 val decision = keyRouter.route(
-                    keyCode = mapAndroidKeyCode(keyEvent.nativeKeyEvent.keyCode),
+                    keyCode = mapAndroidKeyCode(nativeCode),
                     phase = phase,
                     repeatCount = keyEvent.nativeKeyEvent.repeatCount,
                     overlayMode = state.overlayMode,
@@ -151,21 +182,31 @@ fun CameraStageScreen(
             .focusRequester(stageFocusRequester)
             .focusable(),
     ) {
-        // Layer 0: Permanent edge-to-edge 1920x1080 camera stream surface (zero layout shift)
+        // Layer 0: Edge-to-edge 1920x1080 stream surface with poster underlay & OLED pixel orbit
         DualTransportCameraSurface(
             camera = streamCamera ?: activeCam,
             httpClient = httpClient,
+            oledOrbitOffset = oledOrbit,
             onTelemetryChanged = onTelemetryChanged,
             modifier = Modifier.fillMaxSize(),
         )
 
-        // Layer 1A: Independent Top-Left Ambient Clock & Weather Bar (visible in HUD & Pure modes)
+        // Layer 1A: Top-Left Ambient Clock, Weather, Air Quality & Solar Bar
         val clockText = if (state.showClockOverlay) clockState.value else null
         val weatherSummary = if (state.showWeatherOverlay) currentWeather?.formattedSummary() else null
-        if (!clockText.isNullOrBlank() || !weatherSummary.isNullOrBlank()) {
+        val aqiModel = if (state.showAirQualityOverlay) currentAirQuality else null
+        val solarModel = if (state.showSolarOverlay) solarState.value else null
+
+        if (!clockText.isNullOrBlank() ||
+            !weatherSummary.isNullOrBlank() ||
+            aqiModel != null ||
+            solarModel != null
+        ) {
             AmbientClockWeatherBar(
                 clockText = clockText,
                 weatherSummary = weatherSummary,
+                airQuality = aqiModel,
+                solarStatus = solarModel,
                 cityLabel = activeCam?.city?.displayLabel(),
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -173,7 +214,8 @@ fun CameraStageScreen(
                         start = TvOverscanHorizontal,
                         end = TvOverscanHorizontal,
                         top = 38.dp,
-                    ),
+                    )
+                    .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
             )
         }
 
@@ -183,7 +225,8 @@ fun CameraStageScreen(
             telemetry = telemetry,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical),
+                .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical)
+                .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
         )
 
         // Layer 2: Street & Camera Info HUD (hidden completely in Pure Camera Mode)
@@ -242,12 +285,64 @@ private fun rememberCameraClockText(
 }
 
 @Composable
+private fun rememberSolarStatus(
+    timezoneId: String,
+    windows: List<SolarWindow>,
+    enabled: Boolean,
+): State<SolarStatus?> = produceState(
+    initialValue = if (enabled) {
+        SolarPhaseCalculator.evaluate(Instant.now(), timezoneId, windows)
+    } else {
+        null
+    },
+    key1 = timezoneId,
+    key2 = windows,
+    key3 = enabled,
+) {
+    if (!enabled || windows.isEmpty()) {
+        value = null
+        return@produceState
+    }
+    while (isActive) {
+        value = SolarPhaseCalculator.evaluate(Instant.now(), timezoneId, windows)
+        delay(60_000L)
+    }
+}
+
+@Composable
+private fun rememberPixelOrbitOffset(
+    enabled: Boolean,
+): State<PixelOrbitOffset> = produceState(
+    initialValue = PixelOrbitCalculator.computeOffset(
+        epochMillis = System.currentTimeMillis(),
+        enabled = enabled,
+    ),
+    key1 = enabled,
+) {
+    if (!enabled) {
+        value = PixelOrbitCalculator.computeOffset(epochMillis = 0L, enabled = false)
+        return@produceState
+    }
+    while (isActive) {
+        value = PixelOrbitCalculator.computeOffset(
+            epochMillis = System.currentTimeMillis(),
+            enabled = true,
+        )
+        delay(PixelOrbitCalculator.DEFAULT_STEP_INTERVAL_MS)
+    }
+}
+
+@Composable
 private fun AmbientClockWeatherBar(
     clockText: String?,
     weatherSummary: String?,
+    airQuality: CurrentAirQuality?,
+    solarStatus: SolarStatus?,
     cityLabel: String?,
     modifier: Modifier = Modifier,
 ) {
+    var hasPreceding = false
+
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
@@ -255,7 +350,7 @@ private fun AmbientClockWeatherBar(
             .border(1.dp, PillBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         if (!clockText.isNullOrBlank()) {
             Text(
@@ -265,19 +360,11 @@ private fun AmbientClockWeatherBar(
                 fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
             )
-        }
-
-        if (!clockText.isNullOrBlank() && !weatherSummary.isNullOrBlank()) {
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(TextMuted),
-            )
+            hasPreceding = true
         }
 
         if (!weatherSummary.isNullOrBlank()) {
+            if (hasPreceding) SeparatorDot()
             val labeledWeather = if (!cityLabel.isNullOrBlank()) {
                 "$cityLabel · $weatherSummary"
             } else {
@@ -287,13 +374,73 @@ private fun AmbientClockWeatherBar(
                 text = labeledWeather,
                 style = TabularStyle,
                 color = TextSecondary,
-                fontSize = 15.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            hasPreceding = true
+        }
+
+        if (airQuality != null) {
+            if (hasPreceding) SeparatorDot()
+            val bandColor = aqiBandColor(airQuality.band)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(8.dp)
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(bandColor),
+                )
+                Text(
+                    text = airQuality.formattedSummary(),
+                    style = TabularStyle,
+                    color = TextPrimary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                )
+            }
+            hasPreceding = true
+        }
+
+        if (solarStatus != null) {
+            if (hasPreceding) SeparatorDot()
+            val isGolden = solarStatus.isGoldenHour
+            Text(
+                text = solarStatus.summaryLabel,
+                style = TabularStyle,
+                color = if (isGolden) AccentAmber else TextSecondary,
+                fontSize = 14.sp,
+                fontWeight = if (isGolden) FontWeight.SemiBold else FontWeight.Medium,
+                maxLines = 1,
+            )
         }
     }
+}
+
+@Composable
+private fun SeparatorDot() {
+    Box(
+        modifier = Modifier
+            .width(4.dp)
+            .height(4.dp)
+            .clip(RoundedCornerShape(2.dp))
+            .background(TextMuted),
+    )
+}
+
+private fun aqiBandColor(band: AirQualityBand): Color = when (band) {
+    AirQualityBand.GOOD -> AqiGood
+    AirQualityBand.FAIR -> AqiFair
+    AirQualityBand.MODERATE -> AqiModerate
+    AirQualityBand.POOR -> AqiPoor
+    AirQualityBand.VERY_POOR -> AqiVeryPoor
+    AirQualityBand.EXTREMELY_POOR -> AqiExtreme
 }
 
 private fun mapAndroidKeyCode(keyCode: Int): TvKeyCode = when (keyCode) {
@@ -441,7 +588,6 @@ private fun StreetInfoHud(
                 overflow = TextOverflow.Ellipsis,
             )
 
-            // Block container enforces clean text-overflow per layout invariants
             Box(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "${camera.streets.joinToString(" · ")} — ${camera.municipality}",
@@ -582,7 +728,7 @@ private fun CameraQuickStrip(
             ),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        // Row 1: Display Overlays (Clock, Weather) & Full-Screen Zap Scope
+        // Row 1: Display Overlays (Clock, Weather, AQI, Sun, OLED guard) & Zap Scope
         LazyRow(
             contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -613,6 +759,51 @@ private fun CameraQuickStrip(
                             stringResource(R.string.toggle_weather_on)
                         } else {
                             stringResource(R.string.toggle_weather_off)
+                        },
+                    )
+                }
+            }
+            item(key = "toggle_aqi") {
+                FilterChip(
+                    selected = state.showAirQualityOverlay,
+                    onClick = { onAction(TvRemoteAction.ToggleAirQualityOverlay) },
+                    colors = chipColors,
+                ) {
+                    Text(
+                        text = if (state.showAirQualityOverlay) {
+                            stringResource(R.string.toggle_aqi_on)
+                        } else {
+                            stringResource(R.string.toggle_aqi_off)
+                        },
+                    )
+                }
+            }
+            item(key = "toggle_solar") {
+                FilterChip(
+                    selected = state.showSolarOverlay,
+                    onClick = { onAction(TvRemoteAction.ToggleSolarOverlay) },
+                    colors = chipColors,
+                ) {
+                    Text(
+                        text = if (state.showSolarOverlay) {
+                            stringResource(R.string.toggle_solar_on)
+                        } else {
+                            stringResource(R.string.toggle_solar_off)
+                        },
+                    )
+                }
+            }
+            item(key = "toggle_oled") {
+                FilterChip(
+                    selected = state.oledProtectionEnabled,
+                    onClick = { onAction(TvRemoteAction.ToggleOledProtection) },
+                    colors = chipColors,
+                ) {
+                    Text(
+                        text = if (state.oledProtectionEnabled) {
+                            stringResource(R.string.toggle_oled_on)
+                        } else {
+                            stringResource(R.string.toggle_oled_off)
                         },
                     )
                 }

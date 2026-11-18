@@ -22,6 +22,9 @@ data class ViewerPreferences(
     val autoHideHud: Boolean = true,
     val showClockOverlay: Boolean = true,
     val showWeatherOverlay: Boolean = true,
+    val showAirQualityOverlay: Boolean = true,
+    val showSolarOverlay: Boolean = true,
+    val oledProtectionEnabled: Boolean = true,
 )
 
 interface FavoritesRepository {
@@ -31,4 +34,7 @@ interface FavoritesRepository {
     suspend fun setZapScope(scope: ZapScope)
     suspend fun setShowClockOverlay(enabled: Boolean)
     suspend fun setShowWeatherOverlay(enabled: Boolean)
+    suspend fun setShowAirQualityOverlay(enabled: Boolean)
+    suspend fun setShowSolarOverlay(enabled: Boolean)
+    suspend fun setOledProtectionEnabled(enabled: Boolean)
 }
