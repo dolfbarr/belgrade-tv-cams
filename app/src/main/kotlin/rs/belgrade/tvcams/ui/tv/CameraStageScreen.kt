@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -98,7 +99,7 @@ private val TvOverscanHorizontal = 48.dp
 private val TvOverscanVertical = 27.dp
 
 private val StageScrimTop = Color(0x00000000)
-private val StageScrimBottom = Color(0xDD080D1A)
+private val HudCardSurface = Color(0xE0080D1A)
 private val PillSurface = Color(0xCC0F172A)
 private val PillBorder = Color(0x3394A3B8)
 private val AccentSky = Color(0xFF38BDF8)
@@ -127,11 +128,13 @@ fun CameraStageScreen(
     onAction: (TvRemoteAction) -> Unit,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
     enableBackHandler: Boolean = true,
+    isScreensaverMode: Boolean = false,
 ) {
     val stageFocusRequester = remember { FocusRequester() }
     val keyRouter = remember { TvKeyRouter() }
     val activeCam = state.activeCamera
     val timezoneId = activeCam?.timezone ?: "Europe/Belgrade"
+    val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
 
     val clockState = rememberCameraClockText(
         timezoneId = timezoneId,
@@ -193,35 +196,7 @@ fun CameraStageScreen(
             modifier = Modifier.fillMaxSize(),
         )
 
-        // Layer 1A: Top-Left Ambient Clock, Weather, Air Quality & Solar Bar
-        val clockText = if (state.showClockOverlay) clockState.value else null
-        val weatherSummary = if (state.showWeatherOverlay) currentWeather?.formattedSummary() else null
-        val aqiModel = if (state.showAirQualityOverlay) currentAirQuality else null
-        val solarModel = if (state.showSolarOverlay) solarState.value else null
-
-        if (!clockText.isNullOrBlank() ||
-            !weatherSummary.isNullOrBlank() ||
-            aqiModel != null ||
-            solarModel != null
-        ) {
-            AmbientClockWeatherBar(
-                clockText = clockText,
-                weatherSummary = weatherSummary,
-                airQuality = aqiModel,
-                solarStatus = solarModel,
-                cityLabel = activeCam?.city?.displayLabel(),
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(
-                        start = TvOverscanHorizontal,
-                        end = TvOverscanHorizontal,
-                        top = 38.dp,
-                    )
-                    .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
-            )
-        }
-
-        // Layer 1B: Non-blocking top-right status / notice badges inside TV safe area
+        // Layer 1: Non-blocking top-right status / notice badges inside TV safe area
         TopStatusLayer(
             noticeMessage = state.noticeMessage,
             telemetry = telemetry,
@@ -231,22 +206,56 @@ fun CameraStageScreen(
                 .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
         )
 
-        // Layer 2: Street & Camera Info HUD (hidden completely in Pure Camera Mode)
-        AnimatedVisibility(
-            visible = state.overlayMode == OverlayMode.HUD_VISIBLE && activeCam != null,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(Alignment.BottomStart),
-        ) {
-            if (activeCam != null) {
-                StreetInfoHud(
-                    camera = activeCam,
-                    positionOneBased = state.activeZapPositionOneBased,
-                    totalInScope = state.zapPlaylist.size,
-                    scopeLabel = state.zapScope.displayLabel(),
-                    isFavorite = state.isCurrentFavorite,
-                    telemetry = telemetry,
-                )
+        // Layer 2: Unified Bottom-Right Info Corner (Camera HUD + Ambient Clock/Weather/AQI/Sun)
+        val clockText = if (state.showClockOverlay) clockState.value else null
+        val weatherSummary = if (state.showWeatherOverlay) currentWeather?.formattedSummary() else null
+        val aqiModel = if (state.showAirQualityOverlay) currentAirQuality else null
+        val solarModel = if (state.showSolarOverlay) solarState.value else null
+        val showAmbientBar = !clockText.isNullOrBlank() ||
+            !weatherSummary.isNullOrBlank() ||
+            aqiModel != null ||
+            solarModel != null
+
+        if (state.overlayMode != OverlayMode.QUICK_STRIP) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        start = TvOverscanHorizontal,
+                        end = TvOverscanHorizontal,
+                        bottom = TvOverscanVertical,
+                    )
+                    .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                AnimatedVisibility(
+                    visible = state.overlayMode == OverlayMode.HUD_VISIBLE && activeCam != null,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    if (activeCam != null) {
+                        StreetInfoHud(
+                            camera = activeCam,
+                            positionOneBased = state.activeZapPositionOneBased,
+                            totalInScope = state.zapPlaylist.size,
+                            scopeLabel = state.zapScope.displayLabel(),
+                            isFavorite = state.isCurrentFavorite,
+                            autoRotateLabel = effectiveRotate.takeIf { it.enabled }?.displayLabel(),
+                            telemetry = telemetry,
+                        )
+                    }
+                }
+
+                if (showAmbientBar) {
+                    AmbientClockWeatherBar(
+                        clockText = clockText,
+                        weatherSummary = weatherSummary,
+                        airQuality = aqiModel,
+                        solarStatus = solarModel,
+                        cityLabel = activeCam?.city?.displayLabel(),
+                    )
+                }
             }
         }
 
@@ -259,6 +268,7 @@ fun CameraStageScreen(
         ) {
             CameraQuickStrip(
                 state = state,
+                isScreensaverMode = isScreensaverMode,
                 onAction = onAction,
             )
         }
@@ -528,101 +538,91 @@ private fun StreetInfoHud(
     totalInScope: Int,
     scopeLabel: String,
     isFavorite: Boolean,
+    autoRotateLabel: String?,
     telemetry: PlaybackTelemetry,
 ) {
-    Box(
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(StageScrimTop, StageScrimBottom),
-                ),
-            )
-            .padding(
-                start = TvOverscanHorizontal,
-                end = TvOverscanHorizontal,
-                top = 44.dp,
-                bottom = TvOverscanVertical,
-            ),
+            .widthIn(min = 460.dp, max = 560.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(HudCardSurface)
+            .border(1.dp, PillBorder, RoundedCornerShape(14.dp))
+            .padding(horizontal = 20.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+            Text(
+                text = "%02d / %02d · %s".format(positionOneBased, totalInScope, scopeLabel),
+                style = TabularStyle,
+                color = AccentSky,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+
+            CityBadge(cityLabel = camera.city.displayLabel())
+
+            QualityBadge(quality = camera.resolvedQuality)
+
+            TransportBadge(telemetry = telemetry)
+
+            if (autoRotateLabel != null) {
                 Text(
-                    text = "%02d / %02d · %s".format(positionOneBased, totalInScope, scopeLabel),
+                    text = "↻ $autoRotateLabel",
                     style = TabularStyle,
                     color = AccentSky,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
-
-                CityBadge(cityLabel = camera.city.displayLabel())
-
-                QualityBadge(quality = camera.resolvedQuality)
-
-                Text(
-                    text = camera.category.displayLabel(),
-                    color = TextSecondary,
-                    fontSize = 14.sp,
-                )
-
-                TransportBadge(telemetry = telemetry)
-
-                if (isFavorite) {
-                    Text(
-                        text = "★ Favorite",
-                        color = AccentAmber,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                }
             }
 
-            Text(
-                text = camera.name,
-                color = TextPrimary,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-
-            Box(modifier = Modifier.fillMaxWidth()) {
+            if (isFavorite) {
                 Text(
-                    text = "${camera.streets.joinToString(" · ")} — ${camera.municipality}",
-                    color = TextPrimary,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    text = "★",
+                    color = AccentAmber,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
-
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = camera.direction,
-                    color = TextSecondary,
-                    fontSize = 15.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(R.string.hud_remote_hints),
-                color = TextMuted,
-                fontSize = 13.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
         }
+
+        Text(
+            text = camera.name,
+            color = TextPrimary,
+            fontSize = 21.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            text = "${camera.streets.joinToString(" · ")} — ${camera.municipality}",
+            color = TextPrimary,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Text(
+            text = camera.direction,
+            color = TextSecondary,
+            fontSize = 13.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        Text(
+            text = stringResource(R.string.hud_remote_hints),
+            color = TextMuted,
+            fontSize = 11.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -716,9 +716,11 @@ private fun TransportBadge(telemetry: PlaybackTelemetry) {
 @Composable
 private fun CameraQuickStrip(
     state: TvStageState,
+    isScreensaverMode: Boolean,
     onAction: (TvRemoteAction) -> Unit,
 ) {
     val defaultCityChipFocusRequester = remember { FocusRequester() }
+    val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
 
     LaunchedEffect(Unit) {
         defaultCityChipFocusRequester.requestFocus()
@@ -779,6 +781,20 @@ private fun CameraQuickStrip(
                     colors = chipColors,
                 ) {
                     Text(text = qualityText)
+                }
+            }
+            item(key = "toggle_auto_rotate") {
+                val rotateText = if (isScreensaverMode && !state.autoRotateInterval.enabled) {
+                    "Rotate: ${effectiveRotate.displayLabel()} (Screensaver)"
+                } else {
+                    "Rotate: ${state.autoRotateInterval.displayLabel()}"
+                }
+                FilterChip(
+                    selected = effectiveRotate.enabled,
+                    onClick = { onAction(TvRemoteAction.CycleAutoRotate) },
+                    colors = chipColors,
+                ) {
+                    Text(text = rotateText)
                 }
             }
             item(key = "toggle_clock") {

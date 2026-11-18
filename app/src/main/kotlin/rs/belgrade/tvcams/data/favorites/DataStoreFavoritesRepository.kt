@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ViewerPreferences
@@ -35,11 +36,17 @@ class DataStoreFavoritesRepository(
                 if (rawQualityFilter != null) QualityFilter.valueOf(rawQualityFilter) else QualityFilter.ALL
             }.getOrDefault(QualityFilter.ALL)
 
+            val rawAutoRotate = prefs[KEY_AUTO_ROTATE_INTERVAL]
+            val autoRotateInterval = runCatching {
+                if (rawAutoRotate != null) AutoRotateInterval.valueOf(rawAutoRotate) else AutoRotateInterval.OFF
+            }.getOrDefault(AutoRotateInterval.OFF)
+
             ViewerPreferences(
                 favoriteIds = prefs[KEY_FAVORITE_IDS].orEmpty(),
                 lastCameraId = prefs[KEY_LAST_CAMERA_ID],
                 zapScope = scope,
                 qualityFilter = qualityFilter,
+                autoRotateInterval = autoRotateInterval,
                 autoHideHud = prefs[KEY_AUTO_HIDE_HUD] ?: true,
                 showClockOverlay = prefs[KEY_SHOW_CLOCK_OVERLAY] ?: true,
                 showWeatherOverlay = prefs[KEY_SHOW_WEATHER_OVERLAY] ?: true,
@@ -70,6 +77,12 @@ class DataStoreFavoritesRepository(
     override suspend fun setQualityFilter(filter: QualityFilter) {
         appContext.viewerPreferencesDataStore.edit { prefs ->
             prefs[KEY_QUALITY_FILTER] = filter.name
+        }
+    }
+
+    override suspend fun setAutoRotateInterval(interval: AutoRotateInterval) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_AUTO_ROTATE_INTERVAL] = interval.name
         }
     }
 
@@ -108,6 +121,7 @@ class DataStoreFavoritesRepository(
         val KEY_LAST_CAMERA_ID = stringPreferencesKey("last_camera_id")
         val KEY_ZAP_SCOPE = stringPreferencesKey("zap_scope")
         val KEY_QUALITY_FILTER = stringPreferencesKey("quality_filter")
+        val KEY_AUTO_ROTATE_INTERVAL = stringPreferencesKey("auto_rotate_interval")
         val KEY_AUTO_HIDE_HUD = booleanPreferencesKey("auto_hide_hud")
         val KEY_SHOW_CLOCK_OVERLAY = booleanPreferencesKey("show_clock_overlay")
         val KEY_SHOW_WEATHER_OVERLAY = booleanPreferencesKey("show_weather_overlay")

@@ -32,7 +32,7 @@ def test_normalize_snapshot_url_strips_stale_cache_buster() -> None:
 
 def test_curated_v3_serbia_catalog_invariants() -> None:
     cameras = build_curated_cameras()
-    assert len(cameras) == 74
+    assert len(cameras) == 78
 
     seen_ids: set[str] = set()
     categories: set[CameraCategory] = set()
@@ -58,8 +58,8 @@ def test_curated_v3_serbia_catalog_invariants() -> None:
             assert 44.55 <= cam.coordinates.lat <= 45.05
             assert 19.65 <= cam.coordinates.lon <= 21.15
         elif cam.city == SerbiaCity.ZEMUN:
-            assert 44.80 <= cam.coordinates.lat <= 45.02
-            assert 20.05 <= cam.coordinates.lon <= 20.43
+            assert 44.80 <= cam.coordinates.lat <= 45.08
+            assert 19.20 <= cam.coordinates.lon <= 20.43
         elif cam.city == SerbiaCity.NOVI_SAD:
             assert 44.95 <= cam.coordinates.lat <= 45.40
             assert 19.70 <= cam.coordinates.lon <= 20.05
@@ -67,7 +67,7 @@ def test_curated_v3_serbia_catalog_invariants() -> None:
             assert 45.95 <= cam.coordinates.lat <= 46.25
             assert 19.50 <= cam.coordinates.lon <= 20.20
         elif cam.city == SerbiaCity.NIS:
-            assert 42.95 <= cam.coordinates.lat <= 43.45
+            assert 42.30 <= cam.coordinates.lat <= 43.45
             assert 21.50 <= cam.coordinates.lon <= 22.85
 
         assert len(cam.streams) >= 1
@@ -86,18 +86,18 @@ def test_curated_v3_serbia_catalog_invariants() -> None:
 
     assert city_counts == {
         SerbiaCity.BELGRADE: 40,
-        SerbiaCity.ZEMUN: 6,
+        SerbiaCity.ZEMUN: 8,
         SerbiaCity.NOVI_SAD: 8,
         SerbiaCity.SUBOTICA: 9,
-        SerbiaCity.NIS: 11,
+        SerbiaCity.NIS: 13,
     }
     assert quality_counts == {
         VideoQuality.UHD_2K: 18,
         VideoQuality.FHD_1080P: 1,
-        VideoQuality.HD_720P: 28,
+        VideoQuality.HD_720P: 32,
         VideoQuality.SD: 27,
     }
-    assert sum(1 for c in cameras if c.quality.is_hd) == 47
+    assert sum(1 for c in cameras if c.quality.is_hd) == 51
     assert sum(1 for c in cameras if not c.quality.is_hd) == 27
 
     # Verify HD-before-SD ordering invariant within every city

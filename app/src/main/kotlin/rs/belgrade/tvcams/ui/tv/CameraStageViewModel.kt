@@ -25,6 +25,7 @@ import rs.belgrade.tvcams.domain.airquality.AirQualityRepository
 import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
 import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
+import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.SerbiaCity
@@ -92,9 +93,7 @@ class CameraStageViewModel(
         bootstrap()
         observeActiveCameraWeather()
         observeActiveCameraAirQuality()
-        if (isScreensaverMode) {
-            startScreensaverAutoTour()
-        }
+        observeAutoRotation()
     }
 
     private fun bootstrap() {
@@ -112,6 +111,7 @@ class CameraStageViewModel(
                 initialCameraId = targetCameraId,
                 zapScope = prefs.zapScope,
                 qualityFilter = prefs.qualityFilter,
+                autoRotateInterval = prefs.autoRotateInterval,
                 showClockOverlay = prefs.showClockOverlay,
                 showWeatherOverlay = prefs.showWeatherOverlay,
                 showAirQualityOverlay = prefs.showAirQualityOverlay,
@@ -203,14 +203,37 @@ class CameraStageViewModel(
         }
     }
 
-    private fun startScreensaverAutoTour() {
+    private data class AutoRotationTrigger(
+        val effectiveInterval: AutoRotateInterval,
+        val isQuickStripOpen: Boolean,
+        val activeCameraId: String?,
+        val hasMultipleCameras: Boolean,
+    )
+
+    private fun observeAutoRotation() {
         viewModelScope.launch {
-            while (isActive) {
-                delay(SCREENSAVER_TOUR_INTERVAL_MS)
-                if (_stageState.value.overlayMode == OverlayMode.PURE_CAMERA) {
-                    dispatch(TvRemoteAction.ZapNextSilent)
+            _stageState
+                .map { state ->
+                    AutoRotationTrigger(
+                        effectiveInterval = state.autoRotateInterval.effectiveFor(isScreensaverMode),
+                        isQuickStripOpen = state.overlayMode == OverlayMode.QUICK_STRIP,
+                        activeCameraId = state.activeCameraId,
+                        hasMultipleCameras = state.cameras.size > 1,
+                    )
                 }
-            }
+                .distinctUntilChanged()
+                .collectLatest { trigger ->
+                    if (!trigger.effectiveInterval.enabled ||
+                        trigger.isQuickStripOpen ||
+                        !trigger.hasMultipleCameras
+                    ) {
+                        return@collectLatest
+                    }
+                    while (isActive) {
+                        delay(trigger.effectiveInterval.intervalMillis)
+                        dispatch(TvRemoteAction.ZapNextSilent)
+                    }
+                }
         }
     }
 
@@ -269,6 +292,13 @@ class CameraStageViewModel(
             val updatedQuality = next.qualityFilter
             viewModelScope.launch {
                 favoritesRepository.setQualityFilter(updatedQuality)
+            }
+        }
+
+        if (next.autoRotateInterval != previous.autoRotateInterval) {
+            val updatedRotate = next.autoRotateInterval
+            viewModelScope.launch {
+                favoritesRepository.setAutoRotateInterval(updatedRotate)
             }
         }
 
@@ -369,6 +399,5 @@ class CameraStageViewModel(
         const val NOTICE_VISIBLE_MS = 2_800L
         const val WEATHER_POLL_MS = 15L * 60L * 1_000L
         const val AIR_QUALITY_POLL_MS = 30L * 60L * 1_000L
-        const val SCREENSAVER_TOUR_INTERVAL_MS = 45L * 1_000L
     }
 }

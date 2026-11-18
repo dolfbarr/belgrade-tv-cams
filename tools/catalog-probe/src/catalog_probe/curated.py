@@ -129,9 +129,28 @@ def _toll4all_front_camera(
     lat: float,
     lon: float,
     pan_num: int,
+    include_hls: bool = True,
 ) -> CameraEntry:
     base = f"https://cam.bitinfo.co.rs/front_pan_cam{pan_num}"
     jpg_url = f"{base}/index.jpg"
+    streams: list[StreamDescriptor] = []
+    if include_hls:
+        streams.append(
+            StreamDescriptor(
+                type=StreamTransportType.HLS,
+                url=f"{base}/index.m3u8",
+                headers=dict(TOLL4ALL_HEADERS),
+            )
+        )
+    streams.append(
+        StreamDescriptor(
+            type=StreamTransportType.SNAPSHOT_POLL,
+            url=jpg_url,
+            interval_ms=3000,
+            cache_buster_param="_",
+            headers=dict(TOLL4ALL_HEADERS),
+        )
+    )
     return CameraEntry(
         id=cam_id,
         name=name,
@@ -144,20 +163,7 @@ def _toll4all_front_camera(
         poster_url=jpg_url,
         poster_headers=dict(TOLL4ALL_HEADERS),
         coordinates=GeoCoordinates(lat=lat, lon=lon),
-        streams=(
-            StreamDescriptor(
-                type=StreamTransportType.HLS,
-                url=f"{base}/index.m3u8",
-                headers=dict(TOLL4ALL_HEADERS),
-            ),
-            StreamDescriptor(
-                type=StreamTransportType.SNAPSHOT_POLL,
-                url=jpg_url,
-                interval_ms=3000,
-                cache_buster_param="_",
-                headers=dict(TOLL4ALL_HEADERS),
-            ),
-        ),
+        streams=tuple(streams),
     )
 
 
@@ -268,11 +274,18 @@ def build_curated_cameras() -> list[CameraEntry]:
         ),
         _naxi_camera(
             cam_id="bg-gazela",
-            name="Most Gazela",
-            streets=("Most Gazela", "Autoput E-75", "Savska", "Bulevar vojvode Mišića"),
+            name="Most Gazela — Galerija & Beograd na vodi",
+            streets=(
+                "Most Gazela",
+                "TC Galerija Belgrade",
+                "Beograd na vodi",
+                "Autoput E-75",
+            ),
             municipality="Savski Venac / Novi Beograd",
             category=CameraCategory.BRIDGES,
-            direction="Kolovozne trake mosta Gazela preko Save u oba smera",
+            direction=(
+                "Most Gazela preko Save sa direktnim pogledom na TC Galerija i Beograd na vodi"
+            ),
             lat=44.8019,
             lon=20.4408,
             hls_slug="gazela",
@@ -292,14 +305,19 @@ def build_curated_cameras() -> list[CameraEntry]:
         ),
         _ott_24sedam_camera(
             cam_id="bg-most-na-adi-topcider",
-            name="Most na Adi — Topčider & Hipodrom",
+            name="Most na Adi — Radnička (Ada Mall) & Topčider",
             city=SerbiaCity.BELGRADE,
-            streets=("Most na Adi", "Bulevar vojvode Mišića", "Radnička", "Topčiderski park"),
+            streets=(
+                "Most na Adi",
+                "Radnička (Ada Mall)",
+                "Bulevar vojvode Mišića",
+                "Topčiderski park",
+            ),
             municipality="Savski Venac / Čukarica",
             category=CameraCategory.BRIDGES,
             direction=(
-                "2K QHD pogled na isključenje sa Mosta na Adi ka Topčideru, "
-                "Hipodromu i Banovom brdu"
+                "2K QHD pogled na isključenje sa Mosta na Adi ka Radničkoj (Ada Mall), "
+                "Topčideru i Hipodromu"
             ),
             lat=44.7891,
             lon=20.4294,
@@ -429,11 +447,14 @@ def build_curated_cameras() -> list[CameraEntry]:
         ),
         _naxi_camera(
             cam_id="bg-savski-trg",
-            name="Savski trg",
-            streets=("Savski trg", "Nemanjina", "Karađorđeva", "Savska"),
+            name="Savski trg — Beograd na vodi & Stefan Nemanja",
+            streets=("Savski trg", "Beograd na vodi", "Nemanjina", "Karađorđeva"),
             municipality="Savski Venac",
             category=CameraCategory.SQUARES,
-            direction="Obodni saobraćaj na Savskom trgu pored zgrade stare Železničke stanice",
+            direction=(
+                "Savski trg, spomenik Stefanu Nemanji i ulaz u Beograd na vodi "
+                "kod stare Železničke stanice"
+            ),
             lat=44.8082,
             lon=20.4561,
             hls_slug="zeleznicka",
@@ -478,11 +499,16 @@ def build_curated_cameras() -> list[CameraEntry]:
         # Belgrade Boulevards & Urban Arteries (14)
         _naxi_camera(
             cam_id="bg-bulevar-mihajla-pupina",
-            name="Bulevar Mihajla Pupina — Ušće",
-            streets=("Bulevar Mihajla Pupina", "Ušće", "Antifašističke borbe"),
+            name="TC Ušće & Bulevar Mihajla Pupina",
+            streets=(
+                "TC Ušće",
+                "Poslovni centar Ušće",
+                "Bulevar Mihajla Pupina",
+                "Palata Srbija",
+            ),
             municipality="Novi Beograd",
             category=CameraCategory.BOULEVARDS,
-            direction="Pravac pored Palate Srbija i Ušća ka Brankovom mostu",
+            direction="Pogled pored TC Ušće, kula Ušće i Palate Srbija ka Brankovom mostu",
             lat=44.8178,
             lon=20.4319,
             hls_slug="pupina",
@@ -490,13 +516,18 @@ def build_curated_cameras() -> list[CameraEntry]:
         ),
         _ott_24sedam_camera(
             cam_id="bg-sava-centar-usce",
-            name="Sava Centar — Milentija Popovića",
+            name="Sava Centar & Prilaz Ušću — Milentija Popovića",
             city=SerbiaCity.BELGRADE,
-            streets=("Bulevar Milentija Popovića", "Bulevar Arsenija Čarnojevića", "Blok 19"),
+            streets=(
+                "Bulevar Milentija Popovića",
+                "Prilaz TC Ušće",
+                "Sava Centar",
+                "Blok 19",
+            ),
             municipality="Novi Beograd",
             category=CameraCategory.BOULEVARDS,
             direction=(
-                "2K QHD pogled na glavni ulaz u Sava Centar, Milentija Popovića i Šest kaplara"
+                "2K QHD pogled duž Milentija Popovića pored Sava Centra ka TC Ušće i Šest kaplara"
             ),
             lat=44.8089,
             lon=20.4314,
@@ -581,12 +612,17 @@ def build_curated_cameras() -> list[CameraEntry]:
         ),
         _ott_24sedam_camera(
             cam_id="bg-jurija-gagarina-belville",
-            name="Jurija Gagarina — Belville & Delta",
+            name="Jurija Gagarina — Delta City & Belville",
             city=SerbiaCity.BELGRADE,
-            streets=("Jurija Gagarina", "Antifašističke borbe", "Dr Agostina Neta"),
+            streets=(
+                "Jurija Gagarina",
+                "TC Delta City",
+                "Antifašističke borbe",
+                "Dr Agostina Neta",
+            ),
             municipality="Novi Beograd",
             category=CameraCategory.BOULEVARDS,
-            direction="2K QHD pogled na Jurija Gagarina kod naselja Belville i Delta City-ja",
+            direction="2K QHD pogled na Jurija Gagarina kod TC Delta City i naselja Belville",
             lat=44.8052,
             lon=20.4068,
             ott_slug="jur1-gargarina",
@@ -852,6 +888,28 @@ def build_curated_cameras() -> list[CameraEntry]:
             lat=44.8691,
             lon=20.0984,
             pan_num=12,
+        ),
+        _toll4all_front_camera(
+            cam_id="zm-sid-izlaz",
+            name="Koridor A3 Zapad (Šid) — Smer Ruma & Zemun",
+            city=SerbiaCity.ZEMUN,
+            streets=("Autoput A3 / E-70", "Šid — Ruma — Šimanovci — Zemun"),
+            municipality="Zapadni koridor E-70",
+            direction="Zapadni autoput A3 / E-70 iz smera Batrovaca ka Rumi, Dobanovcima i Zemunu",
+            lat=45.0518,
+            lon=19.2291,
+            pan_num=13,
+        ),
+        _toll4all_front_camera(
+            cam_id="zm-sid-ulaz",
+            name="Koridor A3 Zapad (Šid) — Smer Batrovci",
+            city=SerbiaCity.ZEMUN,
+            streets=("Autoput A3 / E-70", "Zemun — Ruma — Šid — Batrovci"),
+            municipality="Zapadni koridor E-70",
+            direction="Zapadni autoput A3 / E-70 od Zemuna ka prelazu Batrovci",
+            lat=45.0514,
+            lon=19.2297,
+            pan_num=14,
         ),
         # =========================================================================
         # NOVI SAD (8 HD cameras: 4 urban 2K QHD + 4 A1 & Fruškogorski koridor 720p)
@@ -1218,6 +1276,30 @@ def build_curated_cameras() -> list[CameraEntry]:
             lat=43.0164,
             lon=22.7691,
             pan_num=18,
+        ),
+        _toll4all_front_camera(
+            cam_id="ni-presevo-ulaz",
+            name="Koridor A1 Jug (Preševo) — Smer Vranje & Niš",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A1 / E-75", "Preševo — Vranje — Grdelica — Niš"),
+            municipality="Južni krak E-75",
+            direction="Južni krak Koridora 10 (A1 / E-75) u smeru ka Vranju, Grdelici i Nišu",
+            lat=42.3624,
+            lon=21.6884,
+            pan_num=20,
+            include_hls=True,
+        ),
+        _toll4all_front_camera(
+            cam_id="ni-presevo-izlaz",
+            name="Koridor A1 Jug (Preševo) — Južni izlaz sa A1",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A1 / E-75", "Niš — Vranje — Preševo"),
+            municipality="Južni krak E-75",
+            direction="Južni krak Koridora 10 (A1 / E-75) od Niša i Vranja ka prelazu Preševo",
+            lat=42.3620,
+            lon=21.6890,
+            pan_num=19,
+            include_hls=False,
         ),
         _mup_border_camera(
             cam_id="ni-gradina-ulaz",

@@ -1,5 +1,6 @@
 package rs.belgrade.tvcams.domain.tv
 
+import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
@@ -28,6 +29,7 @@ sealed interface TvRemoteAction {
     data object OpenQuickStrip : TvRemoteAction
     data object ToggleZapScope : TvRemoteAction
     data object CycleQualityFilter : TvRemoteAction
+    data object CycleAutoRotate : TvRemoteAction
     data object ToggleClockOverlay : TvRemoteAction
     data object ToggleWeatherOverlay : TvRemoteAction
     data object ToggleAirQualityOverlay : TvRemoteAction
@@ -47,6 +49,7 @@ data class TvStageState(
     val favoriteIds: Set<String>,
     val zapScope: ZapScope,
     val qualityFilter: QualityFilter,
+    val autoRotateInterval: AutoRotateInterval,
     val overlayMode: OverlayMode,
     val hudPinned: Boolean,
     val stripFilter: StripFilter,
@@ -128,6 +131,7 @@ data class TvStageState(
             initialCameraId: String? = null,
             zapScope: ZapScope = ZapScope.ALL,
             qualityFilter: QualityFilter = QualityFilter.ALL,
+            autoRotateInterval: AutoRotateInterval = AutoRotateInterval.OFF,
             showClockOverlay: Boolean = true,
             showWeatherOverlay: Boolean = true,
             showAirQualityOverlay: Boolean = true,
@@ -153,6 +157,7 @@ data class TvStageState(
                 favoriteIds = favoriteIds.toSet(),
                 zapScope = effectiveScope,
                 qualityFilter = qualityFilter,
+                autoRotateInterval = autoRotateInterval,
                 overlayMode = initialOverlayMode,
                 hudPinned = false,
                 stripFilter = StripFilter.All,
@@ -326,6 +331,16 @@ object TvStageReducer {
             }
         }
 
+        TvRemoteAction.CycleAutoRotate -> {
+            val nextInterval = state.autoRotateInterval.next()
+            TvStageTransition(
+                state.copy(
+                    autoRotateInterval = nextInterval,
+                    noticeMessage = "Auto-rotate: ${nextInterval.displayLabel()}",
+                ),
+            )
+        }
+
         TvRemoteAction.ToggleClockOverlay -> {
             val nextClock = !state.showClockOverlay
             TvStageTransition(
@@ -377,13 +392,19 @@ object TvStageReducer {
         }
 
         is TvRemoteAction.SelectCamera -> {
-            val exists = state.cameras.any { it.id == action.cameraId }
-            if (!exists) {
+            val target = state.cameras.firstOrNull { it.id == action.cameraId }
+            if (target == null) {
                 TvStageTransition(state)
             } else {
+                val updatedQualityFilter = if (state.qualityFilter.matches(target.resolvedQuality)) {
+                    state.qualityFilter
+                } else {
+                    QualityFilter.ALL
+                }
                 TvStageTransition(
                     state.copy(
-                        activeCameraId = action.cameraId,
+                        activeCameraId = target.id,
+                        qualityFilter = updatedQualityFilter,
                         overlayMode = OverlayMode.HUD_VISIBLE,
                         hudPinned = false,
                     ),
@@ -447,7 +468,14 @@ object TvStageReducer {
         step: Int,
         preserveOverlay: Boolean,
     ): TvStageState {
-        val playlist = state.zapPlaylist
+        val scopedPlaylist = state.zapPlaylist
+        val playlist = if (preserveOverlay && scopedPlaylist.size <= 1) {
+            state.qualityFilteredCameras
+                .sortedBy { it.resolvedQuality.sortRank }
+                .ifEmpty { scopedPlaylist }
+        } else {
+            scopedPlaylist
+        }
         if (playlist.isEmpty()) return state
 
         val currentIndex = playlist.indexOfFirst { it.id == state.activeCameraId }.let {
@@ -457,7 +485,7 @@ object TvStageReducer {
         return state.copy(
             activeCameraId = playlist[nextIndex].id,
             overlayMode = if (preserveOverlay) state.overlayMode else OverlayMode.HUD_VISIBLE,
-            hudPinned = false,
+            hudPinned = if (preserveOverlay) state.hudPinned else false,
         )
     }
 }

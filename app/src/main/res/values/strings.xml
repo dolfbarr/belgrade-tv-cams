@@ -37,5 +37,5 @@
     <string name="empty_quality_heading">No cameras match this quality filter</string>
     <string name="empty_quality_body">Switch the quality filter to view cameras in this city or category</string>
     <string name="empty_quality_action">Switch quality filter</string>
-    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Switch camera · ▼: Cities &amp; overlays · ▲: Zap scope</string>
+    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Camera · ▼: Menu &amp; rotate · ▲: Scope</string>
 </resources>

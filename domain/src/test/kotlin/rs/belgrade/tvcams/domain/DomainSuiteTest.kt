@@ -555,10 +555,12 @@ class DomainSuiteTest {
         val decoded = CatalogJsonCodec.decode(rawDiskJson)
 
         assertEquals(3, decoded.schemaVersion)
-        assertEquals(74, decoded.cameras.size)
-        assertEquals(6, decoded.cameras.count { it.city == SerbiaCity.ZEMUN })
-        assertEquals(47, decoded.cameras.count { it.resolvedQuality.isHd })
+        assertEquals(78, decoded.cameras.size)
+        assertEquals(8, decoded.cameras.count { it.city == SerbiaCity.ZEMUN })
+        assertEquals(51, decoded.cameras.count { it.resolvedQuality.isHd })
         assertEquals(27, decoded.cameras.count { !it.resolvedQuality.isHd })
+        assertTrue(decoded.cameras.any { it.id == "bg-bulevar-mihajla-pupina" && "TC Ušće" in it.streets })
+        assertTrue(decoded.cameras.any { it.id == "bg-gazela" && "TC Galerija Belgrade" in it.streets })
 
         val firstEncode = CatalogJsonCodec.encode(decoded)
         val reDecoded = CatalogJsonCodec.decode(firstEncode)
@@ -591,6 +593,11 @@ class DomainSuiteTest {
         assertEquals(listOf("bg-2k-1", "zm-720-1"), hdOnly.zapPlaylist.map { it.id })
         assertEquals(listOf("bg-2k-1", "zm-720-1"), hdOnly.hdStripCameras.map { it.id })
         assertTrue(hdOnly.sdStripCameras.isEmpty())
+
+        // Selecting an SD camera directly (e.g. via TV Home deep link) while HD_ONLY is active relaxes filter to ALL
+        val deepLinkedSd = TvStageReducer.reduce(hdOnly, TvRemoteAction.SelectCamera("bg-sd-1")).state
+        assertEquals("bg-sd-1", deepLinkedSd.activeCameraId)
+        assertEquals(QualityFilter.ALL, deepLinkedSd.qualityFilter)
 
         // Cycling HD_ONLY -> SD_ONLY switches active HD camera onto an SD camera and restricts zapping to SD
         val sdOnly = TvStageReducer.reduce(hdOnly, TvRemoteAction.CycleQualityFilter).state
@@ -630,5 +637,62 @@ class DomainSuiteTest {
         val stripRight = router.route(TvKeyCode.DPAD_RIGHT, TvKeyPhase.DOWN, repeatCount = 0, OverlayMode.QUICK_STRIP)
         assertFalse(stripRight.consumed)
         assertNull(stripRight.action)
+    }
+
+    @Test
+    fun `auto rotate interval cycles presets, defaults screensaver to 30s, and silent rotation falls back when scope has single camera`() {
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.OFF, rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.OFF.effectiveFor(isScreensaverMode = false))
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.SEC_30, rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.OFF.effectiveFor(isScreensaverMode = true))
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.SEC_60, rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.SEC_60.effectiveFor(isScreensaverMode = true))
+
+        val cams = listOf(
+            sampleCamera("bg-2k-1", "TC Ušće", SerbiaCity.BELGRADE, quality = VideoQuality.UHD_2K),
+            sampleCamera("zm-2k-1", "Zemun Lakat", SerbiaCity.ZEMUN, quality = VideoQuality.UHD_2K),
+            sampleCamera("bg-sd-1", "Gazela Galerija", SerbiaCity.BELGRADE, quality = VideoQuality.SD),
+        )
+        var state = TvStageState.initial(
+            cameras = cams,
+            favoriteIds = setOf("bg-2k-1"),
+            initialCameraId = "bg-2k-1",
+            zapScope = ZapScope.FAVORITES,
+            qualityFilter = QualityFilter.HD_ONLY,
+        )
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.OFF, state.autoRotateInterval)
+
+        // Cycle OFF -> 15s -> 30s -> 60s -> 2m -> OFF
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleAutoRotate).state
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.SEC_15, state.autoRotateInterval)
+        assertEquals("Auto-rotate: 15s", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleAutoRotate).state
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.SEC_30, state.autoRotateInterval)
+        assertEquals("Auto-rotate: 30s", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleAutoRotate).state
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.SEC_60, state.autoRotateInterval)
+        assertEquals("Auto-rotate: 60s", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleAutoRotate).state
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.SEC_120, state.autoRotateInterval)
+        assertEquals("Auto-rotate: 2m", state.noticeMessage)
+
+        val resetState = TvStageReducer.reduce(state, TvRemoteAction.CycleAutoRotate).state
+        assertEquals(rs.belgrade.tvcams.domain.favorites.AutoRotateInterval.OFF, resetState.autoRotateInterval)
+        assertEquals("Auto-rotate: Off", resetState.noticeMessage)
+
+        // Pin HUD and run ZapNextSilent with a 1-item Favorites playlist:
+        // must fall back to qualityFilteredCameras (HD_ONLY -> bg-2k-1, zm-2k-1) and preserve pinned HUD
+        val pinnedState = state.copy(overlayMode = OverlayMode.HUD_VISIBLE, hudPinned = true)
+        assertEquals(listOf("bg-2k-1"), pinnedState.zapPlaylist.map { it.id })
+
+        val rotated1 = TvStageReducer.reduce(pinnedState, TvRemoteAction.ZapNextSilent).state
+        assertEquals("zm-2k-1", rotated1.activeCameraId)
+        assertEquals(OverlayMode.HUD_VISIBLE, rotated1.overlayMode)
+        assertTrue(rotated1.hudPinned)
+
+        val pureState = rotated1.copy(overlayMode = OverlayMode.PURE_CAMERA, hudPinned = false)
+        val rotated2 = TvStageReducer.reduce(pureState, TvRemoteAction.ZapNextSilent).state
+        assertEquals("bg-2k-1", rotated2.activeCameraId)
+        assertEquals(OverlayMode.PURE_CAMERA, rotated2.overlayMode)
     }
 }

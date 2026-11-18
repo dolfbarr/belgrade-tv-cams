@@ -41,11 +41,50 @@ enum class QualityFilter {
     }
 }
 
+enum class AutoRotateInterval(val seconds: Int) {
+    OFF(0),
+    SEC_15(15),
+    SEC_30(30),
+    SEC_60(60),
+    SEC_120(120),
+    ;
+
+    val enabled: Boolean
+        get() = seconds > 0
+
+    val intervalMillis: Long
+        get() = seconds * 1_000L
+
+    fun next(): AutoRotateInterval = when (this) {
+        OFF -> SEC_15
+        SEC_15 -> SEC_30
+        SEC_30 -> SEC_60
+        SEC_60 -> SEC_120
+        SEC_120 -> OFF
+    }
+
+    fun displayLabel(): String = when (this) {
+        OFF -> "Off"
+        SEC_15 -> "15s"
+        SEC_30 -> "30s"
+        SEC_60 -> "60s"
+        SEC_120 -> "2m"
+    }
+
+    fun effectiveFor(isScreensaverMode: Boolean): AutoRotateInterval =
+        if (isScreensaverMode && this == OFF) DEFAULT_SCREENSAVER else this
+
+    companion object {
+        val DEFAULT_SCREENSAVER: AutoRotateInterval = SEC_30
+    }
+}
+
 data class ViewerPreferences(
     val favoriteIds: Set<String> = emptySet(),
     val lastCameraId: String? = null,
     val zapScope: ZapScope = ZapScope.ALL,
     val qualityFilter: QualityFilter = QualityFilter.ALL,
+    val autoRotateInterval: AutoRotateInterval = AutoRotateInterval.OFF,
     val autoHideHud: Boolean = true,
     val showClockOverlay: Boolean = true,
     val showWeatherOverlay: Boolean = true,
@@ -60,6 +99,7 @@ interface FavoritesRepository {
     suspend fun setLastCamera(cameraId: String)
     suspend fun setZapScope(scope: ZapScope)
     suspend fun setQualityFilter(filter: QualityFilter)
+    suspend fun setAutoRotateInterval(interval: AutoRotateInterval)
     suspend fun setShowClockOverlay(enabled: Boolean)
     suspend fun setShowWeatherOverlay(enabled: Boolean)
     suspend fun setShowAirQualityOverlay(enabled: Boolean)

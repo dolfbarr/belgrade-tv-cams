@@ -138,6 +138,7 @@ class SerbiaCamsDreamService : DreamService() {
                         onAction = stageViewModel::dispatch,
                         onTelemetryChanged = stageViewModel::updateTelemetry,
                         enableBackHandler = false,
+                        isScreensaverMode = true,
                     )
                 }
             }
