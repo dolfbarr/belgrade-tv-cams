@@ -111,6 +111,7 @@ class CameraStageViewModel(
                 favoriteIds = prefs.favoriteIds,
                 initialCameraId = targetCameraId,
                 zapScope = prefs.zapScope,
+                qualityFilter = prefs.qualityFilter,
                 showClockOverlay = prefs.showClockOverlay,
                 showWeatherOverlay = prefs.showWeatherOverlay,
                 showAirQualityOverlay = prefs.showAirQualityOverlay,
@@ -261,6 +262,13 @@ class CameraStageViewModel(
             val updatedScope = next.zapScope
             viewModelScope.launch {
                 favoritesRepository.setZapScope(updatedScope)
+            }
+        }
+
+        if (next.qualityFilter != previous.qualityFilter) {
+            val updatedQuality = next.qualityFilter
+            viewModelScope.launch {
+                favoritesRepository.setQualityFilter(updatedQuality)
             }
         }
 

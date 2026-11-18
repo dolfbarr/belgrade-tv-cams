@@ -5,6 +5,12 @@ All notable user-visible changes to this project are documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Expanded 74-Camera Serbia Catalog & First-Class Zemun Support (`catalog.v3.json`):** Promoted **Zemun** (`6` HD cameras covering Nova Galenika / Pupinov most approach, Zmaj / Tošin bunar E-70, Batajnica–Stara Pazova A1, and Dobanovci–Šimanovci / Airport E-70) to a dedicated city filter with local weather/AQI coordinates, and added **18 new verified live cameras** across **Subotica — Gradski trg & Narodno pozorište (`1080p Full HD`)**, **Astronomska stanica Vidojevica (`3K` AllSky)**, **Fruškogorski koridor / Ruma**, **Podunavlje / Smederevo**, **Dunavski koridor / Požarevac**, **Posavina / Šabac**, **Južna Morava / Leskovac**, **Koridor A4 / Dimitrovgrad**, **GP Đala**, and **GP Gradina** (**74 total cameras**: Belgrade `40`, Zemun `6`, Novi Sad `8`, Subotica `9`, Niš `11`).
+- **HD vs. Non-HD (`SD`) Interface Split:** Added per-camera `VideoQuality` metadata (`2K QHD`, `1080p HD`, `720p HD`, `SD`), HD-first stream ordering, dedicated **`HD streams` (`2K · 1080p · 720p`)** and **`SD streams` (`576p · Standard`)** section divider cards in the Quick Strip, a persisted **`Quality: All / HD only / SD only`** filter chip governing both browsing and channel zapping, and resolution badges on every camera card and the Street Info HUD.
+
+## [0.3.0] - 2026-11-18
+
+### Added
 - **Android TV System Screensaver (`DreamService`):** Registerable under `Settings -> Device Preferences -> Screen saver` (`Serbia live cams`), launching directly into Pure Camera Mode with active ambient overlays and automatic `45-second` camera patrol across the selected scope.
 - **Live Air Quality (`EAQI` / `PM2.5` / `PM10`) Overlay:** Toggleable `[AQI: On/Off]` chip powered by the Open-Meteo Air Quality API (`0.05°` grid `30-min` cache) with semantic European Air Quality Index status indicator.
 - **Sunrise, Sunset & Golden Hour Overlay:** Toggleable `[Sun: On/Off]` chip computing Dawn, Morning Golden Hour, Daytime Sunset countdown, Evening Golden Hour, Dusk, and Next-Day Sunrise per camera timezone.

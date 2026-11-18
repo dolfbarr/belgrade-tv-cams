@@ -8,6 +8,7 @@ from typing import Any
 
 class SerbiaCity(StrEnum):
     BELGRADE = "BELGRADE"
+    ZEMUN = "ZEMUN"
     NOVI_SAD = "NOVI_SAD"
     SUBOTICA = "SUBOTICA"
     NIS = "NIS"
@@ -18,6 +19,27 @@ class CameraCategory(StrEnum):
     SQUARES = "SQUARES"
     BOULEVARDS = "BOULEVARDS"
     HIGHWAYS = "HIGHWAYS"
+
+
+class VideoQuality(StrEnum):
+    UHD_2K = "UHD_2K"
+    FHD_1080P = "FHD_1080P"
+    HD_720P = "HD_720P"
+    SD = "SD"
+
+    @property
+    def is_hd(self) -> bool:
+        return self in (VideoQuality.UHD_2K, VideoQuality.FHD_1080P, VideoQuality.HD_720P)
+
+    @property
+    def sort_rank(self) -> int:
+        if self == VideoQuality.UHD_2K:
+            return 0
+        if self == VideoQuality.FHD_1080P:
+            return 1
+        if self == VideoQuality.HD_720P:
+            return 2
+        return 3
 
 
 class StreamTransportType(StrEnum):
@@ -86,6 +108,7 @@ class CameraEntry:
     coordinates: GeoCoordinates
     streams: tuple[StreamDescriptor, ...]
     city: SerbiaCity = SerbiaCity.BELGRADE
+    quality: VideoQuality = VideoQuality.SD
     timezone: str = "Europe/Belgrade"
     poster_headers: dict[str, str] | None = None
 
@@ -94,6 +117,7 @@ class CameraEntry:
             "id": self.id,
             "name": self.name,
             "city": self.city.value,
+            "quality": self.quality.value,
             "timezone": self.timezone,
             "streets": list(self.streets),
             "municipality": self.municipality,
@@ -114,11 +138,13 @@ class CameraEntry:
             {str(k): str(v) for k, v in raw_poster_headers.items()} if raw_poster_headers else None
         )
         raw_city = raw.get("city", SerbiaCity.BELGRADE.value)
+        raw_quality = raw.get("quality", VideoQuality.SD.value)
         raw_timezone = raw.get("timezone", "Europe/Belgrade")
         return cls(
             id=str(raw["id"]),
             name=str(raw["name"]),
             city=SerbiaCity(str(raw_city)),
+            quality=VideoQuality(str(raw_quality)),
             timezone=str(raw_timezone),
             streets=tuple(str(s) for s in raw["streets"]),
             municipality=str(raw["municipality"]),

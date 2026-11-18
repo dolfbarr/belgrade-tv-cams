@@ -10,18 +10,18 @@ data class HomeChannelSelection(
 
 object HomeChannelSelector {
     private val FEATURED_IDS_ORDER: List<String> = listOf(
-        "bg-brankov-most",
-        "bg-slavija",
         "bg-kralja-milana-london",
         "bg-most-na-adi-topcider",
+        "bg-lakat-nova-galenika",
+        "bg-zmaj-autoput",
         "ns-pupinova-palata",
         "ns-varadinski-most",
-        "ns-bulevar-mihajla-pupina",
-        "su-mz-zorka",
-        "su-horgos-ulaz",
+        "su-gradski-trg-korzo",
+        "su-jug-izlaz",
+        "ni-vidojevica-allsky",
         "ni-sever-izlaz",
-        "ni-jug-izlaz",
-        "bg-gazela",
+        "bg-sava-centar-usce",
+        "bg-brankov-most",
     )
 
     fun selectChannelCameras(

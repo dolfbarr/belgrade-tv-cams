@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 @Serializable
 enum class SerbiaCity {
     BELGRADE,
+    ZEMUN,
     NOVI_SAD,
     SUBOTICA,
     NIS,
@@ -15,9 +16,40 @@ enum class SerbiaCity {
 
     fun displayLabel(): String = when (this) {
         BELGRADE -> "Belgrade"
+        ZEMUN -> "Zemun"
         NOVI_SAD -> "Novi Sad"
         SUBOTICA -> "Subotica"
         NIS -> "Niš"
+    }
+}
+
+@Serializable
+enum class VideoQuality {
+    UHD_2K,
+    FHD_1080P,
+    HD_720P,
+    SD,
+    ;
+
+    val isHd: Boolean
+        get() = when (this) {
+            UHD_2K, FHD_1080P, HD_720P -> true
+            SD -> false
+        }
+
+    val sortRank: Int
+        get() = when (this) {
+            UHD_2K -> 0
+            FHD_1080P -> 1
+            HD_720P -> 2
+            SD -> 3
+        }
+
+    fun shortBadgeLabel(): String = when (this) {
+        UHD_2K -> "2K QHD"
+        FHD_1080P -> "1080p HD"
+        HD_720P -> "720p HD"
+        SD -> "SD"
     }
 }
 
@@ -65,6 +97,7 @@ data class Camera(
     val id: String,
     val name: String,
     val city: SerbiaCity = SerbiaCity.BELGRADE,
+    val quality: VideoQuality? = null,
     val timezone: String = "Europe/Belgrade",
     val streets: List<String>,
     val municipality: String,
@@ -76,7 +109,10 @@ data class Camera(
     val streams: List<StreamDescriptor>,
     @SerialName("poster_headers")
     val posterHeaders: Map<String, String>? = null,
-)
+) {
+    val resolvedQuality: VideoQuality
+        get() = quality ?: VideoQuality.SD
+}
 
 @Serializable
 data class CatalogManifest(
@@ -89,8 +125,8 @@ data class CatalogManifest(
 )
 
 object CatalogJsonCodec {
-    val SUPPORTED_SCHEMA_VERSIONS: Set<Int> = setOf(1, 2)
-    const val LATEST_SCHEMA_VERSION: Int = 2
+    val SUPPORTED_SCHEMA_VERSIONS: Set<Int> = setOf(1, 2, 3)
+    const val LATEST_SCHEMA_VERSION: Int = 3
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {

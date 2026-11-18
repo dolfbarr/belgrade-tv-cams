@@ -13,6 +13,7 @@ import rs.belgrade.tvcams.domain.catalog.CatalogSeedSource
 import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogClient
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogResult
+import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
@@ -22,6 +23,7 @@ import rs.belgrade.tvcams.domain.model.GeoCoordinates
 import rs.belgrade.tvcams.domain.model.SerbiaCity
 import rs.belgrade.tvcams.domain.model.StreamDescriptor
 import rs.belgrade.tvcams.domain.model.StreamTransportType
+import rs.belgrade.tvcams.domain.model.VideoQuality
 import rs.belgrade.tvcams.domain.oled.PixelOrbitCalculator
 import rs.belgrade.tvcams.domain.solar.SolarPhase
 import rs.belgrade.tvcams.domain.solar.SolarPhaseCalculator
@@ -62,10 +64,12 @@ class DomainSuiteTest {
         name: String,
         city: SerbiaCity = SerbiaCity.BELGRADE,
         category: CameraCategory = CameraCategory.SQUARES,
+        quality: VideoQuality? = null,
     ): Camera = Camera(
         id = id,
         name = name,
         city = city,
+        quality = quality,
         timezone = "Europe/Belgrade",
         streets = listOf("Kralja Milana", "Nemanjina"),
         municipality = "Vračar",
@@ -509,19 +513,25 @@ class DomainSuiteTest {
 
     @Test
     fun `home channel selector provides multi-city featured row when favorites empty and switches to favorites`() {
-        val catalogPath = System.getProperty("belgrade.catalog.v2.path")
+        val catalogPath = System.getProperty("belgrade.catalog.v3.path")
         val manifest = CatalogJsonCodec.decode(File(catalogPath).readText(Charsets.UTF_8))
 
         val featured = HomeChannelSelector.selectChannelCameras(
             cameras = manifest.cameras,
             favoriteIds = emptySet(),
-            maxItems = 10,
+            maxItems = 12,
         )
         assertFalse(featured.isFavoritesMode)
-        assertEquals(10, featured.cameras.size)
-        // Featured row covers all 4 Serbian cities out of the box
+        assertEquals(12, featured.cameras.size)
+        // Featured row covers all 5 Serbian city/district groups including Zemun out of the box
         assertEquals(
-            setOf(SerbiaCity.BELGRADE, SerbiaCity.NOVI_SAD, SerbiaCity.SUBOTICA, SerbiaCity.NIS),
+            setOf(
+                SerbiaCity.BELGRADE,
+                SerbiaCity.ZEMUN,
+                SerbiaCity.NOVI_SAD,
+                SerbiaCity.SUBOTICA,
+                SerbiaCity.NIS,
+            ),
             featured.cameras.map { it.city }.toSet(),
         )
 
@@ -535,6 +545,65 @@ class DomainSuiteTest {
             setOf("ns-varadinski-most", "bg-slavija"),
             favoritesSelection.cameras.map { it.id }.toSet(),
         )
+    }
+
+    @Test
+    fun `whole-graph round trip of v3 Serbia catalog preserves Zemun and VideoQuality tiers`() {
+        val catalogV3Path = System.getProperty("belgrade.catalog.v3.path")
+        assertNotNull(catalogV3Path, "System property belgrade.catalog.v3.path must be set")
+        val rawDiskJson = File(catalogV3Path).readText(Charsets.UTF_8)
+        val decoded = CatalogJsonCodec.decode(rawDiskJson)
+
+        assertEquals(3, decoded.schemaVersion)
+        assertEquals(74, decoded.cameras.size)
+        assertEquals(6, decoded.cameras.count { it.city == SerbiaCity.ZEMUN })
+        assertEquals(47, decoded.cameras.count { it.resolvedQuality.isHd })
+        assertEquals(27, decoded.cameras.count { !it.resolvedQuality.isHd })
+
+        val firstEncode = CatalogJsonCodec.encode(decoded)
+        val reDecoded = CatalogJsonCodec.decode(firstEncode)
+        val secondEncode = CatalogJsonCodec.encode(reDecoded)
+
+        assertEquals(decoded, reDecoded)
+        assertEquals(firstEncode, secondEncode)
+        assertEquals(rawDiskJson, firstEncode)
+    }
+
+    @Test
+    fun `tv stage reducer splits HD before SD in strip and cycles quality filter across zapping`() {
+        val cams = listOf(
+            sampleCamera("bg-sd-1", "Brankov most", SerbiaCity.BELGRADE, quality = VideoQuality.SD),
+            sampleCamera("bg-2k-1", "London 2K", SerbiaCity.BELGRADE, quality = VideoQuality.UHD_2K),
+            sampleCamera("zm-720-1", "Zemun Sever", SerbiaCity.ZEMUN, quality = VideoQuality.HD_720P),
+            sampleCamera("su-sd-1", "Kelebija", SerbiaCity.SUBOTICA, quality = VideoQuality.SD),
+        )
+        val initial = TvStageState.initial(cameras = cams, initialCameraId = "bg-sd-1")
+
+        // In ALL mode, strip orders HD cameras (2K -> 720p) ahead of SD cameras and splits sections
+        assertEquals(listOf("bg-2k-1", "zm-720-1", "bg-sd-1", "su-sd-1"), initial.stripCameras.map { it.id })
+        assertEquals(listOf("bg-2k-1", "zm-720-1"), initial.hdStripCameras.map { it.id })
+        assertEquals(listOf("bg-sd-1", "su-sd-1"), initial.sdStripCameras.map { it.id })
+
+        // Cycling ALL -> HD_ONLY switches active SD camera onto an HD camera in the same city and restricts zapping
+        val hdOnly = TvStageReducer.reduce(initial, TvRemoteAction.CycleQualityFilter).state
+        assertEquals(QualityFilter.HD_ONLY, hdOnly.qualityFilter)
+        assertEquals("bg-2k-1", hdOnly.activeCameraId)
+        assertEquals(listOf("bg-2k-1", "zm-720-1"), hdOnly.zapPlaylist.map { it.id })
+        assertEquals(listOf("bg-2k-1", "zm-720-1"), hdOnly.hdStripCameras.map { it.id })
+        assertTrue(hdOnly.sdStripCameras.isEmpty())
+
+        // Cycling HD_ONLY -> SD_ONLY switches active HD camera onto an SD camera and restricts zapping to SD
+        val sdOnly = TvStageReducer.reduce(hdOnly, TvRemoteAction.CycleQualityFilter).state
+        assertEquals(QualityFilter.SD_ONLY, sdOnly.qualityFilter)
+        assertEquals("bg-sd-1", sdOnly.activeCameraId)
+        assertEquals(listOf("bg-sd-1", "su-sd-1"), sdOnly.zapPlaylist.map { it.id })
+        assertTrue(sdOnly.hdStripCameras.isEmpty())
+        assertEquals(listOf("bg-sd-1", "su-sd-1"), sdOnly.sdStripCameras.map { it.id })
+
+        // Cycling SD_ONLY -> ALL restores full catalog
+        val backToAll = TvStageReducer.reduce(sdOnly, TvRemoteAction.CycleQualityFilter).state
+        assertEquals(QualityFilter.ALL, backToAll.qualityFilter)
+        assertEquals(4, backToAll.zapPlaylist.size)
     }
 
     @Test

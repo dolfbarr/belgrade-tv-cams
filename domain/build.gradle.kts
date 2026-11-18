@@ -21,7 +21,9 @@ tasks.test {
     useJUnitPlatform()
     val v1Catalog = rootProject.file("catalog/catalog.v1.json")
     val v2Catalog = rootProject.file("catalog/catalog.v2.json")
-    inputs.files(v1Catalog, v2Catalog)
+    val v3Catalog = rootProject.file("catalog/catalog.v3.json")
+    inputs.files(v1Catalog, v2Catalog, v3Catalog)
     systemProperty("belgrade.catalog.v1.path", v1Catalog.absolutePath)
     systemProperty("belgrade.catalog.v2.path", v2Catalog.absolutePath)
+    systemProperty("belgrade.catalog.v3.path", v3Catalog.absolutePath)
 }

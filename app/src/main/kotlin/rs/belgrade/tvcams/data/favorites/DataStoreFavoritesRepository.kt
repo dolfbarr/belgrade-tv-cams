@@ -11,6 +11,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
+import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ViewerPreferences
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 
@@ -29,10 +30,16 @@ class DataStoreFavoritesRepository(
                 if (rawScope != null) ZapScope.valueOf(rawScope) else ZapScope.ALL
             }.getOrDefault(ZapScope.ALL)
 
+            val rawQualityFilter = prefs[KEY_QUALITY_FILTER]
+            val qualityFilter = runCatching {
+                if (rawQualityFilter != null) QualityFilter.valueOf(rawQualityFilter) else QualityFilter.ALL
+            }.getOrDefault(QualityFilter.ALL)
+
             ViewerPreferences(
                 favoriteIds = prefs[KEY_FAVORITE_IDS].orEmpty(),
                 lastCameraId = prefs[KEY_LAST_CAMERA_ID],
                 zapScope = scope,
+                qualityFilter = qualityFilter,
                 autoHideHud = prefs[KEY_AUTO_HIDE_HUD] ?: true,
                 showClockOverlay = prefs[KEY_SHOW_CLOCK_OVERLAY] ?: true,
                 showWeatherOverlay = prefs[KEY_SHOW_WEATHER_OVERLAY] ?: true,
@@ -57,6 +64,12 @@ class DataStoreFavoritesRepository(
     override suspend fun setZapScope(scope: ZapScope) {
         appContext.viewerPreferencesDataStore.edit { prefs ->
             prefs[KEY_ZAP_SCOPE] = scope.name
+        }
+    }
+
+    override suspend fun setQualityFilter(filter: QualityFilter) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_QUALITY_FILTER] = filter.name
         }
     }
 
@@ -94,6 +107,7 @@ class DataStoreFavoritesRepository(
         val KEY_FAVORITE_IDS = stringSetPreferencesKey("favorite_camera_ids")
         val KEY_LAST_CAMERA_ID = stringPreferencesKey("last_camera_id")
         val KEY_ZAP_SCOPE = stringPreferencesKey("zap_scope")
+        val KEY_QUALITY_FILTER = stringPreferencesKey("quality_filter")
         val KEY_AUTO_HIDE_HUD = booleanPreferencesKey("auto_hide_hud")
         val KEY_SHOW_CLOCK_OVERLAY = booleanPreferencesKey("show_clock_overlay")
         val KEY_SHOW_WEATHER_OVERLAY = booleanPreferencesKey("show_weather_overlay")

@@ -5,6 +5,7 @@
     <string name="category_all">All Serbia</string>
     <string name="category_favorites">Favorites</string>
     <string name="city_belgrade">Belgrade</string>
+    <string name="city_zemun">Zemun</string>
     <string name="city_novi_sad">Novi Sad</string>
     <string name="city_subotica">Subotica</string>
     <string name="city_nis">Niš</string>
@@ -22,6 +23,10 @@
     <string name="toggle_solar_off">Sun: Off</string>
     <string name="toggle_oled_on">OLED guard: On</string>
     <string name="toggle_oled_off">OLED guard: Off</string>
+    <string name="section_hd_title">HD streams</string>
+    <string name="section_hd_subtitle">2K · 1080p · 720p</string>
+    <string name="section_sd_title">SD streams</string>
+    <string name="section_sd_subtitle">576p · Standard</string>
     <string name="badge_live_hls">Live HLS</string>
     <string name="badge_snapshot">Live snapshot</string>
     <string name="status_connecting">Connecting to camera…</string>
@@ -29,5 +34,8 @@
     <string name="empty_favorites_heading">No favorite cameras yet</string>
     <string name="empty_favorites_body">Press and hold OK while watching any street camera to pin it here</string>
     <string name="empty_favorites_action">Browse all Serbia cameras</string>
+    <string name="empty_quality_heading">No cameras match this quality filter</string>
+    <string name="empty_quality_body">Switch the quality filter to view cameras in this city or category</string>
+    <string name="empty_quality_action">Switch quality filter</string>
     <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Switch camera · ▼: Cities &amp; overlays · ▲: Zap scope</string>
 </resources>

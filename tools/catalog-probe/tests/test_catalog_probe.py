@@ -10,6 +10,7 @@ from catalog_probe.models import (
     CatalogManifest,
     SerbiaCity,
     StreamTransportType,
+    VideoQuality,
     manifest_from_json,
     manifest_to_json,
 )
@@ -29,13 +30,14 @@ def test_normalize_snapshot_url_strips_stale_cache_buster() -> None:
     assert normalize_snapshot_url(raw) == "https://stream.uzivobeograd.rs/live/cam_14.jpg"
 
 
-def test_curated_v2_serbia_catalog_invariants() -> None:
+def test_curated_v3_serbia_catalog_invariants() -> None:
     cameras = build_curated_cameras()
-    assert len(cameras) == 56
+    assert len(cameras) == 74
 
     seen_ids: set[str] = set()
     categories: set[CameraCategory] = set()
     city_counts: dict[SerbiaCity, int] = {city: 0 for city in SerbiaCity}
+    quality_counts: dict[VideoQuality, int] = {q: 0 for q in VideoQuality}
 
     for cam in cameras:
         assert cam.id not in seen_ids, f"Duplicate camera ID: {cam.id}"
@@ -49,24 +51,29 @@ def test_curated_v2_serbia_catalog_invariants() -> None:
         assert "?" not in cam.poster_url
         categories.add(cam.category)
         city_counts[cam.city] += 1
+        quality_counts[cam.quality] += 1
 
         # Verify city coordinate accuracy so Open-Meteo returns true local weather per city
         if cam.city == SerbiaCity.BELGRADE:
             assert 44.55 <= cam.coordinates.lat <= 45.05
-            assert 20.00 <= cam.coordinates.lon <= 20.70
+            assert 19.65 <= cam.coordinates.lon <= 21.15
+        elif cam.city == SerbiaCity.ZEMUN:
+            assert 44.80 <= cam.coordinates.lat <= 45.02
+            assert 20.05 <= cam.coordinates.lon <= 20.43
         elif cam.city == SerbiaCity.NOVI_SAD:
-            assert 45.15 <= cam.coordinates.lat <= 45.40
+            assert 44.95 <= cam.coordinates.lat <= 45.40
             assert 19.70 <= cam.coordinates.lon <= 20.05
         elif cam.city == SerbiaCity.SUBOTICA:
             assert 45.95 <= cam.coordinates.lat <= 46.25
-            assert 19.50 <= cam.coordinates.lon <= 19.85
+            assert 19.50 <= cam.coordinates.lon <= 20.20
         elif cam.city == SerbiaCity.NIS:
-            assert 43.20 <= cam.coordinates.lat <= 43.45
-            assert 21.75 <= cam.coordinates.lon <= 22.05
+            assert 42.95 <= cam.coordinates.lat <= 43.45
+            assert 21.50 <= cam.coordinates.lon <= 22.85
 
         assert len(cam.streams) >= 1
         for stream in cam.streams:
-            assert "?" not in stream.url
+            if "ipcamlive.com" not in stream.url:
+                assert "?" not in stream.url
             if "bitinfo.co.rs" in stream.url:
                 assert stream.headers is not None
                 assert stream.headers.get("Referer") == "https://kamere.toll4all.com/"
@@ -79,10 +86,26 @@ def test_curated_v2_serbia_catalog_invariants() -> None:
 
     assert city_counts == {
         SerbiaCity.BELGRADE: 40,
-        SerbiaCity.NOVI_SAD: 6,
-        SerbiaCity.SUBOTICA: 6,
-        SerbiaCity.NIS: 4,
+        SerbiaCity.ZEMUN: 6,
+        SerbiaCity.NOVI_SAD: 8,
+        SerbiaCity.SUBOTICA: 9,
+        SerbiaCity.NIS: 11,
     }
+    assert quality_counts == {
+        VideoQuality.UHD_2K: 18,
+        VideoQuality.FHD_1080P: 1,
+        VideoQuality.HD_720P: 28,
+        VideoQuality.SD: 27,
+    }
+    assert sum(1 for c in cameras if c.quality.is_hd) == 47
+    assert sum(1 for c in cameras if not c.quality.is_hd) == 27
+
+    # Verify HD-before-SD ordering invariant within every city
+    for city in SerbiaCity:
+        city_cams = [c for c in cameras if c.city == city]
+        ranks = [c.quality.sort_rank for c in city_cams]
+        assert ranks == sorted(ranks), f"City {city} cameras are not sorted HD-first: {ranks}"
+
     assert categories == {
         CameraCategory.BRIDGES,
         CameraCategory.SQUARES,
@@ -137,7 +160,7 @@ def test_extract_upstream_html_parsers() -> None:
 
 
 def test_apply_probe_ordering_promotes_healthy_fallback() -> None:
-    camera = build_curated_cameras()[0]
+    camera = next(c for c in build_curated_cameras() if len(c.streams) >= 2)
     hls_url = camera.streams[0].url
     snap_url = camera.streams[1].url
 
@@ -170,18 +193,18 @@ def test_prober_falls_back_to_get_when_head_returns_403() -> None:
 
 def test_whole_graph_json_round_trip_fixed_point() -> None:
     manifest = CatalogManifest(
-        schema_version=2,
-        revision=2026111801,
-        updated_at="2026-11-18T01:45:00Z",
+        schema_version=3,
+        revision=2026111812,
+        updated_at="2026-11-18T12:20:00Z",
         cameras=tuple(build_curated_cameras()),
     )
     first_json = manifest_to_json(manifest)
     raw_obj = json.loads(first_json)
 
-    assert raw_obj["schema_version"] == 2
+    assert raw_obj["schema_version"] == 3
     first_cam = raw_obj["cameras"][0]
     # Verify exact key order matching Kotlin kotlinx.serialization CatalogJsonCodec
-    assert list(first_cam.keys())[:4] == ["id", "name", "city", "timezone"]
+    assert list(first_cam.keys())[:5] == ["id", "name", "city", "quality", "timezone"]
 
     first_hls_stream = first_cam["streams"][0]
     assert "interval_ms" not in first_hls_stream

@@ -69,11 +69,13 @@ import okhttp3.OkHttpClient
 import rs.belgrade.tvcams.R
 import rs.belgrade.tvcams.domain.airquality.AirQualityBand
 import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
+import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
 import rs.belgrade.tvcams.domain.model.SerbiaCity
 import rs.belgrade.tvcams.domain.model.StreamTransportType
+import rs.belgrade.tvcams.domain.model.VideoQuality
 import rs.belgrade.tvcams.domain.oled.PixelOrbitCalculator
 import rs.belgrade.tvcams.domain.oled.PixelOrbitOffset
 import rs.belgrade.tvcams.domain.solar.SolarPhaseCalculator
@@ -561,6 +563,8 @@ private fun StreetInfoHud(
 
                 CityBadge(cityLabel = camera.city.displayLabel())
 
+                QualityBadge(quality = camera.resolvedQuality)
+
                 Text(
                     text = camera.category.displayLabel(),
                     color = TextSecondary,
@@ -641,6 +645,31 @@ private fun CityBadge(cityLabel: String) {
 }
 
 @Composable
+private fun QualityBadge(quality: VideoQuality) {
+    val (bgColor, borderColor, textColor) = when (quality) {
+        VideoQuality.UHD_2K -> Triple(Color(0x3310B981), Color(0x6610B981), Color(0xFF34D399))
+        VideoQuality.FHD_1080P,
+        VideoQuality.HD_720P,
+        -> Triple(Color(0x330EA5E9), Color(0x6638BDF8), AccentSky)
+        VideoQuality.SD -> Triple(Color(0x881E293B), PillBorder, TextMuted)
+    }
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(bgColor)
+            .border(1.dp, borderColor, RoundedCornerShape(6.dp))
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+    ) {
+        Text(
+            text = quality.shortBadgeLabel(),
+            color = textColor,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
+@Composable
 private fun TransportBadge(telemetry: PlaybackTelemetry) {
     val (dotColor, label) = when (telemetry) {
         is PlaybackTelemetry.Connecting -> AccentAmber to stringResource(R.string.status_connecting)
@@ -696,10 +725,15 @@ private fun CameraQuickStrip(
     }
 
     val allCameras = state.cameras
-    val belgradeCount = remember(allCameras) { allCameras.count { it.city == SerbiaCity.BELGRADE } }
-    val noviSadCount = remember(allCameras) { allCameras.count { it.city == SerbiaCity.NOVI_SAD } }
-    val suboticaCount = remember(allCameras) { allCameras.count { it.city == SerbiaCity.SUBOTICA } }
-    val nisCount = remember(allCameras) { allCameras.count { it.city == SerbiaCity.NIS } }
+    val qualityPool = state.qualityFilteredCameras
+    val belgradeCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.BELGRADE } }
+    val zemunCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.ZEMUN } }
+    val noviSadCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.NOVI_SAD } }
+    val suboticaCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.SUBOTICA } }
+    val nisCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.NIS } }
+    val favCount = remember(qualityPool, state.favoriteIds) {
+        qualityPool.count { state.favoriteIds.contains(it.id) }
+    }
 
     val chipColors = FilterChipDefaults.colors(
         containerColor = Color(0xE60F172A),
@@ -728,11 +762,25 @@ private fun CameraQuickStrip(
             ),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        // Row 1: Display Overlays (Clock, Weather, AQI, Sun, OLED guard) & Zap Scope
+        // Row 1: Quality Tier Filter, Display Overlays (Clock, Weather, AQI, Sun, OLED guard) & Zap Scope
         LazyRow(
             contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            item(key = "toggle_quality_filter") {
+                val qualityText = when (state.qualityFilter) {
+                    QualityFilter.ALL -> "Quality: All (${allCameras.size})"
+                    QualityFilter.HD_ONLY -> "Quality: HD only (${state.hdTotalCount})"
+                    QualityFilter.SD_ONLY -> "Quality: SD only (${state.sdTotalCount})"
+                }
+                FilterChip(
+                    selected = state.qualityFilter != QualityFilter.ALL,
+                    onClick = { onAction(TvRemoteAction.CycleQualityFilter) },
+                    colors = chipColors,
+                ) {
+                    Text(text = qualityText)
+                }
+            }
             item(key = "toggle_clock") {
                 FilterChip(
                     selected = state.showClockOverlay,
@@ -820,12 +868,13 @@ private fun CameraQuickStrip(
             }
         }
 
-        // Row 2: Serbia City Tabs & Street Categories
+        // Row 2: Serbia City Tabs (including Zemun) & Street Categories
         val currentStripFilter = state.stripFilter
         val filters: List<Pair<StripFilter, String>> = listOf(
-            StripFilter.All to "${stringResource(R.string.category_all)} (${allCameras.size})",
-            StripFilter.Favorites to "${stringResource(R.string.category_favorites)} (${state.favoriteIds.size})",
+            StripFilter.All to "${stringResource(R.string.category_all)} (${qualityPool.size})",
+            StripFilter.Favorites to "${stringResource(R.string.category_favorites)} ($favCount)",
             StripFilter.City(SerbiaCity.BELGRADE) to "${stringResource(R.string.city_belgrade)} ($belgradeCount)",
+            StripFilter.City(SerbiaCity.ZEMUN) to "${stringResource(R.string.city_zemun)} ($zemunCount)",
             StripFilter.City(SerbiaCity.NOVI_SAD) to "${stringResource(R.string.city_novi_sad)} ($noviSadCount)",
             StripFilter.City(SerbiaCity.SUBOTICA) to "${stringResource(R.string.city_subotica)} ($suboticaCount)",
             StripFilter.City(SerbiaCity.NIS) to "${stringResource(R.string.city_nis)} ($nisCount)",
@@ -858,31 +907,157 @@ private fun CameraQuickStrip(
             }
         }
 
-        // Row 3: Filtered Camera Preview Cards
+        // Row 3: Split HD vs SD Camera Preview Cards
         val visibleCameras = state.stripCameras
+        val hdCameras = state.hdStripCameras
+        val sdCameras = state.sdStripCameras
         val activeId = state.activeCamera?.id
         val favIds = state.favoriteIds
         if (visibleCameras.isEmpty()) {
-            EmptyFavoritesStripNotice(
-                onBrowseAll = { onAction(TvRemoteAction.SelectStripFilter(StripFilter.All)) },
-            )
+            if (state.stripFilter == StripFilter.Favorites && state.favoriteIds.isEmpty()) {
+                EmptyFavoritesStripNotice(
+                    onBrowseAll = { onAction(TvRemoteAction.SelectStripFilter(StripFilter.All)) },
+                )
+            } else {
+                EmptyQualityStripNotice(
+                    onCycleQuality = { onAction(TvRemoteAction.CycleQualityFilter) },
+                )
+            }
         } else {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                items(
-                    items = visibleCameras,
-                    key = { it.id },
-                ) { item ->
-                    CameraPreviewCard(
-                        camera = item,
-                        isPlaying = item.id == activeId,
-                        isFavorite = favIds.contains(item.id),
-                        onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
-                    )
+                if (hdCameras.isNotEmpty()) {
+                    item(key = "section_header_hd") {
+                        QualitySectionCard(
+                            isHd = true,
+                            count = hdCameras.size,
+                        )
+                    }
+                    items(
+                        items = hdCameras,
+                        key = { it.id },
+                    ) { item ->
+                        CameraPreviewCard(
+                            camera = item,
+                            isPlaying = item.id == activeId,
+                            isFavorite = favIds.contains(item.id),
+                            onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
+                        )
+                    }
+                }
+                if (sdCameras.isNotEmpty()) {
+                    item(key = "section_header_sd") {
+                        QualitySectionCard(
+                            isHd = false,
+                            count = sdCameras.size,
+                        )
+                    }
+                    items(
+                        items = sdCameras,
+                        key = { it.id },
+                    ) { item ->
+                        CameraPreviewCard(
+                            camera = item,
+                            isPlaying = item.id == activeId,
+                            isFavorite = favIds.contains(item.id),
+                            onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
+                        )
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun QualitySectionCard(
+    isHd: Boolean,
+    count: Int,
+) {
+    val accentColor = if (isHd) Color(0xFF34D399) else TextMuted
+    val borderColor = if (isHd) Color(0x5510B981) else PillBorder
+    val containerColor = if (isHd) Color(0xD90A1E24) else Color(0xD90F172A)
+
+    Column(
+        modifier = Modifier
+            .width(120.dp)
+            .height(182.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(containerColor)
+            .border(1.dp, borderColor, RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Box(
+            modifier = Modifier
+                .width(28.dp)
+                .height(4.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(accentColor),
+        )
+
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = if (isHd) {
+                    stringResource(R.string.section_hd_title)
+                } else {
+                    stringResource(R.string.section_sd_title)
+                },
+                color = TextPrimary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+            )
+            Text(
+                text = if (isHd) {
+                    stringResource(R.string.section_hd_subtitle)
+                } else {
+                    stringResource(R.string.section_sd_subtitle)
+                },
+                color = accentColor,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 2,
+            )
+        }
+
+        Text(
+            text = "$count cams",
+            style = TabularStyle,
+            color = TextSecondary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
+    }
+}
+
+@Composable
+private fun EmptyQualityStripNotice(
+    onCycleQuality: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = TvOverscanHorizontal, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.empty_quality_heading),
+            color = TextPrimary,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            text = stringResource(R.string.empty_quality_body),
+            color = TextSecondary,
+            fontSize = 14.sp,
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Button(onClick = onCycleQuality) {
+            Text(text = stringResource(R.string.empty_quality_action))
         }
     }
 }
@@ -989,6 +1164,31 @@ private fun CameraPreviewCard(
                             fontSize = 12.sp,
                         )
                     }
+                }
+
+                val camQuality = camera.resolvedQuality
+                val badgeTextColor = when (camQuality) {
+                    VideoQuality.UHD_2K -> Color(0xFF34D399)
+                    VideoQuality.FHD_1080P,
+                    VideoQuality.HD_720P,
+                    -> AccentSky
+                    VideoQuality.SD -> TextMuted
+                }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color(0xD9090D16))
+                        .border(1.dp, Color(0x3394A3B8), RoundedCornerShape(4.dp))
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                ) {
+                    Text(
+                        text = camQuality.shortBadgeLabel(),
+                        color = badgeTextColor,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 }
             }
 

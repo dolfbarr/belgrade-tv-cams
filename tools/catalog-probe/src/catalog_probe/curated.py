@@ -7,6 +7,7 @@ from catalog_probe.models import (
     SerbiaCity,
     StreamDescriptor,
     StreamTransportType,
+    VideoQuality,
 )
 
 NAXI_HEADERS: dict[str, str] = {
@@ -45,6 +46,7 @@ def _naxi_camera(
         id=cam_id,
         name=name,
         city=SerbiaCity.BELGRADE,
+        quality=VideoQuality.SD,
         streets=streets,
         municipality=municipality,
         category=category,
@@ -105,6 +107,7 @@ def _ott_24sedam_camera(
         id=cam_id,
         name=name,
         city=city,
+        quality=VideoQuality.UHD_2K,
         streets=streets,
         municipality=municipality,
         category=category,
@@ -133,6 +136,7 @@ def _toll4all_front_camera(
         id=cam_id,
         name=name,
         city=city,
+        quality=VideoQuality.HD_720P,
         streets=streets,
         municipality=municipality,
         category=CameraCategory.HIGHWAYS,
@@ -193,6 +197,7 @@ def _toll4all_side_camera(
         id=cam_id,
         name=name,
         city=city,
+        quality=VideoQuality.HD_720P,
         streets=streets,
         municipality=municipality,
         category=CameraCategory.HIGHWAYS,
@@ -221,6 +226,7 @@ def _mup_border_camera(
         id=cam_id,
         name=name,
         city=city,
+        quality=VideoQuality.SD,
         streets=streets,
         municipality=municipality,
         category=CameraCategory.HIGHWAYS,
@@ -237,9 +243,16 @@ def _mup_border_camera(
 
 
 def build_curated_cameras() -> list[CameraEntry]:
-    return [
+    city_order: dict[SerbiaCity, int] = {
+        SerbiaCity.BELGRADE: 0,
+        SerbiaCity.ZEMUN: 1,
+        SerbiaCity.NOVI_SAD: 2,
+        SerbiaCity.SUBOTICA: 3,
+        SerbiaCity.NIS: 4,
+    }
+    raw_cameras = [
         # =========================================================================
-        # BELGRADE (40 cameras: 6 Bridges, 11 Squares, 14 Boulevards, 9 Highways)
+        # BELGRADE (40 cameras: 21 HD [11 2K QHD + 10 720p] + 19 SD)
         # =========================================================================
         _naxi_camera(
             cam_id="bg-brankov-most",
@@ -610,22 +623,6 @@ def build_curated_cameras() -> list[CameraEntry]:
             jpg_num=10,
         ),
         _ott_24sedam_camera(
-            cam_id="bg-lakat-nova-galenika",
-            name="Lakat krivina — Nova Galenika",
-            city=SerbiaCity.BELGRADE,
-            streets=("Batajnički drum", "Cara Dušana", "Prilaz Pupinovom mostu"),
-            municipality="Zemun",
-            category=CameraCategory.BOULEVARDS,
-            direction=(
-                "2K QHD pogled na Lakat krivinu u Zemunu na spoju starog novosadskog puta "
-                "i Pupinovog mosta"
-            ),
-            lat=44.8628,
-            lon=20.3634,
-            ott_slug="posta-lakat",
-            poster_url="https://kamere.24sedam.rs/js/cameras/glavna-posta-2.webp",
-        ),
-        _ott_24sedam_camera(
             cam_id="bg-rakovicki-bulevar",
             name="Bulevar patrijarha Pavla — Košutnjak",
             city=SerbiaCity.BELGRADE,
@@ -654,20 +651,7 @@ def build_curated_cameras() -> list[CameraEntry]:
             ott_slug="zarkovo",
             poster_url="https://kamere.24sedam.rs/js/cameras/zarkovo.webp",
         ),
-        # Belgrade Ring & Highway Plazas (9)
-        _ott_24sedam_camera(
-            cam_id="bg-zmaj-autoput",
-            name="Zmaj — Autoput Beograd–Zagreb",
-            city=SerbiaCity.BELGRADE,
-            streets=("Autoput A3 / E-70", "Tošin bunar", "Zemun"),
-            municipality="Zemun / Novi Beograd",
-            category=CameraCategory.HIGHWAYS,
-            direction="2K QHD pogled na zapadni ulaz u Beograd kod Zmaja na koridoru E-70",
-            lat=44.8286,
-            lon=20.3824,
-            ott_slug="zmaj-pumpa",
-            poster_url="https://kamere.24sedam.rs/js/cameras/zmaj-pumpa.webp",
-        ),
+        # Belgrade Ring & Danube / Sava Corridors (10)
         _toll4all_front_camera(
             cam_id="bg-vrcin-ulaz",
             name="Beograd (Vrčin) — Ulaz na autoput",
@@ -691,50 +675,6 @@ def build_curated_cameras() -> list[CameraEntry]:
             pan_num=5,
         ),
         _toll4all_front_camera(
-            cam_id="bg-simanovci-ulaz",
-            name="Šimanovci — Ulaz na autoput",
-            city=SerbiaCity.BELGRADE,
-            streets=("Autoput A3 / E-70", "Dobanovci — Šimanovci"),
-            municipality="Surčin / Pećinci",
-            direction="Zapadni prilaz Beogradu na koridoru E-70, smer od Beograda ka Šidu",
-            lat=44.8691,
-            lon=20.0984,
-            pan_num=12,
-        ),
-        _toll4all_front_camera(
-            cam_id="bg-simanovci-izlaz",
-            name="Šimanovci — Prilaz Beogradu",
-            city=SerbiaCity.BELGRADE,
-            streets=("Autoput A3 / E-70", "Šimanovci — Aerodrom Nikola Tesla"),
-            municipality="Surčin / Pećinci",
-            direction="Zapadni prilaz Beogradu na koridoru E-70, smer ka Surčinu i Beogradu",
-            lat=44.8694,
-            lon=20.0991,
-            pan_num=11,
-        ),
-        _toll4all_front_camera(
-            cam_id="bg-stara-pazova-ulaz",
-            name="Stara Pazova — Ulaz na autoput",
-            city=SerbiaCity.BELGRADE,
-            streets=("Autoput A1 / E-75", "Batajnica — Stara Pazova"),
-            municipality="Zemun / Stara Pazova",
-            direction="Severni prilaz Beogradu na koridoru E-75, smer od Beograda ka Novom Sadu",
-            lat=44.9912,
-            lon=20.2038,
-            pan_num=2,
-        ),
-        _toll4all_front_camera(
-            cam_id="bg-stara-pazova-izlaz",
-            name="Stara Pazova — Prilaz Beogradu",
-            city=SerbiaCity.BELGRADE,
-            streets=("Autoput A1 / E-75", "Stara Pazova — Batajnica"),
-            municipality="Zemun / Stara Pazova",
-            direction="Severni prilaz Beogradu na koridoru E-75, smer iz Novog Sada ka Beogradu",
-            lat=44.9908,
-            lon=20.2044,
-            pan_num=1,
-        ),
-        _toll4all_front_camera(
             cam_id="bg-obrenovac-ulaz",
             name="Obrenovac — Ulaz na Miloš Veliki",
             city=SerbiaCity.BELGRADE,
@@ -756,8 +696,165 @@ def build_curated_cameras() -> list[CameraEntry]:
             lon=20.2341,
             pan_num=3,
         ),
+        _toll4all_side_camera(
+            cam_id="bg-smederevo-ulaz",
+            name="Podunavlje (Smederevo) — Ulaz na A1 ka Beogradu",
+            city=SerbiaCity.BELGRADE,
+            streets=("Autoput A1 / E-75", "Vodanj — Smederevo"),
+            municipality="Grocka / Smederevo",
+            direction=(
+                "Istočni podunavski prilaz Beogradu na koridoru E-75 — uključenje ka Beogradu"
+            ),
+            lat=44.6012,
+            lon=20.8965,
+            side_num=10,
+            include_hls=True,
+        ),
+        _toll4all_side_camera(
+            cam_id="bg-smederevo-izlaz",
+            name="Podunavlje (Smederevo) — Izlaz sa autoputa A1",
+            city=SerbiaCity.BELGRADE,
+            streets=("Autoput A1 / E-75", "Ralja — Smederevo"),
+            municipality="Grocka / Smederevo",
+            direction="Istočni podunavski koridor E-75 — isključenje ka Smederevu i Dunavu",
+            lat=44.6016,
+            lon=20.8959,
+            side_num=9,
+            include_hls=True,
+        ),
+        _toll4all_side_camera(
+            cam_id="bg-pozarevac-ulaz",
+            name="Dunavski koridor (Požarevac) — Ulaz na A1",
+            city=SerbiaCity.BELGRADE,
+            streets=("Autoput A1 / E-75", "Mala Krsna — Požarevac"),
+            municipality="Podunavlje / Požarevac",
+            direction=(
+                "Jugoistočni koridor ka Beogradu — uključenje sa brze saobraćajnice "
+                "Dunavski koridor"
+            ),
+            lat=44.5738,
+            lon=21.0284,
+            side_num=8,
+            include_hls=True,
+        ),
+        _toll4all_side_camera(
+            cam_id="bg-pozarevac-izlaz",
+            name="Dunavski koridor (Požarevac) — Izlaz sa A1",
+            city=SerbiaCity.BELGRADE,
+            streets=("Autoput A1 / E-75", "Požarevac — Veliko Gradište"),
+            municipality="Podunavlje / Požarevac",
+            direction="Isključenje sa autoputa A1 na brzu saobraćajnicu ka Požarevcu i Đerdapu",
+            lat=44.5742,
+            lon=21.0278,
+            side_num=7,
+            include_hls=True,
+        ),
+        _toll4all_front_camera(
+            cam_id="bg-sabac-ulaz",
+            name="Posavina (Šabac — Most na Savi) — Ulaz ka Beogradu",
+            city=SerbiaCity.BELGRADE,
+            streets=("Autoput A8", "Novi most na Savi — Ruma — Beograd"),
+            municipality="Posavina / Šabac",
+            direction=(
+                "Čeona stanica kod novog mosta preko Save na autoputu A8 — smer ka Rumi i Beogradu"
+            ),
+            lat=44.7814,
+            lon=19.6832,
+            pan_num=10,
+        ),
+        _toll4all_front_camera(
+            cam_id="bg-sabac-izlaz",
+            name="Posavina (Šabac — Most na Savi) — Izlaz sa A8",
+            city=SerbiaCity.BELGRADE,
+            streets=("Autoput A8", "Ruma — Šabac — Loznica"),
+            municipality="Posavina / Šabac",
+            direction="Čeona stanica na autoputu A8 posle mosta preko Save — izlaz ka Šapcu",
+            lat=44.7818,
+            lon=19.6826,
+            pan_num=9,
+        ),
         # =========================================================================
-        # NOVI SAD (6 cameras: 4 urban 2K QHD + 2 A1 highway plazas)
+        # ZEMUN (6 HD cameras: 2 urban 2K QHD + 4 Batajnica & Surčin/Dobanovci 720p)
+        # =========================================================================
+        _ott_24sedam_camera(
+            cam_id="bg-lakat-nova-galenika",
+            name="Zemun — Lakat krivina & Nova Galenika",
+            city=SerbiaCity.ZEMUN,
+            streets=("Batajnički drum", "Cara Dušana", "Prilaz Pupinovom mostu"),
+            municipality="Zemun",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "2K QHD pogled na Lakat krivinu u Zemunu na spoju starog novosadskog puta "
+                "i prilaza Pupinovom mostu"
+            ),
+            lat=44.8628,
+            lon=20.3634,
+            ott_slug="posta-lakat",
+            poster_url="https://kamere.24sedam.rs/js/cameras/glavna-posta-2.webp",
+        ),
+        _ott_24sedam_camera(
+            cam_id="bg-zmaj-autoput",
+            name="Zemun — Zmaj & Tošin bunar (Autoput E-70)",
+            city=SerbiaCity.ZEMUN,
+            streets=("Autoput A3 / E-70", "Tošin bunar", "Zemun"),
+            municipality="Zemun",
+            category=CameraCategory.HIGHWAYS,
+            direction=(
+                "2K QHD pogled kod Zmaja u Zemunu na koridor E-70 ka Tošinom bunaru i aerodromu"
+            ),
+            lat=44.8286,
+            lon=20.3824,
+            ott_slug="zmaj-pumpa",
+            poster_url="https://kamere.24sedam.rs/js/cameras/zmaj-pumpa.webp",
+        ),
+        _toll4all_front_camera(
+            cam_id="bg-stara-pazova-izlaz",
+            name="Zemun Sever (Batajnica / Stara Pazova) — Prilaz Zemunu",
+            city=SerbiaCity.ZEMUN,
+            streets=("Autoput A1 / E-75", "Stara Pazova — Batajnica — Zemun"),
+            municipality="Zemun / Stara Pazova",
+            direction="Severni prilaz Zemunu i Batajnici na koridoru E-75 iz smera Novog Sada",
+            lat=44.9908,
+            lon=20.2044,
+            pan_num=1,
+        ),
+        _toll4all_front_camera(
+            cam_id="bg-stara-pazova-ulaz",
+            name="Zemun Sever (Batajnica / Stara Pazova) — Smer Novi Sad",
+            city=SerbiaCity.ZEMUN,
+            streets=("Autoput A1 / E-75", "Zemun — Batajnica — Stara Pazova"),
+            municipality="Zemun / Stara Pazova",
+            direction="Severni izlaz iz Zemuna i Batajnice na koridoru E-75 ka Novom Sadu",
+            lat=44.9912,
+            lon=20.2038,
+            pan_num=2,
+        ),
+        _toll4all_front_camera(
+            cam_id="bg-simanovci-izlaz",
+            name="Zemun Zapad (Dobanovci / Šimanovci) — Prilaz Zemunu",
+            city=SerbiaCity.ZEMUN,
+            streets=("Autoput A3 / E-70", "Šimanovci — Dobanovci — Aerodrom Nikola Tesla"),
+            municipality="Surčin / Zemun",
+            direction=(
+                "Zapadni prilaz petlji Dobanovci, aerodromu Nikola Tesla i Zemunu na koridoru E-70"
+            ),
+            lat=44.8694,
+            lon=20.0991,
+            pan_num=11,
+        ),
+        _toll4all_front_camera(
+            cam_id="bg-simanovci-ulaz",
+            name="Zemun Zapad (Dobanovci / Šimanovci) — Smer Srem",
+            city=SerbiaCity.ZEMUN,
+            streets=("Autoput A3 / E-70", "Zemun — Dobanovci — Šimanovci"),
+            municipality="Surčin / Zemun",
+            direction="Zapadni koridor E-70 od Zemuna i petlje Dobanovci ka Sremu",
+            lat=44.8691,
+            lon=20.0984,
+            pan_num=12,
+        ),
+        # =========================================================================
+        # NOVI SAD (8 HD cameras: 4 urban 2K QHD + 4 A1 & Fruškogorski koridor 720p)
         # =========================================================================
         _ott_24sedam_camera(
             cam_id="ns-pupinova-palata",
@@ -846,25 +943,51 @@ def build_curated_cameras() -> list[CameraEntry]:
             side_num=13,
             include_hls=False,
         ),
+        _toll4all_front_camera(
+            cam_id="ns-ruma-izlaz",
+            name="Fruškogorski koridor (Ruma) — Smer Irig & Novi Sad",
+            city=SerbiaCity.NOVI_SAD,
+            streets=("Autoput E-70 / M-21", "Ruma — Irig — Fruška gora — Novi Sad"),
+            municipality="Ruma / Fruška gora",
+            direction="Južni prilaz Fruškoj gori i Novom Sadu kod petlje Ruma",
+            lat=44.9782,
+            lon=19.8314,
+            pan_num=7,
+        ),
+        _toll4all_front_camera(
+            cam_id="ns-ruma-ulaz",
+            name="Fruškogorski koridor (Ruma) — Ulaz na autoput E-70",
+            city=SerbiaCity.NOVI_SAD,
+            streets=("Autoput A3 / E-70", "Novi Sad — Irig — Ruma"),
+            municipality="Ruma / Fruška gora",
+            direction="Uključenje sa Fruškogorskog pravca na koridor E-70 kod Rume",
+            lat=44.9778,
+            lon=19.8321,
+            pan_num=8,
+        ),
         # =========================================================================
-        # SUBOTICA (6 cameras: MZ Zorka urban cam + 2 A1 plazas + 3 border cams)
+        # SUBOTICA (9 cameras: 1080p Gradski trg + 2 A1 720p + MZ Zorka + 5 border)
         # =========================================================================
         CameraEntry(
-            id="su-mz-zorka",
-            name="Subotica — MZ Zorka (Panorama & Nebo)",
+            id="su-gradski-trg-korzo",
+            name="Subotica — Gradski trg & Narodno pozorište",
             city=SerbiaCity.SUBOTICA,
-            streets=("Proleterskih brigada", "Sutjeska", "MZ Zorka"),
-            municipality="Subotica",
+            quality=VideoQuality.FHD_1080P,
+            streets=("Trg slobode", "Korzo", "Trg republike"),
+            municipality="Centar, Subotica",
             category=CameraCategory.SQUARES,
-            direction="Uživo meteorološka i panoramska kamera iznad severozapadnog dela Subotice",
-            poster_url="https://sumeteo.info/webcam/cam_1.jpg",
-            coordinates=GeoCoordinates(lat=46.1124, lon=19.6548),
+            direction=(
+                "Full HD 1080p pogled na centralni Gradski trg, Narodno pozorište "
+                "i šetalište Korzo u Subotici"
+            ),
+            poster_url="https://kameresrbije.rs/thumbnails/subotica-gradski-trg-58.webp",
+            coordinates=GeoCoordinates(lat=46.1003, lon=19.6656),
             streams=(
                 StreamDescriptor(
                     type=StreamTransportType.SNAPSHOT_POLL,
-                    url="https://sumeteo.info/webcam/cam_1.jpg",
-                    interval_ms=10000,
-                    cache_buster_param="_",
+                    url="https://g0.ipcamlive.com/player/snapshot.php?alias=kameratrg",
+                    interval_ms=4000,
+                    cache_buster_param="t",
                 ),
             ),
         ),
@@ -889,6 +1012,26 @@ def build_curated_cameras() -> list[CameraEntry]:
             lat=45.9896,
             lon=19.7279,
             pan_num=15,
+        ),
+        CameraEntry(
+            id="su-mz-zorka",
+            name="Subotica — MZ Zorka (Panorama & Nebo)",
+            city=SerbiaCity.SUBOTICA,
+            quality=VideoQuality.SD,
+            streets=("Proleterskih brigada", "Sutjeska", "MZ Zorka"),
+            municipality="Subotica",
+            category=CameraCategory.SQUARES,
+            direction="Uživo meteorološka i panoramska kamera iznad severozapadnog dela Subotice",
+            poster_url="https://sumeteo.info/webcam/cam_1.jpg",
+            coordinates=GeoCoordinates(lat=46.1124, lon=19.6548),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://sumeteo.info/webcam/cam_1.jpg",
+                    interval_ms=10000,
+                    cache_buster_param="_",
+                ),
+            ),
         ),
         _mup_border_camera(
             cam_id="su-kelebija-ulaz",
@@ -928,9 +1071,56 @@ def build_curated_cameras() -> list[CameraEntry]:
             hls_path="Horgos/horgos1.m3u8",
             poster_slug="horgos-32",
         ),
+        _mup_border_camera(
+            cam_id="su-djala-ulaz",
+            name="Potisje (GP Đala) — Ulaz u Srbiju",
+            city=SerbiaCity.SUBOTICA,
+            streets=("Državni put II A-104", "Đala — Novi Kneževac — Subotica"),
+            municipality="Severni Banat / Potisje",
+            direction="Severoistočni prilaz Potisju i Subotici na prelazu Đala — ulaz u Srbiju",
+            lat=46.1583,
+            lon=20.1162,
+            hls_path="Djala/djala2.m3u8",
+            poster_slug="djala-29",
+        ),
+        _mup_border_camera(
+            cam_id="su-djala-izlaz",
+            name="Potisje (GP Đala) — Izlaz iz Srbije",
+            city=SerbiaCity.SUBOTICA,
+            streets=("Državni put II A-104", "Novi Kneževac — Đala — Tisasiget"),
+            municipality="Severni Banat / Potisje",
+            direction="Izlaz iz Srbije na prelazu Đala duž reke Tise ka Segedinu",
+            lat=46.1586,
+            lon=20.1157,
+            hls_path="Djala/djala1.m3u8",
+            poster_slug="djala-28",
+        ),
         # =========================================================================
-        # NIŠ (4 cameras: Northern Trupale & Southern Doljevac highway rings)
+        # NIŠ (11 cameras: 3K Vidojevica AllSky + 8 A1/A4 720p + 2 Gradina border)
         # =========================================================================
+        CameraEntry(
+            id="ni-vidojevica-allsky",
+            name="Vidojevica (Opservatorija) — Nebo uživo (AllSky)",
+            city=SerbiaCity.NIS,
+            quality=VideoQuality.UHD_2K,
+            streets=("Astronomska stanica Vidojevica", "Planina Vidojevica (1155 m)"),
+            municipality="Toplica / Nišavski region",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "3K panoramska AllSky kamera Astronomske opservatorije na Vidojevici "
+                "jugozapadno od Niša"
+            ),
+            poster_url="https://vidojevica.aob.rs/images/stories/allsky/ImageLastFTP_AllSKY.jpg",
+            coordinates=GeoCoordinates(lat=43.1414, lon=21.5558),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://vidojevica.aob.rs/images/stories/allsky/ImageLastFTP_AllSKY.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="_",
+                ),
+            ),
+        ),
         _toll4all_side_camera(
             cam_id="ni-sever-ulaz",
             name="Niš Sever (Trupale) — Ulaz na autoput",
@@ -983,4 +1173,75 @@ def build_curated_cameras() -> list[CameraEntry]:
             side_num=5,
             include_hls=True,
         ),
+        _toll4all_side_camera(
+            cam_id="ni-leskovac-ulaz",
+            name="Južna Morava (Leskovac) — Ulaz na A1 ka Nišu",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A1 / E-75", "Leskovac — Brestovac — Niš"),
+            municipality="Južni koridor A1",
+            direction="Južni koridor E-75 — uključenje kod Leskovca u smeru ka Nišu",
+            lat=43.0346,
+            lon=21.9679,
+            side_num=2,
+            include_hls=True,
+        ),
+        _toll4all_side_camera(
+            cam_id="ni-leskovac-izlaz",
+            name="Južna Morava (Leskovac) — Izlaz sa autoputa A1",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A1 / E-75", "Niš — Pečenjevce — Leskovac"),
+            municipality="Južni koridor A1",
+            direction="Južni koridor E-75 od Niša — isključenje sa autoputa A1 ka Leskovcu",
+            lat=43.0342,
+            lon=21.9685,
+            side_num=1,
+            include_hls=True,
+        ),
+        _toll4all_front_camera(
+            cam_id="ni-dimitrovgrad-izlaz",
+            name="Koridor A4 Istok (Dimitrovgrad) — Smer Pirot & Niš",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A4 / E-80", "Dimitrovgrad — Pirot — Bela Palanka — Niš"),
+            municipality="Istočni krak E-80",
+            direction="Istočni krak Koridora 10 (A4 / E-80) u smeru ka Pirotu i Nišu",
+            lat=43.0168,
+            lon=22.7684,
+            pan_num=17,
+        ),
+        _toll4all_front_camera(
+            cam_id="ni-dimitrovgrad-ulaz",
+            name="Koridor A4 Istok (Dimitrovgrad) — Smer Gradina",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A4 / E-80", "Niš — Pirot — Dimitrovgrad"),
+            municipality="Istočni krak E-80",
+            direction="Istočni krak Koridora 10 (A4 / E-80) od Niša i Pirota ka Gradini",
+            lat=43.0164,
+            lon=22.7691,
+            pan_num=18,
+        ),
+        _mup_border_camera(
+            cam_id="ni-gradina-ulaz",
+            name="Autoput E-80 (GP Gradina) — Ulaz ka Nišu",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A4 / E-80", "Gradina — Pirot — Niš"),
+            municipality="Dimitrovgrad / Istočni krak",
+            direction="Istočna kapija Srbije na koridoru E-80 — ulazak u Srbiju ka Pirotu i Nišu",
+            lat=42.9992,
+            lon=22.8016,
+            hls_path="Gradina/gradina1.m3u8",
+            poster_slug="gradina-54",
+        ),
+        _mup_border_camera(
+            cam_id="ni-gradina-izlaz",
+            name="Autoput E-80 (GP Gradina) — Izlaz iz Srbije",
+            city=SerbiaCity.NIS,
+            streets=("Autoput A4 / E-80", "Niš — Dimitrovgrad — Kalotina"),
+            municipality="Dimitrovgrad / Istočni krak",
+            direction="Istočni krak E-80 — izlazak iz Republike Srbije na prelazu Gradina",
+            lat=42.9988,
+            lon=22.8022,
+            hls_path="Gradina/gradina2.m3u8",
+            poster_slug="gradina-55",
+        ),
     ]
+    return sorted(raw_cameras, key=lambda cam: (city_order[cam.city], cam.quality.sort_rank))
