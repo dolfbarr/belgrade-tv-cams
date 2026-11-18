@@ -5,14 +5,47 @@ import rs.belgrade.tvcams.domain.model.VideoQuality
 
 enum class ZapScope {
     ALL,
+    COUNTRY,
     CITY,
     FAVORITES,
     ;
 
     fun displayLabel(): String = when (this) {
         ALL -> "All cameras"
+        COUNTRY -> "Current country"
         CITY -> "Current city"
         FAVORITES -> "Favorites"
+    }
+}
+
+enum class InfoPanelPosition {
+    BOTTOM_CENTER,
+    BOTTOM_RIGHT,
+    BOTTOM_LEFT,
+    TOP_LEFT,
+    TOP_RIGHT,
+    ;
+
+    val isTop: Boolean
+        get() = when (this) {
+            TOP_LEFT, TOP_RIGHT -> true
+            BOTTOM_CENTER, BOTTOM_RIGHT, BOTTOM_LEFT -> false
+        }
+
+    fun next(): InfoPanelPosition = when (this) {
+        BOTTOM_CENTER -> BOTTOM_RIGHT
+        BOTTOM_RIGHT -> BOTTOM_LEFT
+        BOTTOM_LEFT -> TOP_LEFT
+        TOP_LEFT -> TOP_RIGHT
+        TOP_RIGHT -> BOTTOM_CENTER
+    }
+
+    fun displayLabel(): String = when (this) {
+        BOTTOM_CENTER -> "Bottom center"
+        BOTTOM_RIGHT -> "Bottom right"
+        BOTTOM_LEFT -> "Bottom left"
+        TOP_LEFT -> "Top left"
+        TOP_RIGHT -> "Top right"
     }
 }
 
@@ -85,6 +118,7 @@ data class ViewerPreferences(
     val zapScope: ZapScope = ZapScope.ALL,
     val qualityFilter: QualityFilter = QualityFilter.ALL,
     val autoRotateInterval: AutoRotateInterval = AutoRotateInterval.OFF,
+    val infoPanelPosition: InfoPanelPosition = InfoPanelPosition.BOTTOM_CENTER,
     val autoHideHud: Boolean = true,
     val showClockOverlay: Boolean = true,
     val showWeatherOverlay: Boolean = true,
@@ -100,6 +134,7 @@ interface FavoritesRepository {
     suspend fun setZapScope(scope: ZapScope)
     suspend fun setQualityFilter(filter: QualityFilter)
     suspend fun setAutoRotateInterval(interval: AutoRotateInterval)
+    suspend fun setInfoPanelPosition(position: InfoPanelPosition) = Unit
     suspend fun setShowClockOverlay(enabled: Boolean)
     suspend fun setShowWeatherOverlay(enabled: Boolean)
     suspend fun setShowAirQualityOverlay(enabled: Boolean)

@@ -11,16 +11,22 @@ data class HomeChannelSelection(
 object HomeChannelSelector {
     private val FEATURED_IDS_ORDER: List<String> = listOf(
         "bg-kralja-milana-london",
-        "bg-most-na-adi-topcider",
         "bg-lakat-nova-galenika",
-        "bg-zmaj-autoput",
         "ns-pupinova-palata",
-        "ns-varadinski-most",
         "su-gradski-trg-korzo",
-        "su-jug-izlaz",
         "ni-vidojevica-allsky",
-        "ni-sever-izlaz",
         "bg-sava-centar-usce",
+        "ru-spb-palace-bridge",
+        "ru-rov-leninsky-skyline",
+        "ru-tof-yuzhnaya",
+        "es-bcn-3cat-panorama",
+        "es-mad-cibeles",
+        "ro-buh-piata-romana",
+        "bg-most-na-adi-topcider",
+        "bg-zmaj-autoput",
+        "ns-varadinski-most",
+        "su-jug-izlaz",
+        "ni-sever-izlaz",
         "bg-brankov-most",
     )
 
@@ -34,7 +40,7 @@ object HomeChannelSelector {
         if (matchedFavorites.isNotEmpty()) {
             return HomeChannelSelection(
                 isFavoritesMode = true,
-                channelTitle = "Serbia live cams — Favorites",
+                channelTitle = "World live cams — Favorites",
                 cameras = matchedFavorites.take(limit),
             )
         }
@@ -57,7 +63,7 @@ object HomeChannelSelector {
 
         return HomeChannelSelection(
             isFavoritesMode = false,
-            channelTitle = "Serbia live cams — Featured",
+            channelTitle = "World live cams — Featured",
             cameras = curated,
         )
     }

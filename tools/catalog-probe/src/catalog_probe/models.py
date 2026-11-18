@@ -6,12 +6,48 @@ from enum import StrEnum
 from typing import Any
 
 
-class SerbiaCity(StrEnum):
+class CameraCountry(StrEnum):
+    SERBIA = "SERBIA"
+    RUSSIA = "RUSSIA"
+    SPAIN = "SPAIN"
+    ROMANIA = "ROMANIA"
+
+
+class CameraCity(StrEnum):
     BELGRADE = "BELGRADE"
     ZEMUN = "ZEMUN"
     NOVI_SAD = "NOVI_SAD"
     SUBOTICA = "SUBOTICA"
     NIS = "NIS"
+    SAINT_PETERSBURG = "SAINT_PETERSBURG"
+    ROSTOV_ON_DON = "ROSTOV_ON_DON"
+    TOMSK = "TOMSK"
+    BARCELONA = "BARCELONA"
+    MADRID = "MADRID"
+    BUCHAREST = "BUCHAREST"
+
+    @property
+    def default_country(self) -> CameraCountry:
+        if self in (
+            CameraCity.BELGRADE,
+            CameraCity.ZEMUN,
+            CameraCity.NOVI_SAD,
+            CameraCity.SUBOTICA,
+            CameraCity.NIS,
+        ):
+            return CameraCountry.SERBIA
+        if self in (
+            CameraCity.SAINT_PETERSBURG,
+            CameraCity.ROSTOV_ON_DON,
+            CameraCity.TOMSK,
+        ):
+            return CameraCountry.RUSSIA
+        if self in (CameraCity.BARCELONA, CameraCity.MADRID):
+            return CameraCountry.SPAIN
+        return CameraCountry.ROMANIA
+
+
+SerbiaCity = CameraCity
 
 
 class CameraCategory(StrEnum):
@@ -107,26 +143,37 @@ class CameraEntry:
     poster_url: str
     coordinates: GeoCoordinates
     streams: tuple[StreamDescriptor, ...]
-    city: SerbiaCity = SerbiaCity.BELGRADE
+    country: CameraCountry | None = None
+    city: CameraCity = CameraCity.BELGRADE
     quality: VideoQuality = VideoQuality.SD
     timezone: str = "Europe/Belgrade"
     poster_headers: dict[str, str] | None = None
+
+    @property
+    def resolved_country(self) -> CameraCountry:
+        return self.country if self.country is not None else self.city.default_country
 
     def to_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "id": self.id,
             "name": self.name,
-            "city": self.city.value,
-            "quality": self.quality.value,
-            "timezone": self.timezone,
-            "streets": list(self.streets),
-            "municipality": self.municipality,
-            "category": self.category.value,
-            "direction": self.direction,
-            "poster_url": self.poster_url,
-            "coordinates": self.coordinates.to_dict(),
-            "streams": [stream.to_dict() for stream in self.streams],
         }
+        if self.country is not None:
+            payload["country"] = self.country.value
+        payload.update(
+            {
+                "city": self.city.value,
+                "quality": self.quality.value,
+                "timezone": self.timezone,
+                "streets": list(self.streets),
+                "municipality": self.municipality,
+                "category": self.category.value,
+                "direction": self.direction,
+                "poster_url": self.poster_url,
+                "coordinates": self.coordinates.to_dict(),
+                "streams": [stream.to_dict() for stream in self.streams],
+            }
+        )
         if self.poster_headers is not None and len(self.poster_headers) > 0:
             payload["poster_headers"] = dict(self.poster_headers)
         return payload
@@ -137,13 +184,16 @@ class CameraEntry:
         poster_headers = (
             {str(k): str(v) for k, v in raw_poster_headers.items()} if raw_poster_headers else None
         )
-        raw_city = raw.get("city", SerbiaCity.BELGRADE.value)
+        raw_country = raw.get("country")
+        country = CameraCountry(str(raw_country)) if raw_country is not None else None
+        raw_city = raw.get("city", CameraCity.BELGRADE.value)
         raw_quality = raw.get("quality", VideoQuality.SD.value)
         raw_timezone = raw.get("timezone", "Europe/Belgrade")
         return cls(
             id=str(raw["id"]),
             name=str(raw["name"]),
-            city=SerbiaCity(str(raw_city)),
+            country=country,
+            city=CameraCity(str(raw_city)),
             quality=VideoQuality(str(raw_quality)),
             timezone=str(raw_timezone),
             streets=tuple(str(s) for s in raw["streets"]),

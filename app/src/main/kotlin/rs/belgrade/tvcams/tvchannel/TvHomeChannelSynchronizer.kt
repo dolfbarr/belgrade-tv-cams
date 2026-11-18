@@ -54,7 +54,7 @@ class TvHomeChannelSynchronizer(
 
                 val channelBuilder = PreviewChannel.Builder()
                     .setDisplayName(selection.channelTitle)
-                    .setDescription("Live street, bridge, and plaza cameras across Belgrade, Novi Sad, Subotica, and Niš")
+                    .setDescription("Live street, bridge, and skyline cameras across Serbia, Russia, Spain, and Romania")
                     .setAppLinkIntent(appLinkIntent)
                     .setInternalProviderId(CHANNEL_INTERNAL_ID)
                     .setLogo(createChannelLogoBitmap())
@@ -112,6 +112,7 @@ class TvHomeChannelSynchronizer(
             setClassName(appContext.packageName, MainActivity::class.java.name)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
+        val countryLabel = cam.resolvedCountry.displayLabel()
         val cityLabel = cam.city.displayLabel()
         val streetsLabel = cam.streets.joinToString(" · ")
         return PreviewProgram.Builder()
@@ -119,7 +120,7 @@ class TvHomeChannelSynchronizer(
             .setType(TvContractCompat.PreviewProgramColumns.TYPE_EVENT)
             .setLive(true)
             .setTitle(cam.name)
-            .setDescription("$cityLabel · $streetsLabel")
+            .setDescription("$countryLabel · $cityLabel · $streetsLabel")
             .setPosterArtUri(cam.posterUrl.toUri())
             .setPosterArtAspectRatio(TvContractCompat.PreviewProgramColumns.ASPECT_RATIO_16_9)
             .setIntent(launchIntent)

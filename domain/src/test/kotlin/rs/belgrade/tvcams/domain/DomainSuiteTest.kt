@@ -13,10 +13,13 @@ import rs.belgrade.tvcams.domain.catalog.CatalogSeedSource
 import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogClient
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogResult
+import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
+import rs.belgrade.tvcams.domain.model.CameraCity
+import rs.belgrade.tvcams.domain.model.CameraCountry
 import rs.belgrade.tvcams.domain.model.CatalogJsonCodec
 import rs.belgrade.tvcams.domain.model.CatalogManifest
 import rs.belgrade.tvcams.domain.model.GeoCoordinates
@@ -348,6 +351,7 @@ class DomainSuiteTest {
         assertEquals(slavijaWeather, republikeWeather)
         assertEquals(1, upstreamCalls)
         assertEquals("13.7°C · Rain · 15 km/h", slavijaWeather.formattedSummary())
+        assertEquals("13.7°C · 15 km/h", slavijaWeather.compactMetricsLabel())
 
         cachedRepo.getCurrentWeather(45.2543, 19.8457)
         assertEquals(2, upstreamCalls)
@@ -362,6 +366,20 @@ class DomainSuiteTest {
         val instant = Instant.parse("2026-11-18T00:45:30Z")
         assertEquals("01:45", CameraClockFormatter.formatTime(instant, "Europe/Belgrade"))
         assertEquals("01:45", CameraClockFormatter.formatTime(instant, "Invalid/Zone"))
+
+        val eveningInstant = Instant.parse("2026-11-18T16:52:00Z")
+        val viewerZone = ZoneId.of("Europe/Belgrade")
+        val madridClock = CameraClockFormatter.formatDualClock(eveningInstant, "Europe/Madrid", viewerZone)
+        assertTrue(madridClock.isSameZoneTime)
+        assertEquals("17:52 (UTC+1)", madridClock.formattedLabel())
+
+        val spbClock = CameraClockFormatter.formatDualClock(eveningInstant, "Europe/Moscow", viewerZone)
+        assertFalse(spbClock.isSameZoneTime)
+        assertEquals("19:52 (UTC+3) · Local 17:52", spbClock.formattedLabel())
+
+        val tomskClock = CameraClockFormatter.formatDualClock(eveningInstant, "Asia/Tomsk", viewerZone)
+        assertFalse(tomskClock.isSameZoneTime)
+        assertEquals("23:52 (UTC+7) · Local 17:52", tomskClock.formattedLabel())
     }
 
     @Test
@@ -399,6 +417,7 @@ class DomainSuiteTest {
         assertEquals(a1, a2)
         assertEquals(1, aqiCalls)
         assertEquals("AQI 29 Fair · PM2.5 10", a1.formattedSummary())
+        assertEquals("AQI 29", a1.compactLabel())
     }
 
     @Test
@@ -428,6 +447,7 @@ class DomainSuiteTest {
         assertEquals(SolarPhase.NIGHT, nightEarly.phase)
         assertFalse(nightEarly.isGoldenHour)
         assertEquals("Sunrise 06:39", nightEarly.summaryLabel)
+        assertEquals("06:39", nightEarly.targetTimeLabel)
 
         // 06:10 -> Dawn twilight (29m before sunrise)
         val dawn = SolarPhaseCalculator.evaluate(
@@ -470,6 +490,7 @@ class DomainSuiteTest {
         assertEquals(SolarPhase.GOLDEN_HOUR_EVENING, eveningGolden.phase)
         assertTrue(eveningGolden.isGoldenHour)
         assertEquals("Golden hour · Sunset 16:07", eveningGolden.summaryLabel)
+        assertEquals("16:07", eveningGolden.targetTimeLabel)
 
         // 16:30 -> Dusk (23m after sunset)
         val dusk = SolarPhaseCalculator.evaluate(
@@ -694,5 +715,137 @@ class DomainSuiteTest {
         val rotated2 = TvStageReducer.reduce(pureState, TvRemoteAction.ZapNextSilent).state
         assertEquals("bg-2k-1", rotated2.activeCameraId)
         assertEquals(OverlayMode.PURE_CAMERA, rotated2.overlayMode)
+    }
+
+    @Test
+    fun `whole-graph round trip of v4 world catalog preserves 4 countries, 11 cities, and multi-timezone invariants`() {
+        val catalogV4Path = System.getProperty("belgrade.catalog.v4.path")
+        assertNotNull(catalogV4Path, "System property belgrade.catalog.v4.path must be set")
+        val rawDiskJson = File(catalogV4Path).readText(Charsets.UTF_8)
+        val decoded = CatalogJsonCodec.decode(rawDiskJson)
+
+        assertEquals(4, decoded.schemaVersion)
+        assertEquals(128, decoded.cameras.size)
+        assertEquals(
+            mapOf(
+                CameraCountry.SERBIA to 78,
+                CameraCountry.RUSSIA to 23,
+                CameraCountry.SPAIN to 22,
+                CameraCountry.ROMANIA to 5,
+            ),
+            decoded.cameras.groupingBy { it.resolvedCountry }.eachCount(),
+        )
+        assertEquals(11, decoded.cameras.map { it.city }.toSet().size)
+        assertTrue(decoded.cameras.filter { it.city == CameraCity.TOMSK }.all { it.timezone == "Asia/Tomsk" })
+        assertTrue(decoded.cameras.filter { it.city == CameraCity.SAINT_PETERSBURG }.all { it.timezone == "Europe/Moscow" })
+        assertTrue(decoded.cameras.filter { it.city == CameraCity.ROSTOV_ON_DON }.all { it.timezone == "Europe/Moscow" })
+        assertTrue(decoded.cameras.filter { it.city == CameraCity.MADRID }.all { it.timezone == "Europe/Madrid" })
+        assertTrue(decoded.cameras.filter { it.city == CameraCity.BARCELONA }.all { it.timezone == "Europe/Madrid" })
+        assertTrue(decoded.cameras.filter { it.city == CameraCity.BUCHAREST }.all { it.timezone == "Europe/Bucharest" })
+
+        val featured = HomeChannelSelector.selectChannelCameras(
+            cameras = decoded.cameras,
+            favoriteIds = emptySet(),
+            maxItems = 12,
+        )
+        assertEquals("World live cams — Featured", featured.channelTitle)
+        assertEquals(CameraCountry.entries.toSet(), featured.cameras.map { it.resolvedCountry }.toSet())
+        assertEquals(CameraCity.entries.toSet(), featured.cameras.map { it.city }.toSet())
+
+        val firstEncode = CatalogJsonCodec.encode(decoded)
+        val reDecoded = CatalogJsonCodec.decode(firstEncode)
+        val secondEncode = CatalogJsonCodec.encode(reDecoded)
+
+        assertEquals(decoded, reDecoded)
+        assertEquals(firstEncode, secondEncode)
+        assertEquals(rawDiskJson, firstEncode)
+    }
+
+    @Test
+    fun `country grouping, contextual city scope, country zapping, and bottom-center default panel position`() {
+        val cams = listOf(
+            sampleCamera("bg-hd", "Belgrade London", CameraCity.BELGRADE, quality = VideoQuality.UHD_2K),
+            sampleCamera("spb-hd", "Palace Bridge", CameraCity.SAINT_PETERSBURG, quality = VideoQuality.FHD_1080P),
+            sampleCamera("tof-sd", "Tomsky Lane", CameraCity.TOMSK, quality = VideoQuality.SD),
+            sampleCamera("bcn-sd", "Port Olímpic", CameraCity.BARCELONA, quality = VideoQuality.SD),
+            sampleCamera("mad-hd", "Plaza de Cibeles", CameraCity.MADRID, quality = VideoQuality.HD_720P),
+            sampleCamera("buh-hd", "Piața Romană", CameraCity.BUCHAREST, quality = VideoQuality.FHD_1080P),
+        )
+        var state = TvStageState.initial(
+            cameras = cams,
+            favoriteIds = setOf("buh-hd"),
+            initialCameraId = "spb-hd",
+        )
+
+        // Default panel position must be BOTTOM_CENTER
+        assertEquals(InfoPanelPosition.BOTTOM_CENTER, state.infoPanelPosition)
+        assertFalse(state.infoPanelPosition.isTop)
+
+        // Cycle BOTTOM_CENTER -> BOTTOM_RIGHT -> BOTTOM_LEFT -> TOP_LEFT -> TOP_RIGHT -> BOTTOM_CENTER
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleInfoPanelPosition).state
+        assertEquals(InfoPanelPosition.BOTTOM_RIGHT, state.infoPanelPosition)
+        assertEquals("Panel position: Bottom right", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleInfoPanelPosition).state
+        assertEquals(InfoPanelPosition.BOTTOM_LEFT, state.infoPanelPosition)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleInfoPanelPosition).state
+        assertEquals(InfoPanelPosition.TOP_LEFT, state.infoPanelPosition)
+        assertTrue(state.infoPanelPosition.isTop)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleInfoPanelPosition).state
+        assertEquals(InfoPanelPosition.TOP_RIGHT, state.infoPanelPosition)
+        assertTrue(state.infoPanelPosition.isTop)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.CycleInfoPanelPosition).state
+        assertEquals(InfoPanelPosition.BOTTOM_CENTER, state.infoPanelPosition)
+
+        // Strip groups cameras per country (Serbia -> Russia -> Spain -> Romania), HD before SD within each country
+        assertNull(state.selectedStripCountry)
+        assertEquals(
+            listOf(CameraCountry.SERBIA, CameraCountry.RUSSIA, CameraCountry.SPAIN, CameraCountry.ROMANIA),
+            state.stripCountryGroups.map { it.country },
+        )
+        val spainGroup = state.stripCountryGroups.first { it.country == CameraCountry.SPAIN }
+        assertEquals(listOf("mad-hd"), spainGroup.hdCameras.map { it.id })
+        assertEquals(listOf("bcn-sd"), spainGroup.sdCameras.map { it.id })
+
+        // Selecting Russia country filter scopes strip to Russia (HD first, then SD) and exposes Russian cities
+        state = TvStageReducer.reduce(
+            state,
+            TvRemoteAction.SelectStripFilter(StripFilter.Country(CameraCountry.RUSSIA)),
+        ).state
+        assertEquals(CameraCountry.RUSSIA, state.selectedStripCountry)
+        assertEquals(listOf("spb-hd", "tof-sd"), state.stripCameras.map { it.id })
+        assertEquals(
+            listOf(CameraCity.SAINT_PETERSBURG, CameraCity.ROSTOV_ON_DON, CameraCity.TOMSK),
+            CameraCity.citiesFor(CameraCountry.RUSSIA),
+        )
+
+        // Selecting Tomsk city keeps selectedStripCountry == RUSSIA
+        state = TvStageReducer.reduce(
+            state,
+            TvRemoteAction.SelectStripFilter(StripFilter.City(CameraCity.TOMSK)),
+        ).state
+        assertEquals(CameraCountry.RUSSIA, state.selectedStripCountry)
+        assertEquals(listOf("tof-sd"), state.stripCameras.map { it.id })
+
+        // Multi-country ZapScope cycles ALL -> COUNTRY (Russia: spb-hd, tof-sd) -> CITY (Saint Petersburg: spb-hd) -> FAVORITES (buh-hd) -> ALL
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
+        assertEquals(ZapScope.COUNTRY, state.zapScope)
+        assertEquals(listOf("spb-hd", "tof-sd"), state.zapPlaylist.map { it.id })
+        assertEquals("Zapping Russia (2)", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
+        assertEquals(ZapScope.CITY, state.zapScope)
+        assertEquals(listOf("spb-hd"), state.zapPlaylist.map { it.id })
+        assertEquals("Zapping Saint Petersburg (1)", state.noticeMessage)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
+        assertEquals(ZapScope.FAVORITES, state.zapScope)
+        assertEquals(listOf("buh-hd"), state.zapPlaylist.map { it.id })
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
+        assertEquals(ZapScope.ALL, state.zapScope)
     }
 }

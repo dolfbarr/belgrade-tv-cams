@@ -70,11 +70,13 @@ import okhttp3.OkHttpClient
 import rs.belgrade.tvcams.R
 import rs.belgrade.tvcams.domain.airquality.AirQualityBand
 import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
+import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
-import rs.belgrade.tvcams.domain.model.SerbiaCity
+import rs.belgrade.tvcams.domain.model.CameraCity
+import rs.belgrade.tvcams.domain.model.CameraCountry
 import rs.belgrade.tvcams.domain.model.StreamTransportType
 import rs.belgrade.tvcams.domain.model.VideoQuality
 import rs.belgrade.tvcams.domain.oled.PixelOrbitCalculator
@@ -83,6 +85,7 @@ import rs.belgrade.tvcams.domain.solar.SolarPhaseCalculator
 import rs.belgrade.tvcams.domain.solar.SolarStatus
 import rs.belgrade.tvcams.domain.solar.SolarWindow
 import rs.belgrade.tvcams.domain.time.CameraClockFormatter
+import rs.belgrade.tvcams.domain.time.DualClockReading
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.StripFilter
 import rs.belgrade.tvcams.domain.tv.TvKeyCode
@@ -136,7 +139,7 @@ fun CameraStageScreen(
     val timezoneId = activeCam?.timezone ?: "Europe/Belgrade"
     val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
 
-    val clockState = rememberCameraClockText(
+    val clockState = rememberDualCameraClock(
         timezoneId = timezoneId,
         enabled = state.showClockOverlay,
     )
@@ -196,39 +199,95 @@ fun CameraStageScreen(
             modifier = Modifier.fillMaxSize(),
         )
 
-        // Layer 1: Non-blocking top-right status / notice badges inside TV safe area
+        val panelPosition = state.infoPanelPosition
+        val statusBoxAlignment = if (panelPosition == InfoPanelPosition.TOP_RIGHT) {
+            Alignment.TopStart
+        } else {
+            Alignment.TopEnd
+        }
+        val statusHorizontalAlignment = if (panelPosition == InfoPanelPosition.TOP_RIGHT) {
+            Alignment.Start
+        } else {
+            Alignment.End
+        }
+
+        // Layer 1: Non-blocking top status / notice badges inside TV safe area
         TopStatusLayer(
             noticeMessage = state.noticeMessage,
             telemetry = telemetry,
+            horizontalAlignment = statusHorizontalAlignment,
             modifier = Modifier
-                .align(Alignment.TopEnd)
+                .align(statusBoxAlignment)
                 .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical)
                 .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
         )
 
-        // Layer 2: Unified Bottom-Right Info Corner (Camera HUD + Ambient Clock/Weather/AQI/Sun)
-        val clockText = if (state.showClockOverlay) clockState.value else null
-        val weatherSummary = if (state.showWeatherOverlay) currentWeather?.formattedSummary() else null
+        // Layer 2: Configurable Info Panel (default Bottom Center) with Current View Name + Ambient Telemetry
+        val cameraName = activeCam?.name
+        val cityLabel = activeCam?.city?.displayLabel()
+        val country = activeCam?.resolvedCountry
+        val clockReading = if (state.showClockOverlay) clockState.value else null
+        val weatherModel = if (state.showWeatherOverlay) currentWeather else null
         val aqiModel = if (state.showAirQualityOverlay) currentAirQuality else null
         val solarModel = if (state.showSolarOverlay) solarState.value else null
-        val showAmbientBar = !clockText.isNullOrBlank() ||
-            !weatherSummary.isNullOrBlank() ||
+        val showAmbientBar = !cameraName.isNullOrBlank() ||
+            clockReading != null ||
+            weatherModel != null ||
             aqiModel != null ||
             solarModel != null
 
+        val panelBoxAlignment = when (panelPosition) {
+            InfoPanelPosition.BOTTOM_CENTER -> Alignment.BottomCenter
+            InfoPanelPosition.BOTTOM_RIGHT -> Alignment.BottomEnd
+            InfoPanelPosition.BOTTOM_LEFT -> Alignment.BottomStart
+            InfoPanelPosition.TOP_LEFT -> Alignment.TopStart
+            InfoPanelPosition.TOP_RIGHT -> Alignment.TopEnd
+        }
+        val panelColumnAlignment = when (panelPosition) {
+            InfoPanelPosition.BOTTOM_CENTER -> Alignment.CenterHorizontally
+            InfoPanelPosition.BOTTOM_RIGHT,
+            InfoPanelPosition.TOP_RIGHT,
+            -> Alignment.End
+            InfoPanelPosition.BOTTOM_LEFT,
+            InfoPanelPosition.TOP_LEFT,
+            -> Alignment.Start
+        }
+
         if (state.overlayMode != OverlayMode.QUICK_STRIP) {
+            val panelPadding = if (panelPosition.isTop) {
+                Modifier.padding(
+                    start = TvOverscanHorizontal,
+                    end = TvOverscanHorizontal,
+                    top = TvOverscanVertical,
+                )
+            } else {
+                Modifier.padding(
+                    start = TvOverscanHorizontal,
+                    end = TvOverscanHorizontal,
+                    bottom = TvOverscanVertical,
+                )
+            }
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(
-                        start = TvOverscanHorizontal,
-                        end = TvOverscanHorizontal,
-                        bottom = TvOverscanVertical,
-                    )
+                    .align(panelBoxAlignment)
+                    .then(panelPadding)
                     .offset(x = oledOrbit.dxDp.dp, y = oledOrbit.dyDp.dp),
-                horizontalAlignment = Alignment.End,
+                horizontalAlignment = panelColumnAlignment,
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
+                if (panelPosition.isTop && showAmbientBar) {
+                    AmbientClockWeatherBar(
+                        cameraName = cameraName,
+                        cityLabel = cityLabel,
+                        country = country,
+                        clockReading = clockReading,
+                        weather = weatherModel,
+                        airQuality = aqiModel,
+                        solarStatus = solarModel,
+                        horizontalAlignment = panelColumnAlignment,
+                    )
+                }
+
                 AnimatedVisibility(
                     visible = state.overlayMode == OverlayMode.HUD_VISIBLE && activeCam != null,
                     enter = fadeIn(),
@@ -247,13 +306,16 @@ fun CameraStageScreen(
                     }
                 }
 
-                if (showAmbientBar) {
+                if (!panelPosition.isTop && showAmbientBar) {
                     AmbientClockWeatherBar(
-                        clockText = clockText,
-                        weatherSummary = weatherSummary,
+                        cameraName = cameraName,
+                        cityLabel = cityLabel,
+                        country = country,
+                        clockReading = clockReading,
+                        weather = weatherModel,
                         airQuality = aqiModel,
                         solarStatus = solarModel,
-                        cityLabel = activeCam?.city?.displayLabel(),
+                        horizontalAlignment = panelColumnAlignment,
                     )
                 }
             }
@@ -276,20 +338,20 @@ fun CameraStageScreen(
 }
 
 @Composable
-private fun rememberCameraClockText(
+private fun rememberDualCameraClock(
     timezoneId: String,
     enabled: Boolean,
-): State<String> = produceState(
-    initialValue = if (enabled) CameraClockFormatter.formatTime(Instant.now(), timezoneId) else "",
+): State<DualClockReading?> = produceState(
+    initialValue = if (enabled) CameraClockFormatter.formatDualClock(Instant.now(), timezoneId) else null,
     key1 = timezoneId,
     key2 = enabled,
 ) {
     if (!enabled) {
-        value = ""
+        value = null
         return@produceState
     }
     while (isActive) {
-        value = CameraClockFormatter.formatTime(Instant.now(), timezoneId)
+        value = CameraClockFormatter.formatDualClock(Instant.now(), timezoneId)
         val remainder = System.currentTimeMillis() % 60_000L
         val sleepMs = (60_000L - remainder).coerceIn(500L, 60_000L)
         delay(sleepMs)
@@ -346,91 +408,189 @@ private fun rememberPixelOrbitOffset(
 
 @Composable
 private fun AmbientClockWeatherBar(
-    clockText: String?,
-    weatherSummary: String?,
+    cameraName: String?,
+    cityLabel: String?,
+    country: CameraCountry?,
+    clockReading: DualClockReading?,
+    weather: CurrentWeather?,
     airQuality: CurrentAirQuality?,
     solarStatus: SolarStatus?,
-    cityLabel: String?,
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     modifier: Modifier = Modifier,
 ) {
-    var hasPreceding = false
+    val hasTelemetry = clockReading != null ||
+        weather != null ||
+        airQuality != null ||
+        solarStatus != null
 
-    Row(
+    Column(
         modifier = modifier
+            .widthIn(max = 840.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(PillSurface)
             .border(1.dp, PillBorder, RoundedCornerShape(10.dp))
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+            .padding(horizontal = 16.dp, vertical = 9.dp),
+        horizontalAlignment = horizontalAlignment,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        if (!clockText.isNullOrBlank()) {
-            Text(
-                text = clockText,
-                style = TabularStyle,
-                color = TextPrimary,
-                fontSize = 19.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            hasPreceding = true
-        }
-
-        if (!weatherSummary.isNullOrBlank()) {
-            if (hasPreceding) SeparatorDot()
-            val labeledWeather = if (!cityLabel.isNullOrBlank()) {
-                "$cityLabel · $weatherSummary"
-            } else {
-                weatherSummary
-            }
-            Text(
-                text = labeledWeather,
-                style = TabularStyle,
-                color = TextSecondary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            hasPreceding = true
-        }
-
-        if (airQuality != null) {
-            if (hasPreceding) SeparatorDot()
-            val bandColor = aqiBandColor(airQuality.band)
+        if (!cameraName.isNullOrBlank()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Box(
-                    modifier = Modifier
-                        .width(8.dp)
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(bandColor),
-                )
                 Text(
-                    text = airQuality.formattedSummary(),
-                    style = TabularStyle,
+                    text = cameraName,
                     color = TextPrimary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 540.dp),
                 )
+                val countryLabel = country?.displayLabel()
+                val locationTag = when {
+                    !cityLabel.isNullOrBlank() && !countryLabel.isNullOrBlank() ->
+                        "$cityLabel, $countryLabel"
+                    !cityLabel.isNullOrBlank() -> cityLabel
+                    !countryLabel.isNullOrBlank() -> countryLabel
+                    else -> null
+                }
+                if (locationTag != null || country != null) {
+                    SeparatorDot()
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        if (country != null) {
+                            CountryFlagIcon(
+                                country = country,
+                                width = 18.dp,
+                                height = 12.dp,
+                            )
+                        }
+                        if (locationTag != null) {
+                            Text(
+                                text = locationTag,
+                                color = AccentSky,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                maxLines = 1,
+                            )
+                        }
+                    }
+                }
             }
-            hasPreceding = true
         }
 
-        if (solarStatus != null) {
-            if (hasPreceding) SeparatorDot()
-            val isGolden = solarStatus.isGoldenHour
-            Text(
-                text = solarStatus.summaryLabel,
-                style = TabularStyle,
-                color = if (isGolden) AccentAmber else TextSecondary,
-                fontSize = 14.sp,
-                fontWeight = if (isGolden) FontWeight.SemiBold else FontWeight.Medium,
-                maxLines = 1,
-            )
+        if (hasTelemetry) {
+            var hasPreceding = false
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                if (clockReading != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    ) {
+                        Text(
+                            text = clockReading.cameraTime,
+                            style = TabularStyle,
+                            color = TextPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            text = clockReading.cameraUtcOffsetLabel,
+                            style = TabularStyle,
+                            color = AccentSky,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        if (!clockReading.isSameZoneTime) {
+                            Text(
+                                text = "· Local ${clockReading.localTime}",
+                                style = TabularStyle,
+                                color = TextSecondary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                    }
+                    hasPreceding = true
+                }
+
+                if (weather != null) {
+                    if (hasPreceding) SeparatorDot()
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        WeatherConditionIcon(
+                            condition = weather.condition,
+                            isDay = weather.isDay,
+                            size = 17.dp,
+                        )
+                        Text(
+                            text = weather.compactMetricsLabel(),
+                            style = TabularStyle,
+                            color = TextSecondary,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1,
+                        )
+                    }
+                    hasPreceding = true
+                }
+
+                if (airQuality != null) {
+                    if (hasPreceding) SeparatorDot()
+                    val bandColor = aqiBandColor(airQuality.band)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(8.dp)
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(bandColor),
+                        )
+                        Text(
+                            text = airQuality.compactLabel(),
+                            style = TabularStyle,
+                            color = TextPrimary,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1,
+                        )
+                    }
+                    hasPreceding = true
+                }
+
+                if (solarStatus != null) {
+                    if (hasPreceding) SeparatorDot()
+                    val isGolden = solarStatus.isGoldenHour
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    ) {
+                        SolarPhaseIcon(
+                            phase = solarStatus.phase,
+                            size = 17.dp,
+                        )
+                        Text(
+                            text = solarStatus.targetTimeLabel,
+                            style = TabularStyle,
+                            color = if (isGolden) AccentAmber else TextSecondary,
+                            fontSize = 13.sp,
+                            fontWeight = if (isGolden) FontWeight.SemiBold else FontWeight.Medium,
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -479,11 +639,12 @@ private fun mapAndroidKeyCode(keyCode: Int): TvKeyCode = when (keyCode) {
 private fun TopStatusLayer(
     noticeMessage: String?,
     telemetry: PlaybackTelemetry,
+    horizontalAlignment: Alignment.Horizontal = Alignment.End,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
-        horizontalAlignment = Alignment.End,
+        horizontalAlignment = horizontalAlignment,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (noticeMessage != null) {
@@ -543,7 +704,7 @@ private fun StreetInfoHud(
 ) {
     Column(
         modifier = Modifier
-            .widthIn(min = 460.dp, max = 560.dp)
+            .widthIn(min = 480.dp, max = 640.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(HudCardSurface)
             .border(1.dp, PillBorder, RoundedCornerShape(14.dp))
@@ -561,6 +722,8 @@ private fun StreetInfoHud(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
             )
+
+            CountryBadge(country = camera.resolvedCountry)
 
             CityBadge(cityLabel = camera.city.displayLabel())
 
@@ -622,6 +785,31 @@ private fun StreetInfoHud(
             fontSize = 11.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun CountryBadge(country: CameraCountry) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(Color(0x331E293B))
+            .border(1.dp, PillBorder, RoundedCornerShape(6.dp))
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        CountryFlagIcon(
+            country = country,
+            width = 16.dp,
+            height = 11.dp,
+        )
+        Text(
+            text = country.displayLabel(),
+            color = TextPrimary,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
         )
     }
 }
@@ -719,20 +907,21 @@ private fun CameraQuickStrip(
     isScreensaverMode: Boolean,
     onAction: (TvRemoteAction) -> Unit,
 ) {
-    val defaultCityChipFocusRequester = remember { FocusRequester() }
+    val defaultCountryChipFocusRequester = remember { FocusRequester() }
     val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
 
     LaunchedEffect(Unit) {
-        defaultCityChipFocusRequester.requestFocus()
+        defaultCountryChipFocusRequester.requestFocus()
     }
 
     val allCameras = state.cameras
     val qualityPool = state.qualityFilteredCameras
-    val belgradeCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.BELGRADE } }
-    val zemunCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.ZEMUN } }
-    val noviSadCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.NOVI_SAD } }
-    val suboticaCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.SUBOTICA } }
-    val nisCount = remember(qualityPool) { qualityPool.count { it.city == SerbiaCity.NIS } }
+    val countryCounts = remember(qualityPool) {
+        qualityPool.groupingBy { it.resolvedCountry }.eachCount()
+    }
+    val cityCounts = remember(qualityPool) {
+        qualityPool.groupingBy { it.city }.eachCount()
+    }
     val favCount = remember(qualityPool, state.favoriteIds) {
         qualityPool.count { state.favoriteIds.contains(it.id) }
     }
@@ -754,17 +943,17 @@ private fun CameraQuickStrip(
             .background(
                 Brush.verticalGradient(
                     0.00f to StageScrimTop,
-                    0.16f to Color(0xDF080D1A),
+                    0.14f to Color(0xDF080D1A),
                     1.00f to Color(0xFA080D1A),
                 ),
             )
             .padding(
-                top = 32.dp,
+                top = 24.dp,
                 bottom = TvOverscanVertical,
             ),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Row 1: Quality Tier Filter, Display Overlays (Clock, Weather, AQI, Sun, OLED guard) & Zap Scope
+        // Row 1: Quality Tier, Auto-Rotate, Panel Position, Zap Scope & Display Overlays
         LazyRow(
             contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -795,6 +984,26 @@ private fun CameraQuickStrip(
                     colors = chipColors,
                 ) {
                     Text(text = rotateText)
+                }
+            }
+            item(key = "toggle_panel_position") {
+                val panelText = "Panel: ${state.infoPanelPosition.displayLabel()}"
+                FilterChip(
+                    selected = state.infoPanelPosition != InfoPanelPosition.BOTTOM_CENTER,
+                    onClick = { onAction(TvRemoteAction.CycleInfoPanelPosition) },
+                    colors = chipColors,
+                ) {
+                    Text(text = panelText)
+                }
+            }
+            item(key = "toggle_zap_scope") {
+                val scopeText = "Zap: ${state.zapScope.displayLabel()}"
+                FilterChip(
+                    selected = state.zapScope != ZapScope.ALL,
+                    onClick = { onAction(TvRemoteAction.ToggleZapScope) },
+                    colors = chipColors,
+                ) {
+                    Text(text = scopeText)
                 }
             }
             item(key = "toggle_clock") {
@@ -872,61 +1081,155 @@ private fun CameraQuickStrip(
                     )
                 }
             }
-            item(key = "toggle_zap_scope") {
-                val scopeText = "Zap: ${state.zapScope.displayLabel()}"
-                FilterChip(
-                    selected = state.zapScope != ZapScope.ALL,
-                    onClick = { onAction(TvRemoteAction.ToggleZapScope) },
-                    colors = chipColors,
-                ) {
-                    Text(text = scopeText)
-                }
-            }
         }
 
-        // Row 2: Serbia City Tabs (including Zemun) & Street Categories
+        // Row 2: Country Grouping Tabs & Street Categories
         val currentStripFilter = state.stripFilter
-        val filters: List<Pair<StripFilter, String>> = listOf(
-            StripFilter.All to "${stringResource(R.string.category_all)} (${qualityPool.size})",
-            StripFilter.Favorites to "${stringResource(R.string.category_favorites)} ($favCount)",
-            StripFilter.City(SerbiaCity.BELGRADE) to "${stringResource(R.string.city_belgrade)} ($belgradeCount)",
-            StripFilter.City(SerbiaCity.ZEMUN) to "${stringResource(R.string.city_zemun)} ($zemunCount)",
-            StripFilter.City(SerbiaCity.NOVI_SAD) to "${stringResource(R.string.city_novi_sad)} ($noviSadCount)",
-            StripFilter.City(SerbiaCity.SUBOTICA) to "${stringResource(R.string.city_subotica)} ($suboticaCount)",
-            StripFilter.City(SerbiaCity.NIS) to "${stringResource(R.string.city_nis)} ($nisCount)",
-            StripFilter.Category(CameraCategory.BRIDGES) to stringResource(R.string.category_bridges),
-            StripFilter.Category(CameraCategory.SQUARES) to stringResource(R.string.category_squares),
-            StripFilter.Category(CameraCategory.BOULEVARDS) to stringResource(R.string.category_boulevards),
-            StripFilter.Category(CameraCategory.HIGHWAYS) to stringResource(R.string.category_highways),
-        )
+        val selectedCountry = state.selectedStripCountry
+        val countryAndCategoryFilters: List<Triple<StripFilter, String, Boolean>> = buildList {
+            add(
+                Triple(
+                    StripFilter.All,
+                    "${stringResource(R.string.category_all)} (${qualityPool.size})",
+                    currentStripFilter == StripFilter.All,
+                ),
+            )
+            add(
+                Triple(
+                    StripFilter.Favorites,
+                    "${stringResource(R.string.category_favorites)} ($favCount)",
+                    currentStripFilter == StripFilter.Favorites,
+                ),
+            )
+            for (country in CameraCountry.entries) {
+                val count = countryCounts[country] ?: 0
+                add(
+                    Triple(
+                        StripFilter.Country(country),
+                        "${country.displayLabel()} ($count)",
+                        selectedCountry == country,
+                    ),
+                )
+            }
+            add(
+                Triple(
+                    StripFilter.Category(CameraCategory.BRIDGES),
+                    stringResource(R.string.category_bridges),
+                    currentStripFilter == StripFilter.Category(CameraCategory.BRIDGES),
+                ),
+            )
+            add(
+                Triple(
+                    StripFilter.Category(CameraCategory.SQUARES),
+                    stringResource(R.string.category_squares),
+                    currentStripFilter == StripFilter.Category(CameraCategory.SQUARES),
+                ),
+            )
+            add(
+                Triple(
+                    StripFilter.Category(CameraCategory.BOULEVARDS),
+                    stringResource(R.string.category_boulevards),
+                    currentStripFilter == StripFilter.Category(CameraCategory.BOULEVARDS),
+                ),
+            )
+            add(
+                Triple(
+                    StripFilter.Category(CameraCategory.HIGHWAYS),
+                    stringResource(R.string.category_highways),
+                    currentStripFilter == StripFilter.Category(CameraCategory.HIGHWAYS),
+                ),
+            )
+        }
 
         LazyRow(
             contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(filters.size) { idx ->
-                val (filterItem, title) = filters[idx]
-                val selected = currentStripFilter == filterItem
+            items(countryAndCategoryFilters.size) { idx ->
+                val (filterItem, title, isSelected) = countryAndCategoryFilters[idx]
                 val chipModifier = if (idx == 0) {
-                    Modifier.focusRequester(defaultCityChipFocusRequester)
+                    Modifier.focusRequester(defaultCountryChipFocusRequester)
                 } else {
                     Modifier
                 }
                 FilterChip(
-                    selected = selected,
+                    selected = isSelected,
                     onClick = { onAction(TvRemoteAction.SelectStripFilter(filterItem)) },
                     colors = chipColors,
                     modifier = chipModifier,
                 ) {
-                    Text(text = title)
+                    if (filterItem is StripFilter.Country) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(7.dp),
+                        ) {
+                            CountryFlagIcon(
+                                country = filterItem.country,
+                                width = 18.dp,
+                                height = 12.dp,
+                            )
+                            Text(text = title)
+                        }
+                    } else {
+                        Text(text = title)
+                    }
                 }
             }
         }
 
-        // Row 3: Split HD vs SD Camera Preview Cards
+        // Row 3: Contextual City Filter Row (Cities of selected Country, or all World Cities)
+        val cityFilters: List<Pair<StripFilter, String>> = buildList {
+            if (selectedCountry != null) {
+                val totalCountry = countryCounts[selectedCountry] ?: 0
+                add(
+                    StripFilter.Country(selectedCountry) to
+                        "All ${selectedCountry.displayLabel()} ($totalCountry)",
+                )
+                for (city in CameraCity.citiesFor(selectedCountry)) {
+                    val count = cityCounts[city] ?: 0
+                    add(StripFilter.City(city) to "${city.displayLabel()} ($count)")
+                }
+            } else {
+                for (city in CameraCity.entries) {
+                    val count = cityCounts[city] ?: 0
+                    add(StripFilter.City(city) to "${city.displayLabel()} ($count)")
+                }
+            }
+        }
+
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(cityFilters.size) { idx ->
+                val (filterItem, title) = cityFilters[idx]
+                FilterChip(
+                    selected = currentStripFilter == filterItem,
+                    onClick = { onAction(TvRemoteAction.SelectStripFilter(filterItem)) },
+                    colors = chipColors,
+                ) {
+                    if (filterItem is StripFilter.Country) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(7.dp),
+                        ) {
+                            CountryFlagIcon(
+                                country = filterItem.country,
+                                width = 18.dp,
+                                height = 12.dp,
+                            )
+                            Text(text = title)
+                        }
+                    } else {
+                        Text(text = title)
+                    }
+                }
+            }
+        }
+
+        // Row 4: Country-Grouped Camera Preview Cards (with HD vs SD split per Country)
         val visibleCameras = state.stripCameras
-        val hdCameras = state.hdStripCameras
-        val sdCameras = state.sdStripCameras
+        val countryGroups = state.stripCountryGroups
         val activeId = state.activeCamera?.id
         val favIds = state.favoriteIds
         if (visibleCameras.isEmpty()) {
@@ -945,42 +1248,46 @@ private fun CameraQuickStrip(
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (hdCameras.isNotEmpty()) {
-                    item(key = "section_header_hd") {
-                        QualitySectionCard(
-                            isHd = true,
-                            count = hdCameras.size,
-                        )
+                for (group in countryGroups) {
+                    if (group.hdCameras.isNotEmpty()) {
+                        item(key = "section_hd_${group.country.name}") {
+                            QualitySectionCard(
+                                country = group.country,
+                                isHd = true,
+                                count = group.hdCameras.size,
+                            )
+                        }
+                        items(
+                            items = group.hdCameras,
+                            key = { it.id },
+                        ) { item ->
+                            CameraPreviewCard(
+                                camera = item,
+                                isPlaying = item.id == activeId,
+                                isFavorite = favIds.contains(item.id),
+                                onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
+                            )
+                        }
                     }
-                    items(
-                        items = hdCameras,
-                        key = { it.id },
-                    ) { item ->
-                        CameraPreviewCard(
-                            camera = item,
-                            isPlaying = item.id == activeId,
-                            isFavorite = favIds.contains(item.id),
-                            onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
-                        )
-                    }
-                }
-                if (sdCameras.isNotEmpty()) {
-                    item(key = "section_header_sd") {
-                        QualitySectionCard(
-                            isHd = false,
-                            count = sdCameras.size,
-                        )
-                    }
-                    items(
-                        items = sdCameras,
-                        key = { it.id },
-                    ) { item ->
-                        CameraPreviewCard(
-                            camera = item,
-                            isPlaying = item.id == activeId,
-                            isFavorite = favIds.contains(item.id),
-                            onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
-                        )
+                    if (group.sdCameras.isNotEmpty()) {
+                        item(key = "section_sd_${group.country.name}") {
+                            QualitySectionCard(
+                                country = group.country,
+                                isHd = false,
+                                count = group.sdCameras.size,
+                            )
+                        }
+                        items(
+                            items = group.sdCameras,
+                            key = { it.id },
+                        ) { item ->
+                            CameraPreviewCard(
+                                camera = item,
+                                isPlaying = item.id == activeId,
+                                isFavorite = favIds.contains(item.id),
+                                onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
+                            )
+                        }
                     }
                 }
             }
@@ -990,6 +1297,7 @@ private fun CameraQuickStrip(
 
 @Composable
 private fun QualitySectionCard(
+    country: CameraCountry,
     isHd: Boolean,
     count: Int,
 ) {
@@ -999,7 +1307,7 @@ private fun QualitySectionCard(
 
     Column(
         modifier = Modifier
-            .width(120.dp)
+            .width(136.dp)
             .height(182.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(containerColor)
@@ -1007,13 +1315,33 @@ private fun QualitySectionCard(
             .padding(horizontal = 12.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Box(
-            modifier = Modifier
-                .width(28.dp)
-                .height(4.dp)
-                .clip(RoundedCornerShape(2.dp))
-                .background(accentColor),
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Box(
+                modifier = Modifier
+                    .width(28.dp)
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(accentColor),
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                CountryFlagIcon(
+                    country = country,
+                    width = 18.dp,
+                    height = 12.dp,
+                )
+                Text(
+                    text = country.displayLabel().uppercase(),
+                    color = AccentSky,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
 
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
@@ -1227,13 +1555,23 @@ private fun CameraPreviewCard(
                 } else {
                     camera.city.displayLabel()
                 }
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    CountryFlagIcon(
+                        country = camera.resolvedCountry,
+                        width = 15.dp,
+                        height = 10.dp,
+                    )
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }

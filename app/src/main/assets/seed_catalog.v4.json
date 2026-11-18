@@ -1,0 +1,4515 @@
+{
+  "schema_version": 4,
+  "revision": 2026111816,
+  "updated_at": "2026-11-18T16:24:56Z",
+  "cameras": [
+    {
+      "id": "bg-most-na-adi-topcider",
+      "name": "Most na Adi — Radnička (Ada Mall) & Topčider",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Most na Adi",
+        "Radnička (Ada Mall)",
+        "Bulevar vojvode Mišića",
+        "Topčiderski park"
+      ],
+      "municipality": "Savski Venac / Čukarica",
+      "category": "BRIDGES",
+      "direction": "2K QHD pogled na isključenje sa Mosta na Adi ka Radničkoj (Ada Mall), Topčideru i Hipodromu",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/adamost-mkonak.webp",
+      "coordinates": {
+        "lat": 44.7891,
+        "lon": 20.4294
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/adamost-mkonak/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_4.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-kralja-milana-london",
+      "name": "Kralja Milana — London",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Kralja Milana",
+        "Kneza Miloša",
+        "Dobrinjska"
+      ],
+      "municipality": "Stari Grad / Vračar",
+      "category": "SQUARES",
+      "direction": "2K QHD pogled duž Ulice kralja Milana od Londona ka Slaviji i Hramu Svetog Save",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/london-2.webp",
+      "coordinates": {
+        "lat": 44.8069,
+        "lon": 20.4638
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/london-2/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-kneza-milosa-london",
+      "name": "Kneza Miloša — London",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Kneza Miloša",
+        "Kraljice Natalije",
+        "Masarikova"
+      ],
+      "municipality": "Savski Venac / Stari Grad",
+      "category": "SQUARES",
+      "direction": "2K QHD pogled na raskrsnicu Kneza Miloša, Kraljice Natalije i Masarikove",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/london-1.webp",
+      "coordinates": {
+        "lat": 44.8065,
+        "lon": 20.4631
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/london-1/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-autokomanda-frans",
+      "name": "Autokomanda — Petlja Franš",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar Franše d'Eperea",
+        "Bulevar oslobođenja",
+        "Južni bulevar",
+        "Ustanička"
+      ],
+      "municipality": "Savski Venac / Voždovac",
+      "category": "SQUARES",
+      "direction": "2K QHD pogled na petlju kod Franša, ulaz u Južni bulevar i Ustaničku",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/autokomanda-petlja.webp",
+      "coordinates": {
+        "lat": 44.7908,
+        "lon": 20.4671
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/autokomanda/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_3.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-sava-centar-usce",
+      "name": "Sava Centar & Prilaz Ušću — Milentija Popovića",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar Milentija Popovića",
+        "Prilaz TC Ušće",
+        "Sava Centar",
+        "Blok 19"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled duž Milentija Popovića pored Sava Centra ka TC Ušće i Šest kaplara",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/sc-usce.webp",
+      "coordinates": {
+        "lat": 44.8089,
+        "lon": 20.4314
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/sc-usce/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-kraljice-marije-postanska",
+      "name": "Kraljice Marije — Poštanska štedionica",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Kraljice Marije",
+        "Starine Novaka",
+        "27. marta"
+      ],
+      "municipality": "Palilula",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled kod Gradske uprave i Tašmajdana na Kraljice Marije i Starine Novaka",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/postanska-stedionica.webp",
+      "coordinates": {
+        "lat": 44.8095,
+        "lon": 20.4732
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/postanska-stedionica/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-juzni-bulevar",
+      "name": "Južni bulevar — Vračar",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Južni bulevar",
+        "Maksima Gorkog",
+        "Đerdapska"
+      ],
+      "municipality": "Vračar",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled duž Južnog bulevara od Autokomande ka Vračaru i Crvenom krstu",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/juzni-bulevar.webp",
+      "coordinates": {
+        "lat": 44.7924,
+        "lon": 20.4763
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/juzni_bulevar/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-jurija-gagarina-belville",
+      "name": "Jurija Gagarina — Delta City & Belville",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Jurija Gagarina",
+        "TC Delta City",
+        "Antifašističke borbe",
+        "Dr Agostina Neta"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled na Jurija Gagarina kod TC Delta City i naselja Belville",
+      "poster_url": "https://kameresrbije.rs/thumbnails/beograd-jur1-170.webp",
+      "coordinates": {
+        "lat": 44.8052,
+        "lon": 20.4068
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/jur1-gargarina/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_12.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-jurija-gagarina-ada",
+      "name": "Jurija Gagarina — Prilaz Mostu na Adi",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Jurija Gagarina",
+        "Marka Hristića",
+        "Novi Beograd stanica"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled na uključenje iz Jurija Gagarina ka Mostu na Adi i novoj autobuskoj stanici",
+      "poster_url": "https://kameresrbije.rs/thumbnails/beograd-jur2-171.webp",
+      "coordinates": {
+        "lat": 44.8069,
+        "lon": 20.4158
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/jur2-gargarina/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_12.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-rakovicki-bulevar",
+      "name": "Bulevar patrijarha Pavla — Košutnjak",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar patrijarha Pavla",
+        "Pere Velimirovića",
+        "Stari Košutnjak"
+      ],
+      "municipality": "Rakovica",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled na Bulevar patrijarha Pavla u Rakovici, skretanje ka Dedinju i Miljakovcu",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/rakovica.webp",
+      "coordinates": {
+        "lat": 44.7591,
+        "lon": 20.4438
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/rakovica/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-trgovacka-zarkovo",
+      "name": "Trgovačka ulica — Žarkovo",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Trgovačka",
+        "Ace Joksimovića",
+        "Vodovodska"
+      ],
+      "municipality": "Čukarica",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled duž Trgovačke ulice u Žarkovu ka Vidikovcu i Ceraku",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/zarkovo.webp",
+      "coordinates": {
+        "lat": 44.7584,
+        "lon": 20.4159
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/zarkovo/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-vrcin-ulaz",
+      "name": "Beograd (Vrčin) — Ulaz na autoput",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Bubanj Potok — Vrčin"
+      ],
+      "municipality": "Grocka / Voždovac",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Beograd–Vrčin, izlaz iz Beograda ka Nišu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.jpg",
+      "coordinates": {
+        "lat": 44.6961,
+        "lon": 20.5731
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-vrcin-izlaz",
+      "name": "Beograd (Vrčin) — Prilaz Beogradu",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Vrčin — Bubanj Potok"
+      ],
+      "municipality": "Grocka / Voždovac",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Beograd–Vrčin, ulazak u Beograd iz smera Niša",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
+      "coordinates": {
+        "lat": 44.6965,
+        "lon": 20.5725
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-obrenovac-ulaz",
+      "name": "Obrenovac — Ulaz na Miloš Veliki",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Surčin — Obrenovac"
+      ],
+      "municipality": "Obrenovac",
+      "category": "HIGHWAYS",
+      "direction": "Jugozapadni prilaz Beogradu na autoputu Miloš Veliki, smer ka Čačku",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam4/index.jpg",
+      "coordinates": {
+        "lat": 44.6518,
+        "lon": 20.2335
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam4/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam4/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-obrenovac-izlaz",
+      "name": "Obrenovac — Prilaz Beogradu",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Obrenovac — Surčin"
+      ],
+      "municipality": "Obrenovac",
+      "category": "HIGHWAYS",
+      "direction": "Jugozapadni prilaz Beogradu na autoputu Miloš Veliki, izlaz ka Surčinu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam3/index.jpg",
+      "coordinates": {
+        "lat": 44.6522,
+        "lon": 20.2341
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam3/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam3/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-smederevo-ulaz",
+      "name": "Podunavlje (Smederevo) — Ulaz na A1 ka Beogradu",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Vodanj — Smederevo"
+      ],
+      "municipality": "Grocka / Smederevo",
+      "category": "HIGHWAYS",
+      "direction": "Istočni podunavski prilaz Beogradu na koridoru E-75 — uključenje ka Beogradu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam10/index.jpg",
+      "coordinates": {
+        "lat": 44.6012,
+        "lon": 20.8965
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam10/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam10/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-smederevo-izlaz",
+      "name": "Podunavlje (Smederevo) — Izlaz sa autoputa A1",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Ralja — Smederevo"
+      ],
+      "municipality": "Grocka / Smederevo",
+      "category": "HIGHWAYS",
+      "direction": "Istočni podunavski koridor E-75 — isključenje ka Smederevu i Dunavu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam9/index.jpg",
+      "coordinates": {
+        "lat": 44.6016,
+        "lon": 20.8959
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam9/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam9/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-pozarevac-ulaz",
+      "name": "Dunavski koridor (Požarevac) — Ulaz na A1",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Mala Krsna — Požarevac"
+      ],
+      "municipality": "Podunavlje / Požarevac",
+      "category": "HIGHWAYS",
+      "direction": "Jugoistočni koridor ka Beogradu — uključenje sa brze saobraćajnice Dunavski koridor",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam8/index.jpg",
+      "coordinates": {
+        "lat": 44.5738,
+        "lon": 21.0284
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam8/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam8/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-pozarevac-izlaz",
+      "name": "Dunavski koridor (Požarevac) — Izlaz sa A1",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Požarevac — Veliko Gradište"
+      ],
+      "municipality": "Podunavlje / Požarevac",
+      "category": "HIGHWAYS",
+      "direction": "Isključenje sa autoputa A1 na brzu saobraćajnicu ka Požarevcu i Đerdapu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam7/index.jpg",
+      "coordinates": {
+        "lat": 44.5742,
+        "lon": 21.0278
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam7/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam7/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-sabac-ulaz",
+      "name": "Posavina (Šabac — Most na Savi) — Ulaz ka Beogradu",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A8",
+        "Novi most na Savi — Ruma — Beograd"
+      ],
+      "municipality": "Posavina / Šabac",
+      "category": "HIGHWAYS",
+      "direction": "Čeona stanica kod novog mosta preko Save na autoputu A8 — smer ka Rumi i Beogradu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam10/index.jpg",
+      "coordinates": {
+        "lat": 44.7814,
+        "lon": 19.6832
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam10/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam10/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-sabac-izlaz",
+      "name": "Posavina (Šabac — Most na Savi) — Izlaz sa A8",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A8",
+        "Ruma — Šabac — Loznica"
+      ],
+      "municipality": "Posavina / Šabac",
+      "category": "HIGHWAYS",
+      "direction": "Čeona stanica na autoputu A8 posle mosta preko Save — izlaz ka Šapcu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam9/index.jpg",
+      "coordinates": {
+        "lat": 44.7818,
+        "lon": 19.6826
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam9/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam9/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-brankov-most",
+      "name": "Brankov most — Terazijski tunel",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Brankov most",
+        "Brankova",
+        "Terazijski tunel",
+        "Pop Lukina"
+      ],
+      "municipality": "Stari Grad / Novi Beograd",
+      "category": "BRIDGES",
+      "direction": "Pogled duž Brankove ulice ka Novom Beogradu i ulazu u Terazijski tunel",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_1.jpg",
+      "coordinates": {
+        "lat": 44.8149,
+        "lon": 20.4533
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/brankov.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_1.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-gazela",
+      "name": "Most Gazela — Galerija & Beograd na vodi",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Most Gazela",
+        "TC Galerija Belgrade",
+        "Beograd na vodi",
+        "Autoput E-75"
+      ],
+      "municipality": "Savski Venac / Novi Beograd",
+      "category": "BRIDGES",
+      "direction": "Most Gazela preko Save sa direktnim pogledom na TC Galerija i Beograd na vodi",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_2.jpg",
+      "coordinates": {
+        "lat": 44.8019,
+        "lon": 20.4408
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/gazela.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_2.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-most-na-adi",
+      "name": "Most na Adi — Novi Beograd",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Most na Adi",
+        "Bulevar Milutina Milankovića",
+        "Jurija Gagarina"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BRIDGES",
+      "direction": "Severni prilaz Mostu na Adi sa novobeogradske petlje",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_4.jpg",
+      "coordinates": {
+        "lat": 44.8054,
+        "lon": 20.4152
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/ada.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_4.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-pancevacki-most",
+      "name": "Pančevački most",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Pančevački most",
+        "Bulevar despota Stefana",
+        "Dragoslava Srejovića"
+      ],
+      "municipality": "Palilula",
+      "category": "BRIDGES",
+      "direction": "Gradski prilaz i uključenje na Pančevački most preko Dunava",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_7.jpg",
+      "coordinates": {
+        "lat": 44.8229,
+        "lon": 20.4856
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/pancevac.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_7.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-plavi-most",
+      "name": "Plavi most — Autoput",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Vojislava Ilića",
+        "Autoput E-75",
+        "Mokroluška"
+      ],
+      "municipality": "Voždovac / Zvezdara",
+      "category": "BRIDGES",
+      "direction": "Petlja Plavi most iznad autoputa Beograd–Niš",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_14.jpg",
+      "coordinates": {
+        "lat": 44.7824,
+        "lon": 20.5021
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/plavimost.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_14.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-slavija",
+      "name": "Trg Slavija",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Trg Slavija",
+        "Kralja Milana",
+        "Beogradska",
+        "Nemanjina",
+        "Makenzijeva"
+      ],
+      "municipality": "Vračar / Savski Venac",
+      "category": "SQUARES",
+      "direction": "Kružni tok na Trgu Slavija i prilazne gradske arterije",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_8.jpg",
+      "coordinates": {
+        "lat": 44.8025,
+        "lon": 20.4664
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/slavija.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_8.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-autokomanda",
+      "name": "Autokomanda — Kružni tok",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar oslobođenja",
+        "Vojvode Stepe",
+        "Dr Milutina Ivkovića"
+      ],
+      "municipality": "Voždovac / Savski Venac",
+      "category": "SQUARES",
+      "direction": "Kružni tok Autokomanda ka Voždovcu i stadionu Rajko Mitić",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_3.jpg",
+      "coordinates": {
+        "lat": 44.7894,
+        "lon": 20.4648
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/autokomanda.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_3.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-trg-republike",
+      "name": "Trg Republike",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Trg Republike",
+        "Kolarčeva",
+        "Francuska",
+        "Vase Čarapića"
+      ],
+      "municipality": "Stari Grad",
+      "category": "SQUARES",
+      "direction": "Centralni gradski trg ispred Narodnog muzeja i Narodnog pozorišta",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
+      "coordinates": {
+        "lat": 44.8162,
+        "lon": 20.4603
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/trgrepublike.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-trg-nikole-pasica",
+      "name": "Trg Nikole Pašića",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Trg Nikole Pašića",
+        "Dečanska",
+        "Bulevar kralja Aleksandra"
+      ],
+      "municipality": "Stari Grad",
+      "category": "SQUARES",
+      "direction": "Saobraćajnica duž Trga Nikole Pašića ka Domu Narodne skupštine",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_20.jpg",
+      "coordinates": {
+        "lat": 44.8124,
+        "lon": 20.4628
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/trgnikole.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_20.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-savski-trg",
+      "name": "Savski trg — Beograd na vodi & Stefan Nemanja",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Savski trg",
+        "Beograd na vodi",
+        "Nemanjina",
+        "Karađorđeva"
+      ],
+      "municipality": "Savski Venac",
+      "category": "SQUARES",
+      "direction": "Savski trg, spomenik Stefanu Nemanji i ulaz u Beograd na vodi kod stare Železničke stanice",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_19.jpg",
+      "coordinates": {
+        "lat": 44.8082,
+        "lon": 20.4561
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/zeleznicka.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_19.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-bogoslovija",
+      "name": "Bogoslovija",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Mije Kovačevića",
+        "Dragoslava Srejovića",
+        "Severni bulevar"
+      ],
+      "municipality": "Palilula",
+      "category": "SQUARES",
+      "direction": "Kružni tok kod Bogoslovije ka Pančevačkom mostu i Zvezdari",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_5.jpg",
+      "coordinates": {
+        "lat": 44.8152,
+        "lon": 20.4918
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/bogoslovija.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_5.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-kruzni-tok-nbg",
+      "name": "Kružni tok Novi Beograd",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar Mihajla Pupina",
+        "Omladinskih brigada",
+        "Pariske komune"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "SQUARES",
+      "direction": "Kružni tok kod Opštine Novi Beograd",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_21.jpg",
+      "coordinates": {
+        "lat": 44.8206,
+        "lon": 20.4139
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/opstinanbg.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_21.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-vukov-spomenik",
+      "name": "Vukov spomenik",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar kralja Aleksandra",
+        "Ruzveltova",
+        "Kraljice Marije"
+      ],
+      "municipality": "Zvezdara / Palilula / Vračar",
+      "category": "SQUARES",
+      "direction": "Raskrsnica kod Vukovog spomenika i Elektrotehničkog fakulteta",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_6.jpg",
+      "coordinates": {
+        "lat": 44.8051,
+        "lon": 20.4774
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/vuk.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_6.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-bulevar-mihajla-pupina",
+      "name": "TC Ušće & Bulevar Mihajla Pupina",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "TC Ušće",
+        "Poslovni centar Ušće",
+        "Bulevar Mihajla Pupina",
+        "Palata Srbija"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "Pogled pored TC Ušće, kula Ušće i Palate Srbija ka Brankovom mostu",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_9.jpg",
+      "coordinates": {
+        "lat": 44.8178,
+        "lon": 20.4319
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/pupina.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_9.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-nemanjina",
+      "name": "Nemanjina ulica",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Nemanjina",
+        "Kneza Miloša",
+        "Sarajevska"
+      ],
+      "municipality": "Savski Venac",
+      "category": "BOULEVARDS",
+      "direction": "Raskrsnica Nemanjine i Kneza Miloša između Savskog trga i Slavije",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_11.jpg",
+      "coordinates": {
+        "lat": 44.8058,
+        "lon": 20.4607
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/nemanjina.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_11.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-takovska",
+      "name": "Takovska ulica",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Takovska",
+        "Bulevar kralja Aleksandra",
+        "Kneza Miloša",
+        "Svetogorska"
+      ],
+      "municipality": "Palilula / Stari Grad",
+      "category": "BOULEVARDS",
+      "direction": "Potez Takovske ulice od Glavne pošte i Skupštine ka Cvijićevoj",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_13.jpg",
+      "coordinates": {
+        "lat": 44.8117,
+        "lon": 20.4676
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/takovska.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_13.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-bulevar-despota-stefana",
+      "name": "Bulevar despota Stefana",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar despota Stefana",
+        "Cvijićeva",
+        "Džordža Vašingtona"
+      ],
+      "municipality": "Stari Grad / Palilula",
+      "category": "BOULEVARDS",
+      "direction": "Saobraćajni koridor od centra grada ka Pančevačkom mostu",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_17.jpg",
+      "coordinates": {
+        "lat": 44.8172,
+        "lon": 20.4721
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/despotastefana.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_17.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-jurija-gagarina",
+      "name": "Jurija Gagarina — Blokovi",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Jurija Gagarina",
+        "Omladinskih brigada",
+        "Gandijeva"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "Novobeogradski blokovi — bulevar sa tramvajskim koridorom",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_12.jpg",
+      "coordinates": {
+        "lat": 44.8038,
+        "lon": 20.3982
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/gagarina.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_12.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-autoput-nbg-genex",
+      "name": "Autoput Novi Beograd — Genex",
+      "country": "SERBIA",
+      "city": "BELGRADE",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput E-75",
+        "Bulevar Arsenija Čarnojevića",
+        "Narodnih heroja"
+      ],
+      "municipality": "Novi Beograd",
+      "category": "BOULEVARDS",
+      "direction": "Autoput kroz Novi Beograd kod kule Genex (Zapadna kapija)",
+      "poster_url": "https://stream.uzivobeograd.rs/live/cam_10.jpg",
+      "coordinates": {
+        "lat": 44.8195,
+        "lon": 20.4044
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/genex.m3u8",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_10.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.naxi.rs/kamere"
+      }
+    },
+    {
+      "id": "bg-lakat-nova-galenika",
+      "name": "Zemun — Lakat krivina & Nova Galenika",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Batajnički drum",
+        "Cara Dušana",
+        "Prilaz Pupinovom mostu"
+      ],
+      "municipality": "Zemun",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled na Lakat krivinu u Zemunu na spoju starog novosadskog puta i prilaza Pupinovom mostu",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/glavna-posta-2.webp",
+      "coordinates": {
+        "lat": 44.8628,
+        "lon": 20.3634
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/posta-lakat/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-zmaj-autoput",
+      "name": "Zemun — Zmaj & Tošin bunar (Autoput E-70)",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Tošin bunar",
+        "Zemun"
+      ],
+      "municipality": "Zemun",
+      "category": "HIGHWAYS",
+      "direction": "2K QHD pogled kod Zmaja u Zemunu na koridor E-70 ka Tošinom bunaru i aerodromu",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/zmaj-pumpa.webp",
+      "coordinates": {
+        "lat": 44.8286,
+        "lon": 20.3824
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/zmaj-pumpa/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bg-stara-pazova-izlaz",
+      "name": "Zemun Sever (Batajnica / Stara Pazova) — Prilaz Zemunu",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Stara Pazova — Batajnica — Zemun"
+      ],
+      "municipality": "Zemun / Stara Pazova",
+      "category": "HIGHWAYS",
+      "direction": "Severni prilaz Zemunu i Batajnici na koridoru E-75 iz smera Novog Sada",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam1/index.jpg",
+      "coordinates": {
+        "lat": 44.9908,
+        "lon": 20.2044
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam1/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam1/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-stara-pazova-ulaz",
+      "name": "Zemun Sever (Batajnica / Stara Pazova) — Smer Novi Sad",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Zemun — Batajnica — Stara Pazova"
+      ],
+      "municipality": "Zemun / Stara Pazova",
+      "category": "HIGHWAYS",
+      "direction": "Severni izlaz iz Zemuna i Batajnice na koridoru E-75 ka Novom Sadu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam2/index.jpg",
+      "coordinates": {
+        "lat": 44.9912,
+        "lon": 20.2038
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam2/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam2/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-simanovci-izlaz",
+      "name": "Zemun Zapad (Dobanovci / Šimanovci) — Prilaz Zemunu",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Šimanovci — Dobanovci — Aerodrom Nikola Tesla"
+      ],
+      "municipality": "Surčin / Zemun",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni prilaz petlji Dobanovci, aerodromu Nikola Tesla i Zemunu na koridoru E-70",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam11/index.jpg",
+      "coordinates": {
+        "lat": 44.8694,
+        "lon": 20.0991
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam11/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam11/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "bg-simanovci-ulaz",
+      "name": "Zemun Zapad (Dobanovci / Šimanovci) — Smer Srem",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Zemun — Dobanovci — Šimanovci"
+      ],
+      "municipality": "Surčin / Zemun",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni koridor E-70 od Zemuna i petlje Dobanovci ka Sremu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam12/index.jpg",
+      "coordinates": {
+        "lat": 44.8691,
+        "lon": 20.0984
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam12/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam12/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "zm-sid-izlaz",
+      "name": "Koridor A3 Zapad (Šid) — Smer Ruma & Zemun",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Šid — Ruma — Šimanovci — Zemun"
+      ],
+      "municipality": "Zapadni koridor E-70",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni autoput A3 / E-70 iz smera Batrovaca ka Rumi, Dobanovcima i Zemunu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam13/index.jpg",
+      "coordinates": {
+        "lat": 45.0518,
+        "lon": 19.2291
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam13/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam13/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "zm-sid-ulaz",
+      "name": "Koridor A3 Zapad (Šid) — Smer Batrovci",
+      "country": "SERBIA",
+      "city": "ZEMUN",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Zemun — Ruma — Šid — Batrovci"
+      ],
+      "municipality": "Zapadni koridor E-70",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni autoput A3 / E-70 od Zemuna ka prelazu Batrovci",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam14/index.jpg",
+      "coordinates": {
+        "lat": 45.0514,
+        "lon": 19.2297
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam14/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam14/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ns-pupinova-palata",
+      "name": "Pupinova palata — Bulevar Mihajla Pupina",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar Mihajla Pupina",
+        "Narodnih heroja",
+        "Modene"
+      ],
+      "municipality": "Stari Grad, Novi Sad",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled duž Bulevara Mihajla Pupina u centru Novog Sada ka Varadinskom mostu",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/posta-ns1.webp",
+      "coordinates": {
+        "lat": 45.2543,
+        "lon": 19.8457
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/posta-ns1/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ns-bulevar-mihajla-pupina",
+      "name": "Srpsko narodno pozorište & Centar",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Bulevar Mihajla Pupina",
+        "Pozorišni trg",
+        "Jevrejska"
+      ],
+      "municipality": "Stari Grad, Novi Sad",
+      "category": "SQUARES",
+      "direction": "2K QHD pogled ka Srpskom narodnom pozorištu, ulazu u pešačku zonu i Uspenskoj crkvi",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/posta-ns2.webp",
+      "coordinates": {
+        "lat": 45.2551,
+        "lon": 19.8432
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/posta-ns2/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ns-varadinski-most",
+      "name": "Varadinski most (Most Duga) — Dunav",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Varadinski most",
+        "Kej žrtava racije",
+        "Beogradski kej"
+      ],
+      "municipality": "Novi Sad / Petrovaradin",
+      "category": "BRIDGES",
+      "direction": "2K QHD pogled preko Dunava na Varadinski most i podgrađe Petrovaradinske tvrđave",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/petrovaradin.webp",
+      "coordinates": {
+        "lat": 45.2548,
+        "lon": 19.8576
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/petrovaradin/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ns-miseluk",
+      "name": "Mišeluk — Prilaz Mostu Slobode",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Put doktora Goldmana",
+        "Tunel Mišeluk",
+        "Most Slobode"
+      ],
+      "municipality": "Petrovaradin / Sremska Kamenica",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD pogled na petlju Mišeluk i sremski prilaz tunelu i Mostu Slobode",
+      "poster_url": "https://kamere.24sedam.rs/js/cameras/miseluk.webp",
+      "coordinates": {
+        "lat": 45.2294,
+        "lon": 19.8519
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/juzni-bul1/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ns-jug-ulaz",
+      "name": "Novi Sad Jug — Ulaz na autoput A1",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Zrenjaninski put — Kaćka petlja"
+      ],
+      "municipality": "Novi Sad",
+      "category": "HIGHWAYS",
+      "direction": "Naplatna stanica Novi Sad Jug, uključenje na autoput E-75 ka Beogradu i Subotici",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam14/index.jpg",
+      "coordinates": {
+        "lat": 45.2764,
+        "lon": 19.8981
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam14/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam14/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ns-jug-izlaz",
+      "name": "Novi Sad Jug — Ulazak u Novi Sad",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Bulevar Evrope / Kaćka petlja"
+      ],
+      "municipality": "Novi Sad",
+      "category": "HIGHWAYS",
+      "direction": "Naplatna stanica Novi Sad Jug, izlazak sa autoputa E-75 ka centru Novog Sada",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam13/index.jpg",
+      "coordinates": {
+        "lat": 45.2768,
+        "lon": 19.8975
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam13/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ns-ruma-izlaz",
+      "name": "Fruškogorski koridor (Ruma) — Smer Irig & Novi Sad",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput E-70 / M-21",
+        "Ruma — Irig — Fruška gora — Novi Sad"
+      ],
+      "municipality": "Ruma / Fruška gora",
+      "category": "HIGHWAYS",
+      "direction": "Južni prilaz Fruškoj gori i Novom Sadu kod petlje Ruma",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam7/index.jpg",
+      "coordinates": {
+        "lat": 44.9782,
+        "lon": 19.8314
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam7/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam7/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ns-ruma-ulaz",
+      "name": "Fruškogorski koridor (Ruma) — Ulaz na autoput E-70",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A3 / E-70",
+        "Novi Sad — Irig — Ruma"
+      ],
+      "municipality": "Ruma / Fruška gora",
+      "category": "HIGHWAYS",
+      "direction": "Uključenje sa Fruškogorskog pravca na koridor E-70 kod Rume",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam8/index.jpg",
+      "coordinates": {
+        "lat": 44.9778,
+        "lon": 19.8321
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam8/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam8/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "su-gradski-trg-korzo",
+      "name": "Subotica — Gradski trg & Narodno pozorište",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Trg slobode",
+        "Korzo",
+        "Trg republike"
+      ],
+      "municipality": "Centar, Subotica",
+      "category": "SQUARES",
+      "direction": "Full HD 1080p pogled na centralni Gradski trg, Narodno pozorište i šetalište Korzo u Subotici",
+      "poster_url": "https://kameresrbije.rs/thumbnails/subotica-gradski-trg-58.webp",
+      "coordinates": {
+        "lat": 46.1003,
+        "lon": 19.6656
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://g0.ipcamlive.com/player/snapshot.php?alias=kameratrg",
+          "interval_ms": 4000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "su-jug-ulaz",
+      "name": "Subotica Jug — Ulaz na autoput A1",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Bikovo — Petlja Subotica Jug"
+      ],
+      "municipality": "Subotica",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Subotica Jug, uključenje ka Novom Sadu i Beogradu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam16/index.jpg",
+      "coordinates": {
+        "lat": 45.9892,
+        "lon": 19.7285
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam16/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam16/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "su-jug-izlaz",
+      "name": "Subotica Jug — Prilaz Subotici i Paliću",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Subotica Jug — Palić"
+      ],
+      "municipality": "Subotica",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Subotica Jug, smer ka Subotici, Paliću i Horgošu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam15/index.jpg",
+      "coordinates": {
+        "lat": 45.9896,
+        "lon": 19.7279
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam15/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam15/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "su-mz-zorka",
+      "name": "Subotica — MZ Zorka (Panorama & Nebo)",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Proleterskih brigada",
+        "Sutjeska",
+        "MZ Zorka"
+      ],
+      "municipality": "Subotica",
+      "category": "SQUARES",
+      "direction": "Uživo meteorološka i panoramska kamera iznad severozapadnog dela Subotice",
+      "poster_url": "https://sumeteo.info/webcam/cam_1.jpg",
+      "coordinates": {
+        "lat": 46.1124,
+        "lon": 19.6548
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://sumeteo.info/webcam/cam_1.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "su-kelebija-ulaz",
+      "name": "Subotica (GP Kelebija) — Ulaz u Srbiju",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Put Edvarda Kardelja",
+        "Y-krak obilaznica Subotica",
+        "Kelebija"
+      ],
+      "municipality": "Subotica",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni prilaz Subotici na graničnom prelazu Kelebija — ulaz u Republiku Srbiju",
+      "poster_url": "https://kameresrbije.rs/thumbnails/kelebija-30.webp",
+      "coordinates": {
+        "lat": 46.1531,
+        "lon": 19.5803
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Kelebija/kelebija1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "su-kelebija-izlaz",
+      "name": "Subotica (GP Kelebija) — Izlaz iz Srbije",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Put Edvarda Kardelja",
+        "Kelebija — Tompa"
+      ],
+      "municipality": "Subotica",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni izlaz iz Subotice na graničnom prelazu Kelebija ka Mađarskoj",
+      "poster_url": "https://kameresrbije.rs/thumbnails/kelebija-31.webp",
+      "coordinates": {
+        "lat": 46.1528,
+        "lon": 19.5809
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Kelebija/kelebija2.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "su-horgos-ulaz",
+      "name": "Autoput E-75 (GP Horgoš) — Severna kapija",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Horgoš — Palić — Subotica"
+      ],
+      "municipality": "Horgoš / Subotica",
+      "category": "HIGHWAYS",
+      "direction": "Glavni koridor E-75 severno od Palića i Subotice — ulaz u Republiku Srbiju",
+      "poster_url": "https://kameresrbije.rs/thumbnails/horgos-32.webp",
+      "coordinates": {
+        "lat": 46.1783,
+        "lon": 19.6997
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Horgos/horgos1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "su-djala-ulaz",
+      "name": "Potisje (GP Đala) — Ulaz u Srbiju",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Državni put II A-104",
+        "Đala — Novi Kneževac — Subotica"
+      ],
+      "municipality": "Severni Banat / Potisje",
+      "category": "HIGHWAYS",
+      "direction": "Severoistočni prilaz Potisju i Subotici na prelazu Đala — ulaz u Srbiju",
+      "poster_url": "https://kameresrbije.rs/thumbnails/djala-29.webp",
+      "coordinates": {
+        "lat": 46.1583,
+        "lon": 20.1162
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Djala/djala2.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "su-djala-izlaz",
+      "name": "Potisje (GP Đala) — Izlaz iz Srbije",
+      "country": "SERBIA",
+      "city": "SUBOTICA",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Državni put II A-104",
+        "Novi Kneževac — Đala — Tisasiget"
+      ],
+      "municipality": "Severni Banat / Potisje",
+      "category": "HIGHWAYS",
+      "direction": "Izlaz iz Srbije na prelazu Đala duž reke Tise ka Segedinu",
+      "poster_url": "https://kameresrbije.rs/thumbnails/djala-28.webp",
+      "coordinates": {
+        "lat": 46.1586,
+        "lon": 20.1157
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Djala/djala1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "ni-vidojevica-allsky",
+      "name": "Vidojevica (Opservatorija) — Nebo uživo (AllSky)",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "UHD_2K",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Astronomska stanica Vidojevica",
+        "Planina Vidojevica (1155 m)"
+      ],
+      "municipality": "Toplica / Nišavski region",
+      "category": "SQUARES",
+      "direction": "3K panoramska AllSky kamera Astronomske opservatorije na Vidojevici jugozapadno od Niša",
+      "poster_url": "https://vidojevica.aob.rs/images/stories/allsky/ImageLastFTP_AllSKY.jpg",
+      "coordinates": {
+        "lat": 43.1414,
+        "lon": 21.5558
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://vidojevica.aob.rs/images/stories/allsky/ImageLastFTP_AllSKY.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "ni-sever-ulaz",
+      "name": "Niš Sever (Trupale) — Ulaz na autoput",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Bulevar 12. februar",
+        "Čamurlijski put"
+      ],
+      "municipality": "Crveni Krst, Niš",
+      "category": "HIGHWAYS",
+      "direction": "Severni prilaz Nišu kod petlje Trupale i aerodroma Konstantin Veliki — ulaz na A1",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam4/index.jpg",
+      "coordinates": {
+        "lat": 43.3551,
+        "lon": 21.8483
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam4/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam4/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-sever-izlaz",
+      "name": "Niš Sever (Trupale) — Ulazak u Niš",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Bulevar 12. februar"
+      ],
+      "municipality": "Crveni Krst, Niš",
+      "category": "HIGHWAYS",
+      "direction": "Severni ulazak u Niš sa koridora E-75 ka Bulevaru 12. februar i Tvrđavi",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam3/index.jpg",
+      "coordinates": {
+        "lat": 43.3555,
+        "lon": 21.8478
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam3/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam3/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-jug-ulaz",
+      "name": "Niš Jug — Ulaz na autoput",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Bulevar Dimitrija Tucovića",
+        "Novo Selo"
+      ],
+      "municipality": "Palilula / Medijana, Niš",
+      "category": "HIGHWAYS",
+      "direction": "Južni prilaz Nišu na koridoru E-75 — uključenje na autoput ka Beogradu i Leskovcu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam6/index.jpg",
+      "coordinates": {
+        "lat": 43.2684,
+        "lon": 21.8252
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam6/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam6/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-jug-izlaz",
+      "name": "Niš Jug — Južni ulazak u Niš",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Južni prilaz Nišu"
+      ],
+      "municipality": "Palilula / Medijana, Niš",
+      "category": "HIGHWAYS",
+      "direction": "Južni izlaz sa autoputa A1 ka Nišu, Ledena Stena i centar grada",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam5/index.jpg",
+      "coordinates": {
+        "lat": 43.2689,
+        "lon": 21.8247
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam5/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam5/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-leskovac-ulaz",
+      "name": "Južna Morava (Leskovac) — Ulaz na A1 ka Nišu",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Leskovac — Brestovac — Niš"
+      ],
+      "municipality": "Južni koridor A1",
+      "category": "HIGHWAYS",
+      "direction": "Južni koridor E-75 — uključenje kod Leskovca u smeru ka Nišu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam2/index.jpg",
+      "coordinates": {
+        "lat": 43.0346,
+        "lon": 21.9679
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam2/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam2/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-leskovac-izlaz",
+      "name": "Južna Morava (Leskovac) — Izlaz sa autoputa A1",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Niš — Pečenjevce — Leskovac"
+      ],
+      "municipality": "Južni koridor A1",
+      "category": "HIGHWAYS",
+      "direction": "Južni koridor E-75 od Niša — isključenje sa autoputa A1 ka Leskovcu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam1/index.jpg",
+      "coordinates": {
+        "lat": 43.0342,
+        "lon": 21.9685
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam1/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam1/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-dimitrovgrad-izlaz",
+      "name": "Koridor A4 Istok (Dimitrovgrad) — Smer Pirot & Niš",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A4 / E-80",
+        "Dimitrovgrad — Pirot — Bela Palanka — Niš"
+      ],
+      "municipality": "Istočni krak E-80",
+      "category": "HIGHWAYS",
+      "direction": "Istočni krak Koridora 10 (A4 / E-80) u smeru ka Pirotu i Nišu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam17/index.jpg",
+      "coordinates": {
+        "lat": 43.0168,
+        "lon": 22.7684
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam17/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam17/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-dimitrovgrad-ulaz",
+      "name": "Koridor A4 Istok (Dimitrovgrad) — Smer Gradina",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A4 / E-80",
+        "Niš — Pirot — Dimitrovgrad"
+      ],
+      "municipality": "Istočni krak E-80",
+      "category": "HIGHWAYS",
+      "direction": "Istočni krak Koridora 10 (A4 / E-80) od Niša i Pirota ka Gradini",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam18/index.jpg",
+      "coordinates": {
+        "lat": 43.0164,
+        "lon": 22.7691
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam18/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam18/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-presevo-ulaz",
+      "name": "Koridor A1 Jug (Preševo) — Smer Vranje & Niš",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Preševo — Vranje — Grdelica — Niš"
+      ],
+      "municipality": "Južni krak E-75",
+      "category": "HIGHWAYS",
+      "direction": "Južni krak Koridora 10 (A1 / E-75) u smeru ka Vranju, Grdelici i Nišu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam20/index.jpg",
+      "coordinates": {
+        "lat": 42.3624,
+        "lon": 21.6884
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam20/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam20/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-presevo-izlaz",
+      "name": "Koridor A1 Jug (Preševo) — Južni izlaz sa A1",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Niš — Vranje — Preševo"
+      ],
+      "municipality": "Južni krak E-75",
+      "category": "HIGHWAYS",
+      "direction": "Južni krak Koridora 10 (A1 / E-75) od Niša i Vranja ka prelazu Preševo",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam19/index.jpg",
+      "coordinates": {
+        "lat": 42.362,
+        "lon": 21.689
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam19/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ni-gradina-ulaz",
+      "name": "Autoput E-80 (GP Gradina) — Ulaz ka Nišu",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A4 / E-80",
+        "Gradina — Pirot — Niš"
+      ],
+      "municipality": "Dimitrovgrad / Istočni krak",
+      "category": "HIGHWAYS",
+      "direction": "Istočna kapija Srbije na koridoru E-80 — ulazak u Srbiju ka Pirotu i Nišu",
+      "poster_url": "https://kameresrbije.rs/thumbnails/gradina-54.webp",
+      "coordinates": {
+        "lat": 42.9992,
+        "lon": 22.8016
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Gradina/gradina1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "ni-gradina-izlaz",
+      "name": "Autoput E-80 (GP Gradina) — Izlaz iz Srbije",
+      "country": "SERBIA",
+      "city": "NIS",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A4 / E-80",
+        "Niš — Dimitrovgrad — Kalotina"
+      ],
+      "municipality": "Dimitrovgrad / Istočni krak",
+      "category": "HIGHWAYS",
+      "direction": "Istočni krak E-80 — izlazak iz Republike Srbije na prelazu Gradina",
+      "poster_url": "https://kameresrbije.rs/thumbnails/gradina-55.webp",
+      "coordinates": {
+        "lat": 42.9988,
+        "lon": 22.8022
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Gradina/gradina2.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-palace-bridge",
+      "name": "Palace Bridge & Neva River Panorama",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Dvortsovy Bridge",
+        "Admiralty Embankment",
+        "Universitetskaya Embankment"
+      ],
+      "municipality": "Tsentralny / Vasileostrovsky",
+      "category": "BRIDGES",
+      "direction": "Live panorama over the Neva River, Palace Bridge drawspan, Spit of Vasilyevsky Island, and Rostral Columns",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-05-24/5b/c8/5bc845ae94af4fbf678737923f35631f.jpg",
+      "coordinates": {
+        "lat": 59.941,
+        "lon": 30.3085
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/86e2f45785378c866d212e7f5f5447b0/index.m3u8?s=6KBGzXlrpGAIjVynmHOq_w&e=2095019077&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-admiralty",
+      "name": "Admiralty Embankment & Peter and Paul Fortress",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Admiralteyskaya Embankment",
+        "Neva River",
+        "Zayachy Island"
+      ],
+      "municipality": "Admiralteysky / Petrogradsky",
+      "category": "BRIDGES",
+      "direction": "Rotating sightseeing camera across Admiralty Embankment, Peter and Paul Fortress, Kunstkamera, and St. Isaac's Cathedral",
+      "poster_url": "https://pic.rtbcdn.ru/video/2024-09-22/3a/97/3a9710c5ebb51907c995f62abc399b79.jpg",
+      "coordinates": {
+        "lat": 59.9385,
+        "lon": 30.3056
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/af70989fe893a8bb4f16447936340e95/index.m3u8?s=7UWNyVR6QlH7_R9n1hVu9A&e=2095019078&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-spilled-blood",
+      "name": "Church of the Savior on Spilled Blood",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Griboyedov Canal Embankment",
+        "Inzhenernaya Street",
+        "Mikhailovsky Garden"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "SQUARES",
+      "direction": "Elevated view toward the domes of the Church of the Savior on Spilled Blood along the Griboyedov Canal",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/c0/ed/c0ed919e225d891155820e5ef183e5a7.jpg",
+      "coordinates": {
+        "lat": 59.9401,
+        "lon": 30.3289
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/9dce2908a76efba4a82c2f95fa72efc6/index.m3u8?s=CRWsGRuwh0JFcx0NYgoCfg&e=2095019078&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-nevsky-gostiny",
+      "name": "Nevsky Prospekt — Gostiny Dvor",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Nevsky Prospekt",
+        "Sadovaya Street",
+        "Gostiny Dvor"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "BOULEVARDS",
+      "direction": "View over the Nevsky Prospekt and Sadovaya Street intersection beside Great Gostiny Dvor arcade",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-09-05/ba/6d/ba6dce8c3abb9eed322c61f4e3adc247.jpg",
+      "coordinates": {
+        "lat": 59.9344,
+        "lon": 30.3323
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/1217bd14907ff59c5c64bcc4cbe1af41/index.m3u8?s=KQ6w3wDPcMl7NZ62BRPJwQ&e=2095019078&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-nevsky-anichkov",
+      "name": "Nevsky Prospekt — Anichkov Palace & Fontanka",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Nevsky Prospekt",
+        "Fontanka River Embankment",
+        "Ostrovsky Square"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "BOULEVARDS",
+      "direction": "Live view along Nevsky Prospekt at Anichkov Palace and Anichkov Bridge over the Fontanka River",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-05-10/3c/c7/3cc7a9b9143624b88fbab52b1d3d8a05.jpg",
+      "coordinates": {
+        "lat": 59.9332,
+        "lon": 30.343
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/a996e6508b2ff81cd523dae2d14f7bf6/index.m3u8?s=TCTPgD1kBN0k3vL_KEJcog&e=2095019078&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-nevsky-panorama",
+      "name": "Nevsky Prospekt — Main Avenue Traffic",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Nevsky Prospekt",
+        "Liteyny Prospekt"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "BOULEVARDS",
+      "direction": "Wide boulevard view along Nevsky Prospekt toward Admiralty Spire",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-05-09/b4/22/b422cb51aae61c450e29574b06685ba1.jpg",
+      "coordinates": {
+        "lat": 59.9327,
+        "lon": 30.3489
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/746aa7922a210086f18daff094a5e63d/index.m3u8?s=mIEKepdc8sg6cWNDd8uTVQ&e=2095019078&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-griboyedov",
+      "name": "Griboyedov Canal & Kazan Quarter",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Griboyedov Canal Embankment",
+        "Kazanskaya Street",
+        "Bank Bridge"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "BRIDGES",
+      "direction": "Waterway and historic embankments along the Griboyedov Canal",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-07-23/da/5a/da5a3a7274459f10201fa9c053489892.jpg",
+      "coordinates": {
+        "lat": 59.9358,
+        "lon": 30.3259
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/e2fae10f093223afb5376b280fcbb24a/index.m3u8?s=pz5JvaKy-6tRPUSNI-5UEw&e=2095019079&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-aurora",
+      "name": "Cruiser Aurora — Petrogradskaya Embankment",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Petrogradskaya Embankment",
+        "Bolshaya Nevka",
+        "Sampsonievsky Bridge"
+      ],
+      "municipality": "Petrogradsky District",
+      "category": "BRIDGES",
+      "direction": "Live view of the historic Cruiser Aurora moored at Petrogradskaya Embankment on the Neva River",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-05-29/1c/cd/1ccd55cd3d235f8bcd0f7bb7dc707dc3.jpg",
+      "coordinates": {
+        "lat": 59.9554,
+        "lon": 30.3378
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/2c5000420be8aa08a969a21614e2d33e/index.m3u8?s=iW9p8ZnPU7th4hBw52vnaQ&e=2095019079&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-historic-rooftops",
+      "name": "Historic Center Rooftops — Tchaikovskogo Street",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Tchaikovskogo Street",
+        "Liteyny Prospekt",
+        "Summer Garden"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "SQUARES",
+      "direction": "360-degree rooftop skyline over historic Saint Petersburg domes and spires",
+      "poster_url": "https://pic.rtbcdn.ru/video/2024-09-30/9c/ba/9cba3c11b2aeea2626df2b0d978843b9.jpg",
+      "coordinates": {
+        "lat": 59.9472,
+        "lon": 30.3468
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/d7e9422167f785e111c880e44ad76428/index.m3u8?s=seNBrS_7IJ8AScIBH5FgyQ&e=2095019079&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-zagorodny",
+      "name": "Zagorodny Prospekt — Five Corners",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Zagorodny Prospekt",
+        "Rubinshteyna Street",
+        "Lomonosova Street"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "BOULEVARDS",
+      "direction": "Street-level panorama along Zagorodny Prospekt near Five Corners",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-23/0b/0e/0b0e398a6f8c698fb107b1019ea997bc.jpg",
+      "coordinates": {
+        "lat": 59.9261,
+        "lon": 30.3408
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/92e79cc0d122fb94647b79d4e7778773/index.m3u8?s=0gBYID9_FIkZhhnqdK1Qwg&e=2095019079&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-sevkabel",
+      "name": "Sevkabel Port — Gulf of Finland & ZSD Bridge",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Kozhevennaya Line, 40",
+        "Sevkabel Port",
+        "Western High-Speed Diameter"
+      ],
+      "municipality": "Vasilyevsky Island",
+      "category": "BRIDGES",
+      "direction": "Waterfront boardwalk at Sevkabel Port overlooking the Gulf of Finland and the cable-stayed ZSD bridge",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1729876918/original.jpg",
+      "coordinates": {
+        "lat": 59.9242,
+        "lon": 30.2407
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://openapi-alpha.ivideon.com/cameras/100-VBPoWKrNcZ6SBhucwbvQCD:0/live_preview?op=GET&access_token=public&q=2",
+          "interval_ms": 2500,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1729876918/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-hermitage",
+      "name": "State Hermitage Museum — Winter Palace Courtyard",
+      "country": "RUSSIA",
+      "city": "SAINT_PETERSBURG",
+      "quality": "HD_720P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Palace Square",
+        "Palace Embankment, 32",
+        "Winter Palace"
+      ],
+      "municipality": "Tsentralny District",
+      "category": "SQUARES",
+      "direction": "View inside the Great Courtyard garden of the Winter Palace (Hermitage)",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793869112/original.jpg",
+      "coordinates": {
+        "lat": 59.9398,
+        "lon": 30.3146
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793869112/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ru-rov-leninsky-skyline",
+      "name": "Leninsky District — Central Station & Siversa Flyover",
+      "country": "RUSSIA",
+      "city": "ROSTOV_ON_DON",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Privokzalnaya Square",
+        "Prospekt Siversa",
+        "Gvardeyskaya Square"
+      ],
+      "municipality": "Leninsky District",
+      "category": "HIGHWAYS",
+      "direction": "High-altitude skyline panorama over Rostov-Glavny Railway Station, Siversa Prospekt viaduct, and western Rostov-on-Don hills",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/c7/35/c735cfed8162599365f1b12cba048a36.jpg",
+      "coordinates": {
+        "lat": 47.2194,
+        "lon": 39.6908
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8?s=d2X4hKV0YGb-IzxNB8kKMg&e=2095019079&scheme=https"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-yuzhnaya",
+      "name": "Yuzhnaya Square — Mokrushinsky Crossing",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Yuzhnaya Square",
+        "Krasnoarmeyskaya Street",
+        "Mokrushina Street"
+      ],
+      "municipality": "Kirovsky District",
+      "category": "SQUARES",
+      "direction": "Southern gateway to Tomsk at Yuzhnaya Square and the Mokrushinsky rail crossing",
+      "poster_url": "https://cdn08.vtomske.ru/stream/21.jpg",
+      "coordinates": {
+        "lat": 56.451,
+        "lon": 84.9823
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cdn08.vtomske.ru/hls/stream6.m3u8"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/21.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-novosobornaya",
+      "name": "Novosobornaya Square & City Administration",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Prospekt Lenina",
+        "Novosobornaya Square",
+        "Sovetskaya Street"
+      ],
+      "municipality": "Sovetsky District",
+      "category": "SQUARES",
+      "direction": "Central civic plaza at Novosobornaya Square along Prospekt Lenina",
+      "poster_url": "https://cdn08.vtomske.ru/stream/admcam1.jpg",
+      "coordinates": {
+        "lat": 56.4755,
+        "lon": 84.9509
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/admcam1.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1623915502/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-tom-embankment",
+      "name": "Tom River Embankment — River Station",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Naberezhnaya Reki Tomi",
+        "Prospekt Lenina",
+        "River Terminal"
+      ],
+      "municipality": "Leninsky District",
+      "category": "BRIDGES",
+      "direction": "Panoramic view over the Tom River embankment and Communal Bridge approach",
+      "poster_url": "https://cdn08.vtomske.ru/stream/23.jpg",
+      "coordinates": {
+        "lat": 56.4942,
+        "lon": 84.9426
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/23.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1618476507/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-lenina-prospekt",
+      "name": "Prospekt Lenina — Tikhiy Lane",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Prospekt Lenina",
+        "Pereulok Tikhiy",
+        "Old Town"
+      ],
+      "municipality": "Leninsky District",
+      "category": "BOULEVARDS",
+      "direction": "Main north-south avenue of historic Tomsk along Prospekt Lenina",
+      "poster_url": "https://cdn08.vtomske.ru/stream/1.jpg",
+      "coordinates": {
+        "lat": 56.4891,
+        "lon": 84.9482
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/1.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-krasnoarmeyskaya",
+      "name": "Krasnoarmeyskaya Street — Yuzhnaya Approach",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Krasnoarmeyskaya Street",
+        "Yuzhnaya Square",
+        "Bogatyevo Highway"
+      ],
+      "municipality": "Kirovsky District",
+      "category": "BOULEVARDS",
+      "direction": "Traffic corridor along Krasnoarmeyskaya Street approaching Yuzhnaya Square",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1429349224/original.jpg",
+      "coordinates": {
+        "lat": 56.4535,
+        "lon": 84.9781
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1429349224/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-transportnaya",
+      "name": "Transportnaya Square",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Transportnaya Square",
+        "Krasnoarmeyskaya Street",
+        "Prospekt Kirova"
+      ],
+      "municipality": "Kirovsky District",
+      "category": "SQUARES",
+      "direction": "Major arterial roundabout at Transportnaya Square in southern Tomsk",
+      "poster_url": "https://cdn08.vtomske.ru/stream/stream8.jpg",
+      "coordinates": {
+        "lat": 56.4557,
+        "lon": 84.9756
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/stream8.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-tsu-parus",
+      "name": "Tom River — Tomsk State University Campus",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Pereulok Buyanovsky, 3A",
+        "Tom River",
+        "TSU Parus Residence"
+      ],
+      "municipality": "Kirovsky District",
+      "category": "BRIDGES",
+      "direction": "High rooftop view from TSU Parus across the Tom River bend and left bank",
+      "poster_url": "https://cdn08.vtomske.ru/stream/tsu.jpg",
+      "coordinates": {
+        "lat": 56.4682,
+        "lon": 84.9389
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/tsu.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-vershinina",
+      "name": "Tom River Panorama — Vershinina Street",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Vershinina Street, 47",
+        "Nahimova Street",
+        "Lagerny Garden"
+      ],
+      "municipality": "Kirovsky District",
+      "category": "BOULEVARDS",
+      "direction": "Wide urban panorama across Kirovsky District toward the Tom River valley",
+      "poster_url": "https://cdn08.vtomske.ru/stream/19.jpg",
+      "coordinates": {
+        "lat": 56.4628,
+        "lon": 84.962
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/19.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-plekhanova",
+      "name": "Plekhanova Lane — Historic Wooden Quarter",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Pereulok Plekhanova, 4",
+        "Prospekt Lenina",
+        "Gagarina Street"
+      ],
+      "municipality": "Sovetsky District",
+      "category": "BOULEVARDS",
+      "direction": "Central tree-lined street along Plekhanova Lane near Prospekt Lenina",
+      "poster_url": "https://cdn08.vtomske.ru/stream/admcam3.jpg",
+      "coordinates": {
+        "lat": 56.4795,
+        "lon": 84.9542
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/admcam3.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "ru-tof-tomsky-lane",
+      "name": "Tomsky Lane — Northern District",
+      "country": "RUSSIA",
+      "city": "TOMSK",
+      "quality": "SD",
+      "timezone": "Asia/Tomsk",
+      "streets": [
+        "Pereulok Tomsky",
+        "Karl Marx Street"
+      ],
+      "municipality": "Leninsky District",
+      "category": "BOULEVARDS",
+      "direction": "Neighborhood street camera at Tomsky Lane in northern central Tomsk",
+      "poster_url": "https://cdn08.vtomske.ru/stream/admcam4.jpg",
+      "coordinates": {
+        "lat": 56.5015,
+        "lon": 84.9612
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn08.vtomske.ru/stream/admcam4.jpg",
+          "interval_ms": 10000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-3cat-panorama",
+      "name": "Barcelona & Catalonia Live Panorama (3Cat)",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Port Olímpic",
+        "Tibidabo",
+        "Barcelona Coastline"
+      ],
+      "municipality": "Barcelona / Catalunya",
+      "category": "SQUARES",
+      "direction": "24/7 1080p broadcast camera rotation across Barcelona skyline, port, and Catalan landmarks by 3Cat",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+      "coordinates": {
+        "lat": 41.3851,
+        "lon": 2.1734
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://directes-tv-int.3catdirectes.cat/live-content/beauties-hls/master.m3u8"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-port-olimpic",
+      "name": "Port Olímpic, Barceloneta & W Hotel",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Moll de Gregal",
+        "Platja de la Barceloneta",
+        "Port Olímpic"
+      ],
+      "municipality": "Sant Martí / Ciutat Vella",
+      "category": "BRIDGES",
+      "direction": "Mediterranean marina view from Port Olímpic toward Barceloneta and W Hotel",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+      "coordinates": {
+        "lat": 41.3858,
+        "lon": 2.2003
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-la-rambla",
+      "name": "La Rambla — Arts Santa Mònica & Port Vell",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "La Rambla",
+        "Plaça del Portal de la Pau",
+        "Columbus Monument"
+      ],
+      "municipality": "Ciutat Vella",
+      "category": "BOULEVARDS",
+      "direction": "Pedestrian promenade at lower La Rambla beside Arts Santa Mònica",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1450823279/original.jpg",
+      "coordinates": {
+        "lat": 41.3772,
+        "lon": 2.1758
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1450823279/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-diagonal-macia",
+      "name": "Avinguda Diagonal — Plaça Francesc Macià",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Avinguda Diagonal",
+        "Plaça de Francesc Macià",
+        "Josep Tarradellas"
+      ],
+      "municipality": "Sarrià-Sant Gervasi / Les Corts",
+      "category": "SQUARES",
+      "direction": "Westbound avenue traffic at Plaça de Francesc Macià on Avinguda Diagonal",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1252945039/original.jpg",
+      "coordinates": {
+        "lat": 41.3926,
+        "lon": 2.1444
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1252945039/original.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-gran-via",
+      "name": "Gran Via de les Corts Catalanes — Glòries",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Gran Via de les Corts Catalanes",
+        "Plaça de les Glòries Catalanes"
+      ],
+      "municipality": "Sant Martí",
+      "category": "BOULEVARDS",
+      "direction": "Arterial traffic along Gran Via de les Corts Catalanes near Glòries",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1616152753/original.jpg",
+      "coordinates": {
+        "lat": 41.4042,
+        "lon": 2.1928
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1616152753/original.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-marina-pujades",
+      "name": "Carrer de la Marina — Port Olímpic Towers",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Carrer de la Marina",
+        "Carrer de Pujades",
+        "Vila Olímpica"
+      ],
+      "municipality": "Sant Martí",
+      "category": "BOULEVARDS",
+      "direction": "Southbound view down Carrer de la Marina toward Torre Mapfre and Hotel Arts",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1616152597/original.jpg",
+      "coordinates": {
+        "lat": 41.3935,
+        "lon": 2.1903
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1616152597/original.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-mitre-balmes",
+      "name": "Ronda del General Mitre — Carrer de Balmes",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Ronda del General Mitre",
+        "Carrer de Balmes"
+      ],
+      "municipality": "Sarrià-Sant Gervasi",
+      "category": "BOULEVARDS",
+      "direction": "Upper-city boulevard junction of Ronda del General Mitre and Balmes",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1252946532/original.jpg",
+      "coordinates": {
+        "lat": 41.4048,
+        "lon": 2.1404
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1252946532/original.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-placa-cerda",
+      "name": "Plaça Cerdà — Gran Via South Gateway",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaça d'Ildefons Cerdà",
+        "Gran Via Sud",
+        "Passeig de la Zona Franca"
+      ],
+      "municipality": "Sants-Montjuïc",
+      "category": "SQUARES",
+      "direction": "Southern airport expressway approach into Barcelona at Plaça Cerdà",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1234692367/original.jpg",
+      "coordinates": {
+        "lat": 41.3622,
+        "lon": 2.1354
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1234692367/original.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-ronda-litoral",
+      "name": "Ronda Litoral (B-10) — Poblenou Coast",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Ronda Litoral B-10",
+        "Carrer de Badajoz",
+        "Mar Bella"
+      ],
+      "municipality": "Sant Martí",
+      "category": "HIGHWAYS",
+      "direction": "Coastal ring-road traffic along Ronda Litoral B-10 near Poblenou",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1253346207/original.jpg",
+      "coordinates": {
+        "lat": 41.3924,
+        "lon": 2.2045
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1253346207/original.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-bcn-ronda-dalt",
+      "name": "Ronda de Dalt (B-20) — Collserola Foothills",
+      "country": "SPAIN",
+      "city": "BARCELONA",
+      "quality": "SD",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Ronda de Dalt B-20",
+        "Passeig de Valldaura"
+      ],
+      "municipality": "Horta-Guinardó / Nou Barris",
+      "category": "HIGHWAYS",
+      "direction": "Northern orbital highway Ronda de Dalt B-20 along Collserola slopes",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1253046256/original.jpg",
+      "coordinates": {
+        "lat": 41.4401,
+        "lon": 2.1678
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1253046256/original.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-cibeles",
+      "name": "Plaza de Cibeles & Paseo de Recoletos",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaza de Cibeles",
+        "Calle de Alcalá",
+        "Paseo del Prado"
+      ],
+      "municipality": "Centro / Retiro",
+      "category": "SQUARES",
+      "direction": "Iconic view across Plaza de Cibeles, Palacio de Cibeles, and Paseo del Prado",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01302.jpg",
+      "coordinates": {
+        "lat": 40.419,
+        "lon": -3.6931
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01302.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-callao-gran-via",
+      "name": "Plaza del Callao — Gran Vía",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Gran Vía",
+        "Plaza del Callao",
+        "Calle Jacometrezo"
+      ],
+      "municipality": "Centro",
+      "category": "SQUARES",
+      "direction": "Heart of Gran Vía at Plaza del Callao and Carrión (Schweppes) landmark",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01314.jpg",
+      "coordinates": {
+        "lat": 40.4201,
+        "lon": -3.7059
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01314.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-gran-via-alcala",
+      "name": "Gran Vía — Calle de Alcalá (Metrópolis)",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Gran Vía, 1",
+        "Calle de Alcalá",
+        "Edificio Metrópolis"
+      ],
+      "municipality": "Centro",
+      "category": "BOULEVARDS",
+      "direction": "Eastern gateway of Gran Vía where it meets Calle de Alcalá",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01317.jpg",
+      "coordinates": {
+        "lat": 40.4193,
+        "lon": -3.6974
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01317.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-plaza-espana",
+      "name": "Plaza de España — Gran Vía West",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaza de España",
+        "Gran Vía",
+        "Calle de la Princesa"
+      ],
+      "municipality": "Centro / Moncloa-Aravaca",
+      "category": "SQUARES",
+      "direction": "Renovated Plaza de España civic esplanade at the western end of Gran Vía",
+      "poster_url": "https://informo.madrid.es/cameras/Camara09301.jpg",
+      "coordinates": {
+        "lat": 40.4232,
+        "lon": -3.7108
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara09301.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-puerta-alcala",
+      "name": "Puerta de Alcalá — Plaza de la Independencia",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaza de la Independencia",
+        "Calle de Alcalá",
+        "Calle de Serrano"
+      ],
+      "municipality": "Salamanca / Retiro",
+      "category": "SQUARES",
+      "direction": "Plaza de la Independencia roundabout beside Puerta de Alcalá and El Retiro",
+      "poster_url": "https://informo.madrid.es/cameras/Camara04322.jpg",
+      "coordinates": {
+        "lat": 40.42,
+        "lon": -3.6887
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara04322.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-neptuno",
+      "name": "Fuente de Neptuno — Paseo del Prado",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaza Cánovas del Castillo",
+        "Paseo del Prado",
+        "Carrera de San Jerónimo"
+      ],
+      "municipality": "Centro / Cortes",
+      "category": "SQUARES",
+      "direction": "Tree-lined Paseo del Prado boulevard at Plaza Cánovas del Castillo (Neptuno)",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01303.jpg",
+      "coordinates": {
+        "lat": 40.4153,
+        "lon": -3.6942
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01303.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-paseo-prado",
+      "name": "Paseo del Prado — Museo del Prado & Huertas",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Paseo del Prado",
+        "Calle de las Huertas",
+        "CaixaForum"
+      ],
+      "municipality": "Centro / Retiro",
+      "category": "BOULEVARDS",
+      "direction": "Landscape of Light UNESCO corridor along Paseo del Prado near Museo del Prado",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01323.jpg",
+      "coordinates": {
+        "lat": 40.4131,
+        "lon": -3.6934
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01323.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-plaza-colon",
+      "name": "Plaza de Colón — Paseo de la Castellana",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaza de Colón",
+        "Paseo de la Castellana",
+        "Calle de Goya"
+      ],
+      "municipality": "Salamanca / Chamberí",
+      "category": "SQUARES",
+      "direction": "Grand junction of Paseo de la Castellana and Paseo de Recoletos at Colón",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01301.jpg",
+      "coordinates": {
+        "lat": 40.4253,
+        "lon": -3.6897
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01301.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-bernabeu-lima",
+      "name": "Plaza de Lima — Santiago Bernabéu",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Paseo de la Castellana",
+        "Plaza de Lima",
+        "Concha Espina"
+      ],
+      "municipality": "Chamartín / Tetuán",
+      "category": "BOULEVARDS",
+      "direction": "Paseo de la Castellana corridor directly in front of Santiago Bernabéu",
+      "poster_url": "https://informo.madrid.es/cameras/Camara06306.jpg",
+      "coordinates": {
+        "lat": 40.4519,
+        "lon": -3.6908
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara06306.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-plaza-castilla",
+      "name": "Plaza de Castilla — Puerta de Europa (Torres KIO)",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaza de Castilla",
+        "Paseo de la Castellana",
+        "Avenida de Asturias"
+      ],
+      "municipality": "Chamartín / Tetuán",
+      "category": "SQUARES",
+      "direction": "Northern business hub at Plaza de Castilla framed by the inclined KIO Towers",
+      "poster_url": "https://informo.madrid.es/cameras/Camara06303.jpg",
+      "coordinates": {
+        "lat": 40.4661,
+        "lon": -3.6889
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara06303.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-atocha",
+      "name": "Glorieta del Emperador Carlos V — Atocha",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Plaza del Emperador Carlos V",
+        "Paseo de la Infanta Isabel",
+        "Atocha"
+      ],
+      "municipality": "Centro / Arganzuela",
+      "category": "SQUARES",
+      "direction": "Main rail hub plaza outside Madrid Puerta de Atocha and Reina Sofía Museum",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01304.jpg",
+      "coordinates": {
+        "lat": 40.4092,
+        "lon": -3.6922
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01304.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "es-mad-bailen-mayor",
+      "name": "Calle de Bailén — Calle Mayor & Almudena",
+      "country": "SPAIN",
+      "city": "MADRID",
+      "quality": "HD_720P",
+      "timezone": "Europe/Madrid",
+      "streets": [
+        "Calle de Bailén",
+        "Calle Mayor",
+        "Catedral de la Almudena"
+      ],
+      "municipality": "Centro (Palacio)",
+      "category": "BRIDGES",
+      "direction": "Historic Bailén viaduct corridor beside Calle Mayor and Almudena Cathedral",
+      "poster_url": "https://informo.madrid.es/cameras/Camara01334.jpg",
+      "coordinates": {
+        "lat": 40.4153,
+        "lon": -3.7135
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://informo.madrid.es/cameras/Camara01334.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ro-buh-piata-romana",
+      "name": "Piața Romană — ASE & Bulevardul Magheru",
+      "country": "ROMANIA",
+      "city": "BUCHAREST",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Bucharest",
+      "streets": [
+        "Piața Romană",
+        "Bulevardul Gheorghe Magheru",
+        "Bulevardul Lascăr Catargiu"
+      ],
+      "municipality": "Sector 1, Bucharest",
+      "category": "SQUARES",
+      "direction": "High-angle view of Piața Romană roundabout, Bucharest Academy of Economic Studies dome, and Bulevardul Magheru",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793909045/original.jpg",
+      "coordinates": {
+        "lat": 44.4471,
+        "lon": 26.0975
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793909045/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ro-buh-bratianu-baratia",
+      "name": "Bulevardul I. C. Brătianu — Bărăția Tower & Cocor",
+      "country": "ROMANIA",
+      "city": "BUCHAREST",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Bucharest",
+      "streets": [
+        "Bulevardul Ion C. Brătianu",
+        "Bărăția Church",
+        "Old Town (Lipscani)"
+      ],
+      "municipality": "Sector 3, Bucharest",
+      "category": "BOULEVARDS",
+      "direction": "Central avenue connecting Piața Universității and Piața Unirii past historic Bărăția Tower and Cocor facade",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793902097/original.jpg",
+      "coordinates": {
+        "lat": 44.4309,
+        "lon": 26.1038
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793902097/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ro-buh-militari-skyline",
+      "name": "Bucharest West Skyline — Militari & Uverturii",
+      "country": "ROMANIA",
+      "city": "BUCHAREST",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Bucharest",
+      "streets": [
+        "Bulevardul Uverturii",
+        "Militari",
+        "Chiajna"
+      ],
+      "municipality": "Sector 6 / Ilfov",
+      "category": "BOULEVARDS",
+      "direction": "Elevated western skyline and evening traffic across Militari district",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793906533/original.jpg",
+      "coordinates": {
+        "lat": 44.4355,
+        "lon": 25.9912
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793906533/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ro-buh-aeroclub-clinceni",
+      "name": "Bucharest Aeroclub — Clinceni Airfield",
+      "country": "ROMANIA",
+      "city": "BUCHAREST",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Bucharest",
+      "streets": [
+        "Aerodromul Clinceni",
+        "DN6 Corridor",
+        "Southwest Bucharest"
+      ],
+      "municipality": "Clinceni / Bucharest Metro",
+      "category": "HIGHWAYS",
+      "direction": "Wide airfield and weather horizon view at Aeroclubul României — București",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1727652470/original.jpg",
+      "coordinates": {
+        "lat": 44.3606,
+        "lon": 25.9317
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1727652470/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "ro-buh-piata-unirii",
+      "name": "Piața Unirii — Fountains & Bulevardul Unirii",
+      "country": "ROMANIA",
+      "city": "BUCHAREST",
+      "quality": "HD_720P",
+      "timezone": "Europe/Bucharest",
+      "streets": [
+        "Piața Unirii",
+        "Bulevardul Unirii",
+        "Splaiul Independenței"
+      ],
+      "municipality": "Sector 3 / Sector 4, Bucharest",
+      "category": "SQUARES",
+      "direction": "Central Bucharest plaza overlooking Piața Unirii fountains and grand boulevard",
+      "poster_url": "https://webcamromania.ro/media/snapshots/01a0267e-d4e0-753a-8ec9-efaa321c0a78/latest.jpg",
+      "coordinates": {
+        "lat": 44.4268,
+        "lon": 26.1025
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://webcamromania.ro/media/snapshots/01a0267e-d4e0-753a-8ec9-efaa321c0a78/latest.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793907437/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    }
+  ]
+}

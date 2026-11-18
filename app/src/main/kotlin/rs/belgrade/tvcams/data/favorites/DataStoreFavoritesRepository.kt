@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
+import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.ViewerPreferences
 import rs.belgrade.tvcams.domain.favorites.ZapScope
@@ -41,12 +42,22 @@ class DataStoreFavoritesRepository(
                 if (rawAutoRotate != null) AutoRotateInterval.valueOf(rawAutoRotate) else AutoRotateInterval.OFF
             }.getOrDefault(AutoRotateInterval.OFF)
 
+            val rawPanelPosition = prefs[KEY_INFO_PANEL_POSITION]
+            val infoPanelPosition = runCatching {
+                if (rawPanelPosition != null) {
+                    InfoPanelPosition.valueOf(rawPanelPosition)
+                } else {
+                    InfoPanelPosition.BOTTOM_CENTER
+                }
+            }.getOrDefault(InfoPanelPosition.BOTTOM_CENTER)
+
             ViewerPreferences(
                 favoriteIds = prefs[KEY_FAVORITE_IDS].orEmpty(),
                 lastCameraId = prefs[KEY_LAST_CAMERA_ID],
                 zapScope = scope,
                 qualityFilter = qualityFilter,
                 autoRotateInterval = autoRotateInterval,
+                infoPanelPosition = infoPanelPosition,
                 autoHideHud = prefs[KEY_AUTO_HIDE_HUD] ?: true,
                 showClockOverlay = prefs[KEY_SHOW_CLOCK_OVERLAY] ?: true,
                 showWeatherOverlay = prefs[KEY_SHOW_WEATHER_OVERLAY] ?: true,
@@ -86,6 +97,12 @@ class DataStoreFavoritesRepository(
         }
     }
 
+    override suspend fun setInfoPanelPosition(position: InfoPanelPosition) {
+        appContext.viewerPreferencesDataStore.edit { prefs ->
+            prefs[KEY_INFO_PANEL_POSITION] = position.name
+        }
+    }
+
     override suspend fun setShowClockOverlay(enabled: Boolean) {
         appContext.viewerPreferencesDataStore.edit { prefs ->
             prefs[KEY_SHOW_CLOCK_OVERLAY] = enabled
@@ -122,6 +139,7 @@ class DataStoreFavoritesRepository(
         val KEY_ZAP_SCOPE = stringPreferencesKey("zap_scope")
         val KEY_QUALITY_FILTER = stringPreferencesKey("quality_filter")
         val KEY_AUTO_ROTATE_INTERVAL = stringPreferencesKey("auto_rotate_interval")
+        val KEY_INFO_PANEL_POSITION = stringPreferencesKey("info_panel_position")
         val KEY_AUTO_HIDE_HUD = booleanPreferencesKey("auto_hide_hud")
         val KEY_SHOW_CLOCK_OVERLAY = booleanPreferencesKey("show_clock_overlay")
         val KEY_SHOW_WEATHER_OVERLAY = booleanPreferencesKey("show_weather_overlay")

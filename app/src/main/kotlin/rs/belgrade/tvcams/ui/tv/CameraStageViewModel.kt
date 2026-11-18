@@ -112,6 +112,7 @@ class CameraStageViewModel(
                 zapScope = prefs.zapScope,
                 qualityFilter = prefs.qualityFilter,
                 autoRotateInterval = prefs.autoRotateInterval,
+                infoPanelPosition = prefs.infoPanelPosition,
                 showClockOverlay = prefs.showClockOverlay,
                 showWeatherOverlay = prefs.showWeatherOverlay,
                 showAirQualityOverlay = prefs.showAirQualityOverlay,
@@ -299,6 +300,13 @@ class CameraStageViewModel(
             val updatedRotate = next.autoRotateInterval
             viewModelScope.launch {
                 favoritesRepository.setAutoRotateInterval(updatedRotate)
+            }
+        }
+
+        if (next.infoPanelPosition != previous.infoPanelPosition) {
+            val updatedPosition = next.infoPanelPosition
+            viewModelScope.launch {
+                favoritesRepository.setInfoPanelPosition(updatedPosition)
             }
         }
 

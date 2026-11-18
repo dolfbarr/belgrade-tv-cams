@@ -16,7 +16,7 @@ import java.io.IOException
 
 class AssetCatalogSeedSource(
     private val appContext: Context,
-    private val assetFileName: String = "seed_catalog.v3.json",
+    private val assetFileName: String = "seed_catalog.v4.json",
 ) : CatalogSeedSource {
     override suspend fun readSeed(): CatalogManifest = withContext(Dispatchers.IO) {
         val raw = appContext.assets.open(assetFileName).bufferedReader(Charsets.UTF_8).use {
@@ -29,8 +29,8 @@ class AssetCatalogSeedSource(
 class FileCatalogCacheStore(
     private val directory: File,
 ) : CatalogCacheStore {
-    private val manifestFile = File(directory, "cached_catalog.v3.json")
-    private val etagFile = File(directory, "cached_catalog.v3.etag")
+    private val manifestFile = File(directory, "cached_catalog.v4.json")
+    private val etagFile = File(directory, "cached_catalog.v4.etag")
 
     override suspend fun readCached(): CatalogManifest? = withContext(Dispatchers.IO) {
         if (!manifestFile.exists()) return@withContext null
@@ -47,7 +47,7 @@ class FileCatalogCacheStore(
         withContext(Dispatchers.IO) {
             directory.mkdirs()
             val encoded = CatalogJsonCodec.encode(manifest)
-            val tmpManifest = File(directory, "cached_catalog.v3.json.tmp")
+            val tmpManifest = File(directory, "cached_catalog.v4.json.tmp")
             tmpManifest.writeText(encoded, Charsets.UTF_8)
             if (!tmpManifest.renameTo(manifestFile)) {
                 manifestFile.writeText(encoded, Charsets.UTF_8)
@@ -55,7 +55,7 @@ class FileCatalogCacheStore(
             }
 
             if (etag != null && etag.isNotBlank()) {
-                val tmpEtag = File(directory, "cached_catalog.v3.etag.tmp")
+                val tmpEtag = File(directory, "cached_catalog.v4.etag.tmp")
                 tmpEtag.writeText(etag.trim(), Charsets.UTF_8)
                 if (!tmpEtag.renameTo(etagFile)) {
                     etagFile.writeText(etag.trim(), Charsets.UTF_8)

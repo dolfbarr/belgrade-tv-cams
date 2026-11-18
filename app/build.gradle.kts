@@ -13,13 +13,13 @@ android {
         applicationId = "rs.belgrade.tvcams"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.4.0"
+        versionCode = 5
+        versionName = "0.5.0"
 
         buildConfigField(
             "String",
             "DEFAULT_CATALOG_URL",
-            "\"https://dolfbarr.github.io/belgrade-tv-cams/catalog.v3.json\"",
+            "\"https://dolfbarr.github.io/belgrade-tv-cams/catalog.v4.json\"",
         )
     }
 

@@ -49,6 +49,12 @@ data class CurrentAirQuality(
         band.displayLabel(),
         pm25,
     )
+
+    fun compactLabel(): String = String.format(
+        Locale.US,
+        "AQI %d",
+        europeanAqi,
+    )
 }
 
 interface AirQualityRepository {

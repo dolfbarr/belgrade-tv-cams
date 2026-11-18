@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Serbia live cams</string>
-    <string name="screensaver_name">Serbia live cams</string>
-    <string name="category_all">All Serbia</string>
+    <string name="app_name">World live cams</string>
+    <string name="screensaver_name">World live cams</string>
+    <string name="category_all">All World</string>
     <string name="category_favorites">Favorites</string>
-    <string name="city_belgrade">Belgrade</string>
-    <string name="city_zemun">Zemun</string>
-    <string name="city_novi_sad">Novi Sad</string>
-    <string name="city_subotica">Subotica</string>
-    <string name="city_nis">Niš</string>
     <string name="category_bridges">Bridges</string>
     <string name="category_squares">Squares</string>
     <string name="category_boulevards">Boulevards</string>
@@ -33,9 +28,9 @@
     <string name="status_retrying">Stream unreachable — retrying…</string>
     <string name="empty_favorites_heading">No favorite cameras yet</string>
     <string name="empty_favorites_body">Press and hold OK while watching any street camera to pin it here</string>
-    <string name="empty_favorites_action">Browse all Serbia cameras</string>
+    <string name="empty_favorites_action">Browse all world cameras</string>
     <string name="empty_quality_heading">No cameras match this quality filter</string>
-    <string name="empty_quality_body">Switch the quality filter to view cameras in this city or category</string>
+    <string name="empty_quality_body">Switch the quality filter to view cameras in this country, city, or category</string>
     <string name="empty_quality_action">Switch quality filter</string>
-    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Camera · ▼: Menu &amp; rotate · ▲: Scope</string>
+    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Camera · ▼: Menu &amp; panel · ▲: Scope</string>
 </resources>

@@ -6,6 +6,7 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import rs.belgrade.tvcams.data.airquality.OpenMeteoAirQualityClient
 import rs.belgrade.tvcams.data.catalog.AssetCatalogSeedSource
 import rs.belgrade.tvcams.data.catalog.FileCatalogCacheStore
@@ -28,6 +29,12 @@ class AppContainer(application: Application) {
         .readTimeout(6, TimeUnit.SECONDS)
         .followRedirects(true)
         .followSslRedirects(true)
+        .build()
+
+    // Dedicated HTTP/1.1 client for HLS/snapshot origins (e.g. bl.rutube.ru / CCTV gateways)
+    // that emit HTTP/1 Keep-Alive headers over HTTP/2 and trigger RFC 7540 stream errors.
+    val mediaHttpClient: OkHttpClient = httpClient.newBuilder()
+        .protocols(listOf(Protocol.HTTP_1_1))
         .build()
 
     val favoritesRepository: FavoritesRepository = DataStoreFavoritesRepository(
@@ -68,7 +75,7 @@ class BelgradeTvApplication : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         ImageLoader.Builder(context)
             .components {
-                add(OkHttpNetworkFetcherFactory(callFactory = { container.httpClient }))
+                add(OkHttpNetworkFetcherFactory(callFactory = { container.mediaHttpClient }))
             }
             .build()
 }

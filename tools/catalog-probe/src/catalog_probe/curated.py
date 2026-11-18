@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 from catalog_probe.models import (
     CameraCategory,
+    CameraCity,
+    CameraCountry,
     CameraEntry,
     GeoCoordinates,
     SerbiaCity,
@@ -248,13 +252,192 @@ def _mup_border_camera(
     )
 
 
+def _rutube_live_camera(
+    *,
+    cam_id: str,
+    name: str,
+    city: CameraCity,
+    timezone: str,
+    streets: tuple[str, ...],
+    municipality: str,
+    category: CameraCategory,
+    direction: str,
+    lat: float,
+    lon: float,
+    hls_url: str,
+    poster_url: str,
+) -> CameraEntry:
+    return CameraEntry(
+        id=cam_id,
+        name=name,
+        country=city.default_country,
+        city=city,
+        quality=VideoQuality.FHD_1080P,
+        timezone=timezone,
+        streets=streets,
+        municipality=municipality,
+        category=category,
+        direction=direction,
+        poster_url=poster_url,
+        coordinates=GeoCoordinates(lat=lat, lon=lon),
+        streams=(
+            StreamDescriptor(
+                type=StreamTransportType.HLS,
+                url=hls_url,
+            ),
+        ),
+    )
+
+
+def _windy_snapshot_camera(
+    *,
+    cam_id: str,
+    name: str,
+    city: CameraCity,
+    quality: VideoQuality,
+    timezone: str,
+    streets: tuple[str, ...],
+    municipality: str,
+    category: CameraCategory,
+    direction: str,
+    lat: float,
+    lon: float,
+    windy_id: str,
+    interval_ms: int = 60000,
+) -> CameraEntry:
+    snap_url = f"https://imgproxy.windy.com/_/full/plain/current/{windy_id}/original.jpg"
+    return CameraEntry(
+        id=cam_id,
+        name=name,
+        country=city.default_country,
+        city=city,
+        quality=quality,
+        timezone=timezone,
+        streets=streets,
+        municipality=municipality,
+        category=category,
+        direction=direction,
+        poster_url=snap_url,
+        coordinates=GeoCoordinates(lat=lat, lon=lon),
+        streams=(
+            StreamDescriptor(
+                type=StreamTransportType.SNAPSHOT_POLL,
+                url=snap_url,
+                interval_ms=interval_ms,
+                cache_buster_param="v",
+            ),
+        ),
+    )
+
+
+def _madrid_camera(
+    *,
+    cam_id: str,
+    name: str,
+    streets: tuple[str, ...],
+    municipality: str,
+    category: CameraCategory,
+    direction: str,
+    lat: float,
+    lon: float,
+    cam_code: str,
+) -> CameraEntry:
+    snap_url = f"https://informo.madrid.es/cameras/Camara{cam_code}.jpg"
+    return CameraEntry(
+        id=cam_id,
+        name=name,
+        country=CameraCountry.SPAIN,
+        city=CameraCity.MADRID,
+        quality=VideoQuality.HD_720P,
+        timezone="Europe/Madrid",
+        streets=streets,
+        municipality=municipality,
+        category=category,
+        direction=direction,
+        poster_url=snap_url,
+        coordinates=GeoCoordinates(lat=lat, lon=lon),
+        streams=(
+            StreamDescriptor(
+                type=StreamTransportType.SNAPSHOT_POLL,
+                url=snap_url,
+                interval_ms=30000,
+                cache_buster_param="v",
+            ),
+        ),
+    )
+
+
+def _tomsk_snapshot_camera(
+    *,
+    cam_id: str,
+    name: str,
+    streets: tuple[str, ...],
+    municipality: str,
+    category: CameraCategory,
+    direction: str,
+    lat: float,
+    lon: float,
+    slug: str,
+    quality: VideoQuality = VideoQuality.FHD_1080P,
+    windy_fallback_id: str | None = None,
+) -> CameraEntry:
+    primary_url = f"https://cdn08.vtomske.ru/stream/{slug}.jpg"
+    streams: list[StreamDescriptor] = [
+        StreamDescriptor(
+            type=StreamTransportType.SNAPSHOT_POLL,
+            url=primary_url,
+            interval_ms=10000,
+            cache_buster_param="_",
+        ),
+    ]
+    if windy_fallback_id is not None:
+        streams.append(
+            StreamDescriptor(
+                type=StreamTransportType.SNAPSHOT_POLL,
+                url=(
+                    f"https://imgproxy.windy.com/_/full/plain/current/{windy_fallback_id}"
+                    "/original.jpg"
+                ),
+                interval_ms=60000,
+                cache_buster_param="v",
+            )
+        )
+    return CameraEntry(
+        id=cam_id,
+        name=name,
+        country=CameraCountry.RUSSIA,
+        city=CameraCity.TOMSK,
+        quality=quality,
+        timezone="Asia/Tomsk",
+        streets=streets,
+        municipality=municipality,
+        category=category,
+        direction=direction,
+        poster_url=primary_url,
+        coordinates=GeoCoordinates(lat=lat, lon=lon),
+        streams=tuple(streams),
+    )
+
+
 def build_curated_cameras() -> list[CameraEntry]:
-    city_order: dict[SerbiaCity, int] = {
-        SerbiaCity.BELGRADE: 0,
-        SerbiaCity.ZEMUN: 1,
-        SerbiaCity.NOVI_SAD: 2,
-        SerbiaCity.SUBOTICA: 3,
-        SerbiaCity.NIS: 4,
+    country_order: dict[CameraCountry, int] = {
+        CameraCountry.SERBIA: 0,
+        CameraCountry.RUSSIA: 1,
+        CameraCountry.SPAIN: 2,
+        CameraCountry.ROMANIA: 3,
+    }
+    city_order: dict[CameraCity, int] = {
+        CameraCity.BELGRADE: 0,
+        CameraCity.ZEMUN: 1,
+        CameraCity.NOVI_SAD: 2,
+        CameraCity.SUBOTICA: 3,
+        CameraCity.NIS: 4,
+        CameraCity.SAINT_PETERSBURG: 5,
+        CameraCity.ROSTOV_ON_DON: 6,
+        CameraCity.TOMSK: 7,
+        CameraCity.BARCELONA: 8,
+        CameraCity.MADRID: 9,
+        CameraCity.BUCHAREST: 10,
     }
     raw_cameras = [
         # =========================================================================
@@ -1325,5 +1508,847 @@ def build_curated_cameras() -> list[CameraEntry]:
             hls_path="Gradina/gradina2.m3u8",
             poster_slug="gradina-55",
         ),
+        # =========================================================================
+        # SAINT PETERSBURG, RUSSIA (12 cameras: 10 live 1080p HLS + 2 live HD snaps)
+        # =========================================================================
+        _rutube_live_camera(
+            cam_id="ru-spb-palace-bridge",
+            name="Palace Bridge & Neva River Panorama",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Dvortsovy Bridge", "Admiralty Embankment", "Universitetskaya Embankment"),
+            municipality="Tsentralny / Vasileostrovsky",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Live panorama over the Neva River, Palace Bridge drawspan, Spit of Vasilyevsky "
+                "Island, and Rostral Columns"
+            ),
+            lat=59.9410,
+            lon=30.3085,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/86e2f45785378c866d212e7f5f5447b0/index.m3u8"
+                "?s=1Px1aOQMP3RaCMhH5mZrvg&e=2095018226&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-05-24/5b/c8/5bc845ae94af4fbf678737923f35631f.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-admiralty",
+            name="Admiralty Embankment & Peter and Paul Fortress",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Admiralteyskaya Embankment", "Neva River", "Zayachy Island"),
+            municipality="Admiralteysky / Petrogradsky",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Rotating sightseeing camera across Admiralty Embankment, Peter and Paul Fortress, "
+                "Kunstkamera, and St. Isaac's Cathedral"
+            ),
+            lat=59.9385,
+            lon=30.3056,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/af70989fe893a8bb4f16447936340e95/index.m3u8"
+                "?s=a2hnBGfscGGfhxA184wBqg&e=2095017940&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2024-09-22/3a/97/3a9710c5ebb51907c995f62abc399b79.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-spilled-blood",
+            name="Church of the Savior on Spilled Blood",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Griboyedov Canal Embankment", "Inzhenernaya Street", "Mikhailovsky Garden"),
+            municipality="Tsentralny District",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Elevated view toward the domes of the Church of the Savior on Spilled Blood "
+                "along the Griboyedov Canal"
+            ),
+            lat=59.9401,
+            lon=30.3289,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/9dce2908a76efba4a82c2f95fa72efc6/index.m3u8"
+                "?s=sg9x2xyRLf-FMc4PnJdCtA&e=2095018227&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-08-07/c0/ed/c0ed919e225d891155820e5ef183e5a7.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-nevsky-gostiny",
+            name="Nevsky Prospekt — Gostiny Dvor",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Nevsky Prospekt", "Sadovaya Street", "Gostiny Dvor"),
+            municipality="Tsentralny District",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "View over the Nevsky Prospekt and Sadovaya Street intersection beside "
+                "Great Gostiny Dvor arcade"
+            ),
+            lat=59.9344,
+            lon=30.3323,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/1217bd14907ff59c5c64bcc4cbe1af41/index.m3u8"
+                "?s=oyxldQwKIGsKItkr-D-_DQ&e=2095018226&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-09-05/ba/6d/ba6dce8c3abb9eed322c61f4e3adc247.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-nevsky-anichkov",
+            name="Nevsky Prospekt — Anichkov Palace & Fontanka",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Nevsky Prospekt", "Fontanka River Embankment", "Ostrovsky Square"),
+            municipality="Tsentralny District",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Live view along Nevsky Prospekt at Anichkov Palace and Anichkov Bridge "
+                "over the Fontanka River"
+            ),
+            lat=59.9332,
+            lon=30.3430,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/a996e6508b2ff81cd523dae2d14f7bf6/index.m3u8"
+                "?s=l_MOvXl61kNKP0H3iiXueg&e=2095018227&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-05-10/3c/c7/3cc7a9b9143624b88fbab52b1d3d8a05.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-nevsky-panorama",
+            name="Nevsky Prospekt — Main Avenue Traffic",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Nevsky Prospekt", "Liteyny Prospekt"),
+            municipality="Tsentralny District",
+            category=CameraCategory.BOULEVARDS,
+            direction="Wide boulevard view along Nevsky Prospekt toward Admiralty Spire",
+            lat=59.9327,
+            lon=30.3489,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/746aa7922a210086f18daff094a5e63d/index.m3u8"
+                "?s=yLRtprP8c2bx2SWjHgASDw&e=2095018308&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-05-09/b4/22/b422cb51aae61c450e29574b06685ba1.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-griboyedov",
+            name="Griboyedov Canal & Kazan Quarter",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Griboyedov Canal Embankment", "Kazanskaya Street", "Bank Bridge"),
+            municipality="Tsentralny District",
+            category=CameraCategory.BRIDGES,
+            direction="Waterway and historic embankments along the Griboyedov Canal",
+            lat=59.9358,
+            lon=30.3259,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/e2fae10f093223afb5376b280fcbb24a/index.m3u8"
+                "?s=8KO6AMsHSkTHHqjXRAHoVA&e=2095018227&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-07-23/da/5a/da5a3a7274459f10201fa9c053489892.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-aurora",
+            name="Cruiser Aurora — Petrogradskaya Embankment",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Petrogradskaya Embankment", "Bolshaya Nevka", "Sampsonievsky Bridge"),
+            municipality="Petrogradsky District",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Live view of the historic Cruiser Aurora moored at Petrogradskaya Embankment "
+                "on the Neva River"
+            ),
+            lat=59.9554,
+            lon=30.3378,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/2c5000420be8aa08a969a21614e2d33e/index.m3u8"
+                "?s=SVasj1lIiRv6A9q64Cz0qg&e=2095018227&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-05-29/1c/cd/1ccd55cd3d235f8bcd0f7bb7dc707dc3.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-historic-rooftops",
+            name="Historic Center Rooftops — Tchaikovskogo Street",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Tchaikovskogo Street", "Liteyny Prospekt", "Summer Garden"),
+            municipality="Tsentralny District",
+            category=CameraCategory.SQUARES,
+            direction="360-degree rooftop skyline over historic Saint Petersburg domes and spires",
+            lat=59.9472,
+            lon=30.3468,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/d7e9422167f785e111c880e44ad76428/index.m3u8"
+                "?s=KzPhUMHJIEjoD7CCWlXpdA&e=2095018308&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2024-09-30/9c/ba/9cba3c11b2aeea2626df2b0d978843b9.jpg"
+            ),
+        ),
+        _rutube_live_camera(
+            cam_id="ru-spb-zagorodny",
+            name="Zagorodny Prospekt — Five Corners",
+            city=CameraCity.SAINT_PETERSBURG,
+            timezone="Europe/Moscow",
+            streets=("Zagorodny Prospekt", "Rubinshteyna Street", "Lomonosova Street"),
+            municipality="Tsentralny District",
+            category=CameraCategory.BOULEVARDS,
+            direction="Street-level panorama along Zagorodny Prospekt near Five Corners",
+            lat=59.9261,
+            lon=30.3408,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/92e79cc0d122fb94647b79d4e7778773/index.m3u8"
+                "?s=3xjII2j4UzMhodWR-hJdYA&e=2095018308&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-08-23/0b/0e/0b0e398a6f8c698fb107b1019ea997bc.jpg"
+            ),
+        ),
+        CameraEntry(
+            id="ru-spb-sevkabel",
+            name="Sevkabel Port — Gulf of Finland & ZSD Bridge",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.SAINT_PETERSBURG,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Moscow",
+            streets=("Kozhevennaya Line, 40", "Sevkabel Port", "Western High-Speed Diameter"),
+            municipality="Vasilyevsky Island",
+            category=CameraCategory.BRIDGES,
+            direction=(
+                "Waterfront boardwalk at Sevkabel Port overlooking the Gulf of Finland "
+                "and the cable-stayed ZSD bridge"
+            ),
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1729876918/original.jpg",
+            coordinates=GeoCoordinates(lat=59.9242, lon=30.2407),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url=(
+                        "https://openapi-alpha.ivideon.com/cameras/"
+                        "100-VBPoWKrNcZ6SBhucwbvQCD:0/live_preview?op=GET&access_token=public&q=2"
+                    ),
+                    interval_ms=2500,
+                    cache_buster_param="_",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1729876918/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+        _windy_snapshot_camera(
+            cam_id="ru-spb-hermitage",
+            name="State Hermitage Museum — Winter Palace Courtyard",
+            city=CameraCity.SAINT_PETERSBURG,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Moscow",
+            streets=("Palace Square", "Palace Embankment, 32", "Winter Palace"),
+            municipality="Tsentralny District",
+            category=CameraCategory.SQUARES,
+            direction="View inside the Great Courtyard garden of the Winter Palace (Hermitage)",
+            lat=59.9398,
+            lon=30.3146,
+            windy_id="1793869112",
+        ),
+        # =========================================================================
+        # ROSTOV-ON-DON, RUSSIA (1 camera: 1080p HD live rooftop skyline HLS)
+        # =========================================================================
+        _rutube_live_camera(
+            cam_id="ru-rov-leninsky-skyline",
+            name="Leninsky District — Central Station & Siversa Flyover",
+            city=CameraCity.ROSTOV_ON_DON,
+            timezone="Europe/Moscow",
+            streets=("Privokzalnaya Square", "Prospekt Siversa", "Gvardeyskaya Square"),
+            municipality="Leninsky District",
+            category=CameraCategory.HIGHWAYS,
+            direction=(
+                "High-altitude skyline panorama over Rostov-Glavny Railway Station, "
+                "Siversa Prospekt viaduct, and western Rostov-on-Don hills"
+            ),
+            lat=47.2194,
+            lon=39.6908,
+            hls_url=(
+                "https://bl.rutube.ru/livestream/eba7bc75dd7994f0d7e22e1ad9e76a87/index.m3u8"
+                "?s=ZyjH13qCcKa5iAOa33NZlw&e=2095018072&scheme=https"
+            ),
+            poster_url=(
+                "https://pic.rtbcdn.ru/video/2026-08-07/c7/35/c735cfed8162599365f1b12cba048a36.jpg"
+            ),
+        ),
+        # =========================================================================
+        # TOMSK, RUSSIA (10 cameras: 9 1080p HD [incl. live HLS] + 1 SD, Asia/Tomsk)
+        # =========================================================================
+        CameraEntry(
+            id="ru-tof-yuzhnaya",
+            name="Yuzhnaya Square — Mokrushinsky Crossing",
+            country=CameraCountry.RUSSIA,
+            city=CameraCity.TOMSK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tomsk",
+            streets=("Yuzhnaya Square", "Krasnoarmeyskaya Street", "Mokrushina Street"),
+            municipality="Kirovsky District",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Southern gateway to Tomsk at Yuzhnaya Square and the Mokrushinsky rail crossing"
+            ),
+            poster_url="https://cdn08.vtomske.ru/stream/21.jpg",
+            coordinates=GeoCoordinates(lat=56.4510, lon=84.9823),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://cdn08.vtomske.ru/hls/stream6.m3u8",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://cdn08.vtomske.ru/stream/21.jpg",
+                    interval_ms=8000,
+                    cache_buster_param="_",
+                ),
+            ),
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-novosobornaya",
+            name="Novosobornaya Square & City Administration",
+            streets=("Prospekt Lenina", "Novosobornaya Square", "Sovetskaya Street"),
+            municipality="Sovetsky District",
+            category=CameraCategory.SQUARES,
+            direction="Central civic plaza at Novosobornaya Square along Prospekt Lenina",
+            lat=56.4755,
+            lon=84.9509,
+            slug="admcam1",
+            windy_fallback_id="1623915502",
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-tom-embankment",
+            name="Tom River Embankment — River Station",
+            streets=("Naberezhnaya Reki Tomi", "Prospekt Lenina", "River Terminal"),
+            municipality="Leninsky District",
+            category=CameraCategory.BRIDGES,
+            direction="Panoramic view over the Tom River embankment and Communal Bridge approach",
+            lat=56.4942,
+            lon=84.9426,
+            slug="23",
+            windy_fallback_id="1618476507",
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-lenina-prospekt",
+            name="Prospekt Lenina — Tikhiy Lane",
+            streets=("Prospekt Lenina", "Pereulok Tikhiy", "Old Town"),
+            municipality="Leninsky District",
+            category=CameraCategory.BOULEVARDS,
+            direction="Main north-south avenue of historic Tomsk along Prospekt Lenina",
+            lat=56.4891,
+            lon=84.9482,
+            slug="1",
+        ),
+        _windy_snapshot_camera(
+            cam_id="ru-tof-krasnoarmeyskaya",
+            name="Krasnoarmeyskaya Street — Yuzhnaya Approach",
+            city=CameraCity.TOMSK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Asia/Tomsk",
+            streets=("Krasnoarmeyskaya Street", "Yuzhnaya Square", "Bogatyevo Highway"),
+            municipality="Kirovsky District",
+            category=CameraCategory.BOULEVARDS,
+            direction="Traffic corridor along Krasnoarmeyskaya Street approaching Yuzhnaya Square",
+            lat=56.4535,
+            lon=84.9781,
+            windy_id="1429349224",
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-transportnaya",
+            name="Transportnaya Square",
+            streets=("Transportnaya Square", "Krasnoarmeyskaya Street", "Prospekt Kirova"),
+            municipality="Kirovsky District",
+            category=CameraCategory.SQUARES,
+            direction="Major arterial roundabout at Transportnaya Square in southern Tomsk",
+            lat=56.4557,
+            lon=84.9756,
+            slug="stream8",
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-tsu-parus",
+            name="Tom River — Tomsk State University Campus",
+            streets=("Pereulok Buyanovsky, 3A", "Tom River", "TSU Parus Residence"),
+            municipality="Kirovsky District",
+            category=CameraCategory.BRIDGES,
+            direction="High rooftop view from TSU Parus across the Tom River bend and left bank",
+            lat=56.4682,
+            lon=84.9389,
+            slug="tsu",
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-vershinina",
+            name="Tom River Panorama — Vershinina Street",
+            streets=("Vershinina Street, 47", "Nahimova Street", "Lagerny Garden"),
+            municipality="Kirovsky District",
+            category=CameraCategory.BOULEVARDS,
+            direction="Wide urban panorama across Kirovsky District toward the Tom River valley",
+            lat=56.4628,
+            lon=84.9620,
+            slug="19",
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-plekhanova",
+            name="Plekhanova Lane — Historic Wooden Quarter",
+            streets=("Pereulok Plekhanova, 4", "Prospekt Lenina", "Gagarina Street"),
+            municipality="Sovetsky District",
+            category=CameraCategory.BOULEVARDS,
+            direction="Central tree-lined street along Plekhanova Lane near Prospekt Lenina",
+            lat=56.4795,
+            lon=84.9542,
+            slug="admcam3",
+        ),
+        _tomsk_snapshot_camera(
+            cam_id="ru-tof-tomsky-lane",
+            name="Tomsky Lane — Northern District",
+            streets=("Pereulok Tomsky", "Karl Marx Street"),
+            municipality="Leninsky District",
+            category=CameraCategory.BOULEVARDS,
+            direction="Neighborhood street camera at Tomsky Lane in northern central Tomsk",
+            lat=56.5015,
+            lon=84.9612,
+            slug="admcam4",
+            quality=VideoQuality.SD,
+        ),
+        # =========================================================================
+        # BARCELONA, SPAIN (10 cameras: 1080p 3Cat live HLS + 9 municipal/port cams)
+        # =========================================================================
+        CameraEntry(
+            id="es-bcn-3cat-panorama",
+            name="Barcelona & Catalonia Live Panorama (3Cat)",
+            country=CameraCountry.SPAIN,
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Madrid",
+            streets=("Port Olímpic", "Tibidabo", "Barcelona Coastline"),
+            municipality="Barcelona / Catalunya",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "24/7 1080p broadcast camera rotation across Barcelona skyline, port, "
+                "and Catalan landmarks by 3Cat"
+            ),
+            poster_url="https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+            coordinates=GeoCoordinates(lat=41.3851, lon=2.1734),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.HLS,
+                    url="https://directes-tv-int.3catdirectes.cat/live-content/beauties-hls/master.m3u8",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1450823411/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-port-olimpic",
+            name="Port Olímpic, Barceloneta & W Hotel",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Moll de Gregal", "Platja de la Barceloneta", "Port Olímpic"),
+            municipality="Sant Martí / Ciutat Vella",
+            category=CameraCategory.BRIDGES,
+            direction="Mediterranean marina view from Port Olímpic toward Barceloneta and W Hotel",
+            lat=41.3858,
+            lon=2.2003,
+            windy_id="1450823411",
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-la-rambla",
+            name="La Rambla — Arts Santa Mònica & Port Vell",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("La Rambla", "Plaça del Portal de la Pau", "Columbus Monument"),
+            municipality="Ciutat Vella",
+            category=CameraCategory.BOULEVARDS,
+            direction="Pedestrian promenade at lower La Rambla beside Arts Santa Mònica",
+            lat=41.3772,
+            lon=2.1758,
+            windy_id="1450823279",
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-diagonal-macia",
+            name="Avinguda Diagonal — Plaça Francesc Macià",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Avinguda Diagonal", "Plaça de Francesc Macià", "Josep Tarradellas"),
+            municipality="Sarrià-Sant Gervasi / Les Corts",
+            category=CameraCategory.SQUARES,
+            direction="Westbound avenue traffic at Plaça de Francesc Macià on Avinguda Diagonal",
+            lat=41.3926,
+            lon=2.1444,
+            windy_id="1252945039",
+            interval_ms=30000,
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-gran-via",
+            name="Gran Via de les Corts Catalanes — Glòries",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Gran Via de les Corts Catalanes", "Plaça de les Glòries Catalanes"),
+            municipality="Sant Martí",
+            category=CameraCategory.BOULEVARDS,
+            direction="Arterial traffic along Gran Via de les Corts Catalanes near Glòries",
+            lat=41.4042,
+            lon=2.1928,
+            windy_id="1616152753",
+            interval_ms=30000,
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-marina-pujades",
+            name="Carrer de la Marina — Port Olímpic Towers",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Carrer de la Marina", "Carrer de Pujades", "Vila Olímpica"),
+            municipality="Sant Martí",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Southbound view down Carrer de la Marina toward Torre Mapfre and Hotel Arts"
+            ),
+            lat=41.3935,
+            lon=2.1903,
+            windy_id="1616152597",
+            interval_ms=30000,
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-mitre-balmes",
+            name="Ronda del General Mitre — Carrer de Balmes",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Ronda del General Mitre", "Carrer de Balmes"),
+            municipality="Sarrià-Sant Gervasi",
+            category=CameraCategory.BOULEVARDS,
+            direction="Upper-city boulevard junction of Ronda del General Mitre and Balmes",
+            lat=41.4048,
+            lon=2.1404,
+            windy_id="1252946532",
+            interval_ms=30000,
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-placa-cerda",
+            name="Plaça Cerdà — Gran Via South Gateway",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Plaça d'Ildefons Cerdà", "Gran Via Sud", "Passeig de la Zona Franca"),
+            municipality="Sants-Montjuïc",
+            category=CameraCategory.SQUARES,
+            direction="Southern airport expressway approach into Barcelona at Plaça Cerdà",
+            lat=41.3622,
+            lon=2.1354,
+            windy_id="1234692367",
+            interval_ms=30000,
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-ronda-litoral",
+            name="Ronda Litoral (B-10) — Poblenou Coast",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Ronda Litoral B-10", "Carrer de Badajoz", "Mar Bella"),
+            municipality="Sant Martí",
+            category=CameraCategory.HIGHWAYS,
+            direction="Coastal ring-road traffic along Ronda Litoral B-10 near Poblenou",
+            lat=41.3924,
+            lon=2.2045,
+            windy_id="1253346207",
+            interval_ms=30000,
+        ),
+        _windy_snapshot_camera(
+            cam_id="es-bcn-ronda-dalt",
+            name="Ronda de Dalt (B-20) — Collserola Foothills",
+            city=CameraCity.BARCELONA,
+            quality=VideoQuality.SD,
+            timezone="Europe/Madrid",
+            streets=("Ronda de Dalt B-20", "Passeig de Valldaura"),
+            municipality="Horta-Guinardó / Nou Barris",
+            category=CameraCategory.HIGHWAYS,
+            direction="Northern orbital highway Ronda de Dalt B-20 along Collserola slopes",
+            lat=41.4401,
+            lon=2.1678,
+            windy_id="1253046256",
+            interval_ms=30000,
+        ),
+        # =========================================================================
+        # MADRID, SPAIN (12 cameras: all 720p HD municipal feeds, Europe/Madrid)
+        # =========================================================================
+        _madrid_camera(
+            cam_id="es-mad-cibeles",
+            name="Plaza de Cibeles & Paseo de Recoletos",
+            streets=("Plaza de Cibeles", "Calle de Alcalá", "Paseo del Prado"),
+            municipality="Centro / Retiro",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Iconic view across Plaza de Cibeles, Palacio de Cibeles, and Paseo del Prado"
+            ),
+            lat=40.4190,
+            lon=-3.6931,
+            cam_code="01302",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-callao-gran-via",
+            name="Plaza del Callao — Gran Vía",
+            streets=("Gran Vía", "Plaza del Callao", "Calle Jacometrezo"),
+            municipality="Centro",
+            category=CameraCategory.SQUARES,
+            direction="Heart of Gran Vía at Plaza del Callao and Carrión (Schweppes) landmark",
+            lat=40.4201,
+            lon=-3.7059,
+            cam_code="01314",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-gran-via-alcala",
+            name="Gran Vía — Calle de Alcalá (Metrópolis)",
+            streets=("Gran Vía, 1", "Calle de Alcalá", "Edificio Metrópolis"),
+            municipality="Centro",
+            category=CameraCategory.BOULEVARDS,
+            direction="Eastern gateway of Gran Vía where it meets Calle de Alcalá",
+            lat=40.4193,
+            lon=-3.6974,
+            cam_code="01317",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-plaza-espana",
+            name="Plaza de España — Gran Vía West",
+            streets=("Plaza de España", "Gran Vía", "Calle de la Princesa"),
+            municipality="Centro / Moncloa-Aravaca",
+            category=CameraCategory.SQUARES,
+            direction="Renovated Plaza de España civic esplanade at the western end of Gran Vía",
+            lat=40.4232,
+            lon=-3.7108,
+            cam_code="09301",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-puerta-alcala",
+            name="Puerta de Alcalá — Plaza de la Independencia",
+            streets=("Plaza de la Independencia", "Calle de Alcalá", "Calle de Serrano"),
+            municipality="Salamanca / Retiro",
+            category=CameraCategory.SQUARES,
+            direction="Plaza de la Independencia roundabout beside Puerta de Alcalá and El Retiro",
+            lat=40.4200,
+            lon=-3.6887,
+            cam_code="04322",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-neptuno",
+            name="Fuente de Neptuno — Paseo del Prado",
+            streets=("Plaza Cánovas del Castillo", "Paseo del Prado", "Carrera de San Jerónimo"),
+            municipality="Centro / Cortes",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Tree-lined Paseo del Prado boulevard at Plaza Cánovas del Castillo (Neptuno)"
+            ),
+            lat=40.4153,
+            lon=-3.6942,
+            cam_code="01303",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-paseo-prado",
+            name="Paseo del Prado — Museo del Prado & Huertas",
+            streets=("Paseo del Prado", "Calle de las Huertas", "CaixaForum"),
+            municipality="Centro / Retiro",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Landscape of Light UNESCO corridor along Paseo del Prado near Museo del Prado"
+            ),
+            lat=40.4131,
+            lon=-3.6934,
+            cam_code="01323",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-plaza-colon",
+            name="Plaza de Colón — Paseo de la Castellana",
+            streets=("Plaza de Colón", "Paseo de la Castellana", "Calle de Goya"),
+            municipality="Salamanca / Chamberí",
+            category=CameraCategory.SQUARES,
+            direction="Grand junction of Paseo de la Castellana and Paseo de Recoletos at Colón",
+            lat=40.4253,
+            lon=-3.6897,
+            cam_code="01301",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-bernabeu-lima",
+            name="Plaza de Lima — Santiago Bernabéu",
+            streets=("Paseo de la Castellana", "Plaza de Lima", "Concha Espina"),
+            municipality="Chamartín / Tetuán",
+            category=CameraCategory.BOULEVARDS,
+            direction="Paseo de la Castellana corridor directly in front of Santiago Bernabéu",
+            lat=40.4519,
+            lon=-3.6908,
+            cam_code="06306",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-plaza-castilla",
+            name="Plaza de Castilla — Puerta de Europa (Torres KIO)",
+            streets=("Plaza de Castilla", "Paseo de la Castellana", "Avenida de Asturias"),
+            municipality="Chamartín / Tetuán",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Northern business hub at Plaza de Castilla framed by the inclined KIO Towers"
+            ),
+            lat=40.4661,
+            lon=-3.6889,
+            cam_code="06303",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-atocha",
+            name="Glorieta del Emperador Carlos V — Atocha",
+            streets=("Plaza del Emperador Carlos V", "Paseo de la Infanta Isabel", "Atocha"),
+            municipality="Centro / Arganzuela",
+            category=CameraCategory.SQUARES,
+            direction="Main rail hub plaza outside Madrid Puerta de Atocha and Reina Sofía Museum",
+            lat=40.4092,
+            lon=-3.6922,
+            cam_code="01304",
+        ),
+        _madrid_camera(
+            cam_id="es-mad-bailen-mayor",
+            name="Calle de Bailén — Calle Mayor & Almudena",
+            streets=("Calle de Bailén", "Calle Mayor", "Catedral de la Almudena"),
+            municipality="Centro (Palacio)",
+            category=CameraCategory.BRIDGES,
+            direction="Historic Bailén viaduct corridor beside Calle Mayor and Almudena Cathedral",
+            lat=40.4153,
+            lon=-3.7135,
+            cam_code="01334",
+        ),
+        # =========================================================================
+        # BUCHAREST, ROMANIA (5 cameras: 4 1080p HD + 1 720p HD, Europe/Bucharest)
+        # =========================================================================
+        _windy_snapshot_camera(
+            cam_id="ro-buh-piata-romana",
+            name="Piața Romană — ASE & Bulevardul Magheru",
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Bucharest",
+            streets=("Piața Romană", "Bulevardul Gheorghe Magheru", "Bulevardul Lascăr Catargiu"),
+            municipality="Sector 1, Bucharest",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "High-angle view of Piața Romană roundabout, Bucharest Academy of Economic "
+                "Studies dome, and Bulevardul Magheru"
+            ),
+            lat=44.4471,
+            lon=26.0975,
+            windy_id="1793909045",
+        ),
+        _windy_snapshot_camera(
+            cam_id="ro-buh-bratianu-baratia",
+            name="Bulevardul I. C. Brătianu — Bărăția Tower & Cocor",
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Bucharest",
+            streets=("Bulevardul Ion C. Brătianu", "Bărăția Church", "Old Town (Lipscani)"),
+            municipality="Sector 3, Bucharest",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "Central avenue connecting Piața Universității and Piața Unirii past historic "
+                "Bărăția Tower and Cocor facade"
+            ),
+            lat=44.4309,
+            lon=26.1038,
+            windy_id="1793902097",
+        ),
+        _windy_snapshot_camera(
+            cam_id="ro-buh-militari-skyline",
+            name="Bucharest West Skyline — Militari & Uverturii",
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Bucharest",
+            streets=("Bulevardul Uverturii", "Militari", "Chiajna"),
+            municipality="Sector 6 / Ilfov",
+            category=CameraCategory.BOULEVARDS,
+            direction="Elevated western skyline and evening traffic across Militari district",
+            lat=44.4355,
+            lon=25.9912,
+            windy_id="1793906533",
+        ),
+        _windy_snapshot_camera(
+            cam_id="ro-buh-aeroclub-clinceni",
+            name="Bucharest Aeroclub — Clinceni Airfield",
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Bucharest",
+            streets=("Aerodromul Clinceni", "DN6 Corridor", "Southwest Bucharest"),
+            municipality="Clinceni / Bucharest Metro",
+            category=CameraCategory.HIGHWAYS,
+            direction="Wide airfield and weather horizon view at Aeroclubul României — București",
+            lat=44.3606,
+            lon=25.9317,
+            windy_id="1727652470",
+        ),
+        CameraEntry(
+            id="ro-buh-piata-unirii",
+            name="Piața Unirii — Fountains & Bulevardul Unirii",
+            country=CameraCountry.ROMANIA,
+            city=CameraCity.BUCHAREST,
+            quality=VideoQuality.HD_720P,
+            timezone="Europe/Bucharest",
+            streets=("Piața Unirii", "Bulevardul Unirii", "Splaiul Independenței"),
+            municipality="Sector 3 / Sector 4, Bucharest",
+            category=CameraCategory.SQUARES,
+            direction=(
+                "Central Bucharest plaza overlooking Piața Unirii fountains and grand boulevard"
+            ),
+            poster_url=(
+                "https://webcamromania.ro/media/snapshots/"
+                "01a0267e-d4e0-753a-8ec9-efaa321c0a78/latest.jpg"
+            ),
+            coordinates=GeoCoordinates(lat=44.4268, lon=26.1025),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url=(
+                        "https://webcamromania.ro/media/snapshots/"
+                        "01a0267e-d4e0-753a-8ec9-efaa321c0a78/latest.jpg"
+                    ),
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://imgproxy.windy.com/_/full/plain/current/1793907437/original.jpg",
+                    interval_ms=60000,
+                    cache_buster_param="v",
+                ),
+            ),
+        ),
     ]
-    return sorted(raw_cameras, key=lambda cam: (city_order[cam.city], cam.quality.sort_rank))
+    enriched = [
+        replace(cam, country=cam.resolved_country) if cam.country is None else cam
+        for cam in raw_cameras
+    ]
+    return sorted(
+        enriched,
+        key=lambda cam: (
+            country_order[cam.resolved_country],
+            city_order[cam.city],
+            cam.quality.sort_rank,
+        ),
+    )

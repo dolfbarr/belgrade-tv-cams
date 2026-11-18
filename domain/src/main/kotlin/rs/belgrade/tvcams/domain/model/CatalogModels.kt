@@ -6,12 +6,34 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 @Serializable
-enum class SerbiaCity {
-    BELGRADE,
-    ZEMUN,
-    NOVI_SAD,
-    SUBOTICA,
-    NIS,
+enum class CameraCountry {
+    SERBIA,
+    RUSSIA,
+    SPAIN,
+    ROMANIA,
+    ;
+
+    fun displayLabel(): String = when (this) {
+        SERBIA -> "Serbia"
+        RUSSIA -> "Russia"
+        SPAIN -> "Spain"
+        ROMANIA -> "Romania"
+    }
+}
+
+@Serializable
+enum class CameraCity(val country: CameraCountry) {
+    BELGRADE(CameraCountry.SERBIA),
+    ZEMUN(CameraCountry.SERBIA),
+    NOVI_SAD(CameraCountry.SERBIA),
+    SUBOTICA(CameraCountry.SERBIA),
+    NIS(CameraCountry.SERBIA),
+    SAINT_PETERSBURG(CameraCountry.RUSSIA),
+    ROSTOV_ON_DON(CameraCountry.RUSSIA),
+    TOMSK(CameraCountry.RUSSIA),
+    BARCELONA(CameraCountry.SPAIN),
+    MADRID(CameraCountry.SPAIN),
+    BUCHAREST(CameraCountry.ROMANIA),
     ;
 
     fun displayLabel(): String = when (this) {
@@ -20,8 +42,21 @@ enum class SerbiaCity {
         NOVI_SAD -> "Novi Sad"
         SUBOTICA -> "Subotica"
         NIS -> "Niš"
+        SAINT_PETERSBURG -> "Saint Petersburg"
+        ROSTOV_ON_DON -> "Rostov-on-Don"
+        TOMSK -> "Tomsk"
+        BARCELONA -> "Barcelona"
+        MADRID -> "Madrid"
+        BUCHAREST -> "Bucharest"
+    }
+
+    companion object {
+        fun citiesFor(country: CameraCountry): List<CameraCity> =
+            entries.filter { it.country == country }
     }
 }
+
+typealias SerbiaCity = CameraCity
 
 @Serializable
 enum class VideoQuality {
@@ -96,7 +131,8 @@ data class StreamDescriptor(
 data class Camera(
     val id: String,
     val name: String,
-    val city: SerbiaCity = SerbiaCity.BELGRADE,
+    val country: CameraCountry? = null,
+    val city: CameraCity = CameraCity.BELGRADE,
     val quality: VideoQuality? = null,
     val timezone: String = "Europe/Belgrade",
     val streets: List<String>,
@@ -110,6 +146,9 @@ data class Camera(
     @SerialName("poster_headers")
     val posterHeaders: Map<String, String>? = null,
 ) {
+    val resolvedCountry: CameraCountry
+        get() = country ?: city.country
+
     val resolvedQuality: VideoQuality
         get() = quality ?: VideoQuality.SD
 }
@@ -125,8 +164,8 @@ data class CatalogManifest(
 )
 
 object CatalogJsonCodec {
-    val SUPPORTED_SCHEMA_VERSIONS: Set<Int> = setOf(1, 2, 3)
-    const val LATEST_SCHEMA_VERSION: Int = 3
+    val SUPPORTED_SCHEMA_VERSIONS: Set<Int> = setOf(1, 2, 3, 4)
+    const val LATEST_SCHEMA_VERSION: Int = 4
 
     @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {

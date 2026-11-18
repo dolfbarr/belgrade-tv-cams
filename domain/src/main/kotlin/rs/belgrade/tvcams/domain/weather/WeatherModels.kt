@@ -64,6 +64,13 @@ data class CurrentWeather(
         condition.displayLabel(isDay),
         windSpeedKmh,
     )
+
+    fun compactMetricsLabel(): String = String.format(
+        Locale.US,
+        "%.1f°C · %.0f km/h",
+        temperatureCelsius,
+        windSpeedKmh,
+    )
 }
 
 interface WeatherRepository {

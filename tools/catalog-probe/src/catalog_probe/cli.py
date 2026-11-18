@@ -7,20 +7,24 @@ from pathlib import Path
 
 from catalog_probe.curated import build_curated_cameras
 from catalog_probe.models import CatalogManifest, manifest_from_json, manifest_to_json
-from catalog_probe.prober import apply_probe_ordering, probe_cameras_live
+from catalog_probe.prober import (
+    apply_probe_ordering,
+    probe_cameras_live,
+    refresh_rutube_live_urls,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="catalog-probe",
-        description="Probe Serbia camera endpoints and write static catalog.v3.json manifests.",
+        description="Probe world camera endpoints and write static catalog.v4.json manifests.",
     )
     parser.add_argument(
         "--output",
         type=Path,
         action="append",
         required=True,
-        help="Destination path(s) for catalog.v3.json (may be specified multiple times).",
+        help="Destination path(s) for catalog.v4.json (may be specified multiple times).",
     )
     parser.add_argument(
         "--offline",
@@ -41,6 +45,7 @@ def main(argv: list[str] | None = None) -> int:
     cameras = build_curated_cameras()
 
     if not args.offline:
+        cameras = refresh_rutube_live_urls(cameras, timeout_seconds=args.timeout)
         results = probe_cameras_live(cameras, timeout_seconds=args.timeout)
         reachable_count = sum(1 for item in results.values() if item.reachable)
         total_count = len(results)
@@ -58,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
     updated_at = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     manifest = CatalogManifest(
-        schema_version=3,
+        schema_version=4,
         revision=revision,
         updated_at=updated_at,
         cameras=tuple(cameras),

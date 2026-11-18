@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                     telemetry = telemetry,
                     currentWeather = currentWeather,
                     currentAirQuality = currentAirQuality,
-                    httpClient = appContainer.httpClient,
+                    httpClient = appContainer.mediaHttpClient,
                     onAction = vm::dispatch,
                     onTelemetryChanged = vm::updateTelemetry,
                 )

@@ -22,6 +22,7 @@ data class SolarWindow(
 data class SolarStatus(
     val phase: SolarPhase,
     val summaryLabel: String,
+    val targetTimeLabel: String,
     val isGoldenHour: Boolean,
 )
 
@@ -57,6 +58,7 @@ object SolarPhaseCalculator {
                     return SolarStatus(
                         phase = SolarPhase.NIGHT,
                         summaryLabel = "Sunrise $srText",
+                        targetTimeLabel = srText,
                         isGoldenHour = false,
                     )
                 }
@@ -65,6 +67,7 @@ object SolarPhaseCalculator {
                     return SolarStatus(
                         phase = SolarPhase.DAWN,
                         summaryLabel = "Dawn · Sunrise $srText",
+                        targetTimeLabel = srText,
                         isGoldenHour = false,
                     )
                 }
@@ -73,6 +76,7 @@ object SolarPhaseCalculator {
                     return SolarStatus(
                         phase = SolarPhase.GOLDEN_HOUR_MORNING,
                         summaryLabel = "Golden hour · Sunrise $srText",
+                        targetTimeLabel = srText,
                         isGoldenHour = true,
                     )
                 }
@@ -81,6 +85,7 @@ object SolarPhaseCalculator {
                     return SolarStatus(
                         phase = SolarPhase.DAY,
                         summaryLabel = "Sunset $ssText",
+                        targetTimeLabel = ssText,
                         isGoldenHour = false,
                     )
                 }
@@ -89,6 +94,7 @@ object SolarPhaseCalculator {
                     return SolarStatus(
                         phase = SolarPhase.GOLDEN_HOUR_EVENING,
                         summaryLabel = "Golden hour · Sunset $ssText",
+                        targetTimeLabel = ssText,
                         isGoldenHour = true,
                     )
                 }
@@ -97,6 +103,7 @@ object SolarPhaseCalculator {
                     return SolarStatus(
                         phase = SolarPhase.DUSK,
                         summaryLabel = "Dusk · Sunset $ssText",
+                        targetTimeLabel = ssText,
                         isGoldenHour = false,
                     )
                 }
@@ -109,6 +116,7 @@ object SolarPhaseCalculator {
         return SolarStatus(
             phase = SolarPhase.NIGHT,
             summaryLabel = "Sunrise $srText",
+            targetTimeLabel = srText,
             isGoldenHour = false,
         )
     }
