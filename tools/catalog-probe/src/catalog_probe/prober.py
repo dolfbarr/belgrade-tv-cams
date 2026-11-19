@@ -5,7 +5,7 @@ import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, replace
-from urllib.parse import parse_qs, urlsplit, urlunsplit
+from urllib.parse import parse_qs, urljoin, urlsplit, urlunsplit
 
 import httpx
 
@@ -485,6 +485,9 @@ def _probe_single_stream(
             return ProbeResult(url=stream.url, reachable=ok, status_code=resp.status_code)
 
         req_headers = stream.headers or {}
+        if stream.type == StreamTransportType.HLS:
+            return _probe_hls_stream(client, stream.url, req_headers)
+
         if "imgproxy.windy.com" in stream.url:
             with client.stream("GET", stream.url, headers=req_headers) as get_resp:
                 status_code = get_resp.status_code
@@ -495,7 +498,6 @@ def _probe_single_stream(
         response = client.head(stream.url, headers=req_headers)
         status_code = response.status_code
         if not (200 <= status_code < 300):
-            # CDNs such as BunnyCDN reject HEAD on HLS; fall back to streaming GET
             with client.stream("GET", stream.url, headers=req_headers) as get_resp:
                 status_code = get_resp.status_code
         ok = 200 <= status_code < 300
@@ -507,6 +509,84 @@ def _probe_single_stream(
             status_code=None,
             error=str(exc),
         )
+
+
+def _extract_first_hls_variant_uri(master_body: str) -> str | None:
+    expect_variant = False
+    for raw in master_body.splitlines():
+        line = raw.strip()
+        if not line:
+            continue
+        if line.startswith("#EXT-X-STREAM-INF"):
+            expect_variant = True
+            continue
+        if expect_variant and not line.startswith("#"):
+            return line
+    return None
+
+
+def _probe_hls_stream(
+    client: httpx.Client,
+    stream_url: str,
+    headers: dict[str, str],
+) -> ProbeResult:
+    outer = client.get(stream_url, headers=headers)
+    if not (200 <= outer.status_code < 300):
+        return ProbeResult(
+            url=stream_url,
+            reachable=False,
+            status_code=outer.status_code,
+            error=f"HTTP {outer.status_code}",
+        )
+    outer_body = outer.text.lstrip()
+    if not outer_body.startswith("#EXTM3U"):
+        return ProbeResult(
+            url=stream_url,
+            reachable=False,
+            status_code=outer.status_code,
+            error="Not an #EXTM3U playlist",
+        )
+    if "#EXT-X-STREAM-INF" in outer_body:
+        variant_uri = _extract_first_hls_variant_uri(outer_body)
+        if variant_uri is None:
+            return ProbeResult(
+                url=stream_url,
+                reachable=False,
+                status_code=outer.status_code,
+                error="Master playlist missing variant URI",
+            )
+        variant_url = urljoin(str(outer.url), variant_uri)
+        variant = client.get(variant_url, headers=headers)
+        if not (200 <= variant.status_code < 300):
+            return ProbeResult(
+                url=stream_url,
+                reachable=False,
+                status_code=variant.status_code,
+                error=f"Variant HTTP {variant.status_code}",
+            )
+        media_body = variant.text.lstrip()
+        if not media_body.startswith("#EXTM3U"):
+            return ProbeResult(
+                url=stream_url,
+                reachable=False,
+                status_code=variant.status_code,
+                error="Variant not #EXTM3U",
+            )
+    else:
+        media_body = outer_body
+
+    has_segments = any(
+        (stripped := raw.strip()) != "" and not stripped.startswith("#")
+        for raw in media_body.splitlines()
+    )
+    if not has_segments:
+        return ProbeResult(
+            url=stream_url,
+            reachable=False,
+            status_code=200,
+            error="Media playlist contains 0 segments",
+        )
+    return ProbeResult(url=stream_url, reachable=True, status_code=outer.status_code)
 
 
 def probe_cameras_live(

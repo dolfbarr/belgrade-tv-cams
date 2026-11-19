@@ -14,8 +14,8 @@ android {
         applicationId = "rs.belgrade.tvcams"
         minSdk = 26
         targetSdk = 36
-        versionCode = 8
-        versionName = "0.7.0"
+        versionCode = 9
+        versionName = "0.7.1"
 
         buildConfigField(
             "String",
@@ -79,6 +79,9 @@ android {
             all {
                 it.maxHeapSize = "2048m"
                 it.systemProperty("robolectric.logging.enabled", "false")
+                if (project.findProperty("verifyLiveStreams") == "true") {
+                    it.systemProperty("tvcams.verifyLiveStreams", "true")
+                }
             }
         }
     }

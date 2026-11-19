@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026111918,
-  "updated_at": "2026-11-19T18:37:30Z",
+  "revision": 2026111922,
+  "updated_at": "2026-11-19T22:13:03Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -2101,50 +2101,6 @@
       ]
     },
     {
-      "id": "ns-jug-ulaz",
-      "name": "Novi Sad Jug — Ulaz na autoput A1",
-      "country": "SERBIA",
-      "city": "NOVI_SAD",
-      "quality": "HD_720P",
-      "timezone": "Europe/Belgrade",
-      "streets": [
-        "Autoput A1 / E-75",
-        "Zrenjaninski put — Kaćka petlja"
-      ],
-      "municipality": "Novi Sad",
-      "category": "HIGHWAYS",
-      "direction": "Naplatna stanica Novi Sad Jug, uključenje na autoput E-75 ka Beogradu i Subotici",
-      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam14/index.jpg",
-      "coordinates": {
-        "lat": 45.2764,
-        "lon": 19.8981
-      },
-      "streams": [
-        {
-          "type": "HLS",
-          "url": "https://cam.bitinfo.co.rs/side_pan_cam14/index.m3u8",
-          "headers": {
-            "Referer": "https://kamere.toll4all.com/",
-            "Origin": "https://kamere.toll4all.com"
-          }
-        },
-        {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://jpps.bitinfo.co.rs/side_pan_cam14/index.jpg",
-          "interval_ms": 3000,
-          "cache_buster_param": "_",
-          "headers": {
-            "Referer": "https://kamere.toll4all.com/",
-            "Origin": "https://kamere.toll4all.com"
-          }
-        }
-      ],
-      "poster_headers": {
-        "Referer": "https://kamere.toll4all.com/",
-        "Origin": "https://kamere.toll4all.com"
-      }
-    },
-    {
       "id": "ns-ruma-izlaz",
       "name": "Fruškogorski koridor (Ruma) — Smer Irig & Novi Sad",
       "country": "SERBIA",
@@ -2219,6 +2175,42 @@
         {
           "type": "SNAPSHOT_POLL",
           "url": "https://cam.bitinfo.co.rs/front_pan_cam8/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "ns-jug-ulaz",
+      "name": "Novi Sad Jug — Ulaz na autoput A1",
+      "country": "SERBIA",
+      "city": "NOVI_SAD",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A1 / E-75",
+        "Zrenjaninski put — Kaćka petlja"
+      ],
+      "municipality": "Novi Sad",
+      "category": "HIGHWAYS",
+      "direction": "Naplatna stanica Novi Sad Jug, uključenje na autoput E-75 ka Beogradu i Subotici",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam14/index.jpg",
+      "coordinates": {
+        "lat": 45.2764,
+        "lon": 19.8981
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam14/index.jpg",
           "interval_ms": 3000,
           "cache_buster_param": "_",
           "headers": {
@@ -4958,7 +4950,7 @@
       "municipality": "Sector 2, Bucharest",
       "category": "SQUARES",
       "direction": "24/7 live aerial view of Piața Obor civic park, tram hub, and ring boulevard",
-      "poster_url": "https://i.ytimg.com/vi/3l12xywF8jU/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/pyUUD-_RDuE/hqdefault.jpg",
       "coordinates": {
         "lat": 44.4494,
         "lon": 26.1246
@@ -4966,7 +4958,13 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=3l12xywF8jU"
+          "url": "https://www.youtube.com/watch?v=pyUUD-_RDuE"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://webcamromania.ro/media/snapshots/01a0267e-d948-7208-b92a-061b18ae0722/latest.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
         }
       ]
     },
@@ -5904,6 +5902,44 @@
       ]
     },
     {
+      "id": "de-ber-tiergarten-skyline",
+      "name": "Tiergarten & City West Skyline 4K",
+      "country": "GERMANY",
+      "city": "BERLIN",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Europe/Berlin",
+      "streets": [
+        "Straße des 17. Juni",
+        "Großer Tiergarten",
+        "Breitscheidplatz"
+      ],
+      "municipality": "Tiergarten / Charlottenburg",
+      "category": "BOULEVARDS",
+      "direction": "4K UHD 24/7 live panorama across Straße des 17. Juni and Tiergarten canopy",
+      "poster_url": "https://i.ytimg.com/vi/a6k2evUSFOU/hqdefault.jpg",
+      "coordinates": {
+        "lat": 52.5137,
+        "lon": 13.3323
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=a6k2evUSFOU"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=l6Hf0ymcwVQ"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
       "id": "de-ber-alexanderplatz-2k",
       "name": "Alexanderplatz & Fernsehturm Panorama 2K",
       "country": "GERMANY",
@@ -5933,39 +5969,6 @@
           "type": "SNAPSHOT_POLL",
           "url": "https://cdn.livespotting.com/vpu/ehlpzb4g/nkw9elfh.jpg",
           "interval_ms": 15000,
-          "cache_buster_param": "t"
-        }
-      ]
-    },
-    {
-      "id": "de-ber-tiergarten-skyline",
-      "name": "Tiergarten & City West Skyline",
-      "country": "GERMANY",
-      "city": "BERLIN",
-      "quality": "FHD_1080P",
-      "timezone": "Europe/Berlin",
-      "streets": [
-        "Straße des 17. Juni",
-        "Großer Tiergarten",
-        "Breitscheidplatz"
-      ],
-      "municipality": "Tiergarten / Charlottenburg",
-      "category": "BOULEVARDS",
-      "direction": "Direct 1080p HLS panorama across Tiergarten canopy and City West high-rises",
-      "poster_url": "https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
-      "coordinates": {
-        "lat": 52.5137,
-        "lon": 13.3323
-      },
-      "streams": [
-        {
-          "type": "HLS",
-          "url": "https://cdn.livespotting.com/vpu/h8ga2o1s/w6wqy7il.m3u8"
-        },
-        {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
-          "interval_ms": 30000,
           "cache_buster_param": "t"
         }
       ]
@@ -6961,21 +6964,25 @@
       "municipality": "Mapo-gu, Seoul",
       "category": "BOULEVARDS",
       "direction": "4K UHD pedestrian and transit hub at Hongik University Station in Hongdae",
-      "poster_url": "https://i.ytimg.com/vi/Lq8kJfy2mrk/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/yzxiAJAXXtQ/hqdefault.jpg",
       "coordinates": {
         "lat": 37.5575,
         "lon": 126.9245
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=yzxiAJAXXtQ"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UC3UpyHYs2n0i5Z1IPJGJfOQ/live"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1701618298/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=Lq8kJfy2mrk"
         }
       ]
     },
@@ -7166,33 +7173,6 @@
       ]
     },
     {
-      "id": "jp-tyo-akihabara-4k",
-      "name": "Akihabara Electric Town — Chuo-dori Boulevard 4K",
-      "country": "JAPAN",
-      "city": "TOKYO",
-      "quality": "UHD_4K",
-      "timezone": "Asia/Tokyo",
-      "streets": [
-        "Chuo-dori",
-        "Kanda Myojin-dori",
-        "Soto-Kanda"
-      ],
-      "municipality": "Chiyoda-ku, Tokyo",
-      "category": "BOULEVARDS",
-      "direction": "4K UHD live street view along neon-lit Chuo-dori in Akihabara Electric Town",
-      "poster_url": "https://i.ytimg.com/vi/aKyf7cKa650/hqdefault.jpg",
-      "coordinates": {
-        "lat": 35.6986,
-        "lon": 139.7711
-      },
-      "streams": [
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=aKyf7cKa650"
-        }
-      ]
-    },
-    {
       "id": "jp-tyo-shiodome-shinkansen-4k",
       "name": "Shiodome & Shimbashi — Shinkansen Rail Corridor 4K",
       "country": "JAPAN",
@@ -7217,6 +7197,41 @@
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=VM18f-IIUTw"
+        }
+      ]
+    },
+    {
+      "id": "jp-tyo-akihabara-4k",
+      "name": "Akihabara Electric Town — Station Central & Chuo-dori 2K",
+      "country": "JAPAN",
+      "city": "TOKYO",
+      "quality": "UHD_2K",
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Chuo-dori",
+        "Akihabara Station Central Exit",
+        "Soto-Kanda"
+      ],
+      "municipality": "Chiyoda-ku, Tokyo",
+      "category": "BOULEVARDS",
+      "direction": "2K QHD 24/7 live street view across Akihabara Electric Town and Central Exit",
+      "poster_url": "https://i.ytimg.com/vi/bYoM8tq2l8E/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.6986,
+        "lon": 139.7711
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=bYoM8tq2l8E"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=4cA_-WAm-SE"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UCILxunrrtDCrv1iN5FO-2xw/live"
         }
       ]
     },

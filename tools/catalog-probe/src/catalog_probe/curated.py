@@ -1309,34 +1309,6 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             ott_slug="juzni-bul1",
             poster_url="https://kamere.24sedam.rs/js/cameras/miseluk.webp",
         ),
-        _toll4all_side_camera(
-            cam_id="ns-jug-ulaz",
-            name="Novi Sad Jug — Ulaz na autoput A1",
-            city=SerbiaCity.NOVI_SAD,
-            streets=("Autoput A1 / E-75", "Zrenjaninski put — Kaćka petlja"),
-            municipality="Novi Sad",
-            direction=(
-                "Naplatna stanica Novi Sad Jug, uključenje na autoput E-75 ka Beogradu i Subotici"
-            ),
-            lat=45.2764,
-            lon=19.8981,
-            side_num=14,
-            include_hls=True,
-        ),
-        _toll4all_side_camera(
-            cam_id="ns-jug-izlaz",
-            name="Novi Sad Jug — Ulazak u Novi Sad",
-            city=SerbiaCity.NOVI_SAD,
-            streets=("Autoput A1 / E-75", "Bulevar Evrope / Kaćka petlja"),
-            municipality="Novi Sad",
-            direction=(
-                "Naplatna stanica Novi Sad Jug, izlazak sa autoputa E-75 ka centru Novog Sada"
-            ),
-            lat=45.2768,
-            lon=19.8975,
-            side_num=13,
-            include_hls=False,
-        ),
         _toll4all_front_camera(
             cam_id="ns-ruma-izlaz",
             name="Fruškogorski koridor (Ruma) — Smer Irig & Novi Sad",
@@ -1358,6 +1330,34 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             lat=44.9778,
             lon=19.8321,
             pan_num=8,
+        ),
+        _toll4all_side_camera(
+            cam_id="ns-jug-ulaz",
+            name="Novi Sad Jug — Ulaz na autoput A1",
+            city=SerbiaCity.NOVI_SAD,
+            streets=("Autoput A1 / E-75", "Zrenjaninski put — Kaćka petlja"),
+            municipality="Novi Sad",
+            direction=(
+                "Naplatna stanica Novi Sad Jug, uključenje na autoput E-75 ka Beogradu i Subotici"
+            ),
+            lat=45.2764,
+            lon=19.8981,
+            side_num=14,
+            include_hls=False,
+        ),
+        _toll4all_side_camera(
+            cam_id="ns-jug-izlaz",
+            name="Novi Sad Jug — Ulazak u Novi Sad",
+            city=SerbiaCity.NOVI_SAD,
+            streets=("Autoput A1 / E-75", "Bulevar Evrope / Kaćka petlja"),
+            municipality="Novi Sad",
+            direction=(
+                "Naplatna stanica Novi Sad Jug, izlazak sa autoputa E-75 ka centru Novog Sada"
+            ),
+            lat=45.2768,
+            lon=19.8975,
+            side_num=13,
+            include_hls=False,
         ),
         # =========================================================================
         # SUBOTICA (9 cameras: 1080p Gradski trg + 2 A1 720p + MZ Zorka + 5 border)
@@ -2767,11 +2767,13 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
         # =========================================================================
         # BUCHAREST, ROMANIA (8 cameras: 3 live video + 5 HD snapshots)
         # =========================================================================
-        _youtube_live_camera(
-            cam_id="ro-buh-piata-obor",
+        CameraEntry(
+            id="ro-buh-piata-obor",
             name="Piața Obor — Șoseaua Mihai Bravu & Colentina",
+            country=CameraCountry.ROMANIA,
             city=CameraCity.BUCHAREST,
             quality=VideoQuality.FHD_1080P,
+            featured=True,
             timezone="Europe/Bucharest",
             streets=("Piața Obor", "Șoseaua Mihai Bravu", "Șoseaua Colentina"),
             municipality="Sector 2, Bucharest",
@@ -2779,10 +2781,23 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             direction=(
                 "24/7 live aerial view of Piața Obor civic park, tram hub, and ring boulevard"
             ),
-            lat=44.4494,
-            lon=26.1246,
-            video_id="3l12xywF8jU",
-            featured=True,
+            poster_url="https://i.ytimg.com/vi/pyUUD-_RDuE/hqdefault.jpg",
+            coordinates=GeoCoordinates(lat=44.4494, lon=26.1246),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.YOUTUBE_LIVE,
+                    url="https://www.youtube.com/watch?v=pyUUD-_RDuE",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url=(
+                        "https://webcamromania.ro/media/snapshots/"
+                        "01a0267e-d948-7208-b92a-061b18ae0722/latest.jpg"
+                    ),
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
         ),
         _ipcamlive_camera(
             cam_id="ro-buh-otopeni-departures",
@@ -3313,6 +3328,37 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
         # BERLIN, GERMANY (8 cameras: 5 live 2K/1080p/720p video + 3 HD snapshots)
         # =========================================================================
         CameraEntry(
+            id="de-ber-tiergarten-skyline",
+            name="Tiergarten & City West Skyline 4K",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.UHD_4K,
+            featured=True,
+            timezone="Europe/Berlin",
+            streets=("Straße des 17. Juni", "Großer Tiergarten", "Breitscheidplatz"),
+            municipality="Tiergarten / Charlottenburg",
+            category=CameraCategory.BOULEVARDS,
+            direction="4K UHD 24/7 live panorama across Straße des 17. Juni and Tiergarten canopy",
+            poster_url="https://i.ytimg.com/vi/a6k2evUSFOU/hqdefault.jpg",
+            coordinates=GeoCoordinates(lat=52.5137, lon=13.3323),
+            streams=(
+                StreamDescriptor(
+                    type=StreamTransportType.YOUTUBE_LIVE,
+                    url="https://www.youtube.com/watch?v=a6k2evUSFOU",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.YOUTUBE_LIVE,
+                    url="https://www.youtube.com/watch?v=l6Hf0ymcwVQ",
+                ),
+                StreamDescriptor(
+                    type=StreamTransportType.SNAPSHOT_POLL,
+                    url="https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
+                    interval_ms=30000,
+                    cache_buster_param="t",
+                ),
+            ),
+        ),
+        CameraEntry(
             id="de-ber-alexanderplatz-2k",
             name="Alexanderplatz & Fernsehturm Panorama 2K",
             country=CameraCountry.GERMANY,
@@ -3338,32 +3384,6 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
                     type=StreamTransportType.SNAPSHOT_POLL,
                     url="https://cdn.livespotting.com/vpu/ehlpzb4g/nkw9elfh.jpg",
                     interval_ms=15000,
-                    cache_buster_param="t",
-                ),
-            ),
-        ),
-        CameraEntry(
-            id="de-ber-tiergarten-skyline",
-            name="Tiergarten & City West Skyline",
-            country=CameraCountry.GERMANY,
-            city=CameraCity.BERLIN,
-            quality=VideoQuality.FHD_1080P,
-            timezone="Europe/Berlin",
-            streets=("Straße des 17. Juni", "Großer Tiergarten", "Breitscheidplatz"),
-            municipality="Tiergarten / Charlottenburg",
-            category=CameraCategory.BOULEVARDS,
-            direction="Direct 1080p HLS panorama across Tiergarten canopy and City West high-rises",
-            poster_url="https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
-            coordinates=GeoCoordinates(lat=52.5137, lon=13.3323),
-            streams=(
-                StreamDescriptor(
-                    type=StreamTransportType.HLS,
-                    url="https://cdn.livespotting.com/vpu/h8ga2o1s/w6wqy7il.m3u8",
-                ),
-                StreamDescriptor(
-                    type=StreamTransportType.SNAPSHOT_POLL,
-                    url="https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
-                    interval_ms=30000,
                     cache_buster_param="t",
                 ),
             ),
@@ -3956,7 +3976,8 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             direction="4K UHD pedestrian and transit hub at Hongik University Station in Hongdae",
             lat=37.5575,
             lon=126.9245,
-            video_id="Lq8kJfy2mrk",
+            video_id="yzxiAJAXXtQ",
+            single_cam_channel_id="UC3UpyHYs2n0i5Z1IPJGJfOQ",
             windy_fallback_id="1701618298",
         ),
         _youtube_live_camera(
@@ -4055,20 +4076,6 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             featured=True,
         ),
         _youtube_live_camera(
-            cam_id="jp-tyo-akihabara-4k",
-            name="Akihabara Electric Town — Chuo-dori Boulevard 4K",
-            city=CameraCity.TOKYO,
-            quality=VideoQuality.UHD_4K,
-            timezone="Asia/Tokyo",
-            streets=("Chuo-dori", "Kanda Myojin-dori", "Soto-Kanda"),
-            municipality="Chiyoda-ku, Tokyo",
-            category=CameraCategory.BOULEVARDS,
-            direction="4K UHD live street view along neon-lit Chuo-dori in Akihabara Electric Town",
-            lat=35.6986,
-            lon=139.7711,
-            video_id="aKyf7cKa650",
-        ),
-        _youtube_live_camera(
             cam_id="jp-tyo-shiodome-shinkansen-4k",
             name="Shiodome & Shimbashi — Shinkansen Rail Corridor 4K",
             city=CameraCity.TOKYO,
@@ -4085,6 +4092,24 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             lon=139.7597,
             video_id="VM18f-IIUTw",
             featured=True,
+        ),
+        _youtube_live_camera(
+            cam_id="jp-tyo-akihabara-4k",
+            name="Akihabara Electric Town — Station Central & Chuo-dori 2K",
+            city=CameraCity.TOKYO,
+            quality=VideoQuality.UHD_2K,
+            timezone="Asia/Tokyo",
+            streets=("Chuo-dori", "Akihabara Station Central Exit", "Soto-Kanda"),
+            municipality="Chiyoda-ku, Tokyo",
+            category=CameraCategory.BOULEVARDS,
+            direction=(
+                "2K QHD 24/7 live street view across Akihabara Electric Town and Central Exit"
+            ),
+            lat=35.6986,
+            lon=139.7711,
+            video_id="bYoM8tq2l8E",
+            secondary_video_id="4cA_-WAm-SE",
+            single_cam_channel_id="UCILxunrrtDCrv1iN5FO-2xw",
         ),
         _youtube_live_camera(
             cam_id="jp-tyo-tokyo-tower-2k",

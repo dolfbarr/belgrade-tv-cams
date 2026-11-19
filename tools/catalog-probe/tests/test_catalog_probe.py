@@ -437,6 +437,55 @@ def test_prober_supports_youtube_rutube_ipcamlive_and_windy_content_type() -> No
         is False
     )
 
+    hls_cameras = [
+        CameraEntry(
+            id="t-hls-live",
+            name="HLS Live",
+            country=CameraCountry.GERMANY,
+            city=CameraCity.BERLIN,
+            quality=VideoQuality.FHD_1080P,
+            timezone="Europe/Berlin",
+            streets=("St",),
+            municipality="Mitte",
+            category=CameraCategory.SQUARES,
+            direction="Dir",
+            poster_url="https://example.com/p.jpg",
+            coordinates=GeoCoordinates(52.52, 13.40),
+            streams=(
+                StreamDescriptor(
+                    StreamTransportType.HLS, "https://cdn.example.com/live/master.m3u8"
+                ),
+                StreamDescriptor(
+                    StreamTransportType.HLS, "https://cdn.example.com/dead/master.m3u8"
+                ),
+            ),
+        )
+    ]
+
+    def hls_handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if url == "https://cdn.example.com/live/master.m3u8":
+            return httpx.Response(
+                200, text="#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=2000000\nchunks.m3u8\n"
+            )
+        if url == "https://cdn.example.com/live/chunks.m3u8":
+            return httpx.Response(200, text="#EXTM3U\n#EXTINF:4.0,\nseg01.ts\n")
+        if url == "https://cdn.example.com/dead/master.m3u8":
+            return httpx.Response(
+                200, text="#EXTM3U\n#EXT-X-STREAM-INF:BANDWIDTH=1024\nempty.m3u8\n"
+            )
+        if url == "https://cdn.example.com/dead/empty.m3u8":
+            return httpx.Response(200, text="#EXTM3U\n#EXT-X-VERSION:3\n")
+        return httpx.Response(404)
+
+    hls_results = probe_cameras_live(
+        hls_cameras,
+        timeout_seconds=2.0,
+        transport=httpx.MockTransport(hls_handler),
+    )
+    assert hls_results["https://cdn.example.com/live/master.m3u8"].reachable is True
+    assert hls_results["https://cdn.example.com/dead/master.m3u8"].reachable is False
+
 
 def test_refresh_rutube_and_rostelecom_live_urls() -> None:
     legacy_rutube_cam = CameraEntry(
