@@ -77,11 +77,15 @@ import java.time.format.DateTimeFormatter
 
 sealed interface PlaybackTelemetry {
     data class Connecting(val transport: StreamTransportType) : PlaybackTelemetry
+    data class SwitchingFallback(val transport: StreamTransportType) : PlaybackTelemetry
     data class PlayingLive(
         val transport: StreamTransportType,
         val updatedTimeLabel: String? = null,
     ) : PlaybackTelemetry
-    data class DegradedRetrying(val retryDelayMs: Long) : PlaybackTelemetry
+    data class DegradedRetrying(
+        val retryDelayMs: Long,
+        val exhaustedCycles: Int = 1,
+    ) : PlaybackTelemetry
 }
 
 private val CLOCK_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
@@ -94,6 +98,7 @@ fun DualTransportCameraSurface(
     performanceMode: PerformanceMode,
     oledOrbitOffset: PixelOrbitOffset,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
+    manualRetryNonce: Int = 0,
     modifier: Modifier = Modifier,
 ) {
     val hostView = LocalView.current
@@ -174,10 +179,29 @@ fun DualTransportCameraSurface(
         }
         var attemptNonce by remember(camId) { mutableIntStateOf(0) }
         var pendingBackoffMs by remember(camId) { mutableStateOf<Long?>(null) }
+        var exhaustedCount by remember(camId) { mutableIntStateOf(0) }
+        var posterFailed by remember(camId, posterUrl) { mutableStateOf(false) }
+
+        LaunchedEffect(camId, manualRetryNonce) {
+            if (manualRetryNonce <= 0) return@LaunchedEffect
+            camStreams.forEach { descriptor ->
+                if (descriptor.type != StreamTransportType.HLS &&
+                    descriptor.type != StreamTransportType.SNAPSHOT_POLL
+                ) {
+                    streamResolver.invalidate(descriptor.url)
+                }
+            }
+            val resetPrimary = tracker.resetForManualRetry()
+            activeStream = resetPrimary
+            pendingBackoffMs = null
+            exhaustedCount = 0
+            attemptNonce += 1
+            onTelemetryChanged(PlaybackTelemetry.Connecting(resetPrimary.type))
+        }
 
         LaunchedEffect(camId, pendingBackoffMs, attemptNonce) {
             val waitMs = pendingBackoffMs ?: return@LaunchedEffect
-            onTelemetryChanged(PlaybackTelemetry.DegradedRetrying(waitMs))
+            onTelemetryChanged(PlaybackTelemetry.DegradedRetrying(waitMs, exhaustedCount.coerceAtLeast(1)))
             delay(waitMs)
             pendingBackoffMs = null
         }
@@ -195,9 +219,11 @@ fun DualTransportCameraSurface(
                 is FailoverDecision.SwitchStreamImmediately -> {
                     activeStream = decision.nextStream
                     attemptNonce += 1
+                    onTelemetryChanged(PlaybackTelemetry.SwitchingFallback(decision.nextStream.type))
                 }
                 is FailoverDecision.RetryAfterBackoff -> {
                     activeStream = decision.nextStream
+                    exhaustedCount = decision.exhaustedCycles
                     pendingBackoffMs = decision.delayMillis
                     attemptNonce += 1
                 }
@@ -256,11 +282,12 @@ fun DualTransportCameraSurface(
         }
 
         // Poster overlay covers initial buffer/decode handshake so zapping never flashes black
-        if (posterAlpha > 0.01f) {
+        if (posterAlpha > 0.01f && !posterFailed) {
             AsyncImage(
                 model = posterRequest,
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
+                onError = { posterFailed = true },
                 modifier = Modifier
                     .fillMaxSize()
                     .alpha(posterAlpha),

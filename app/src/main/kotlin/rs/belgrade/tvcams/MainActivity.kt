@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
                 val state by vm.stageState.collectAsStateWithLifecycle()
                 val streamCamera by vm.debouncedStreamCamera.collectAsStateWithLifecycle()
                 val telemetry by vm.telemetry.collectAsStateWithLifecycle()
+                val streamRetryNonce by vm.streamRetryNonce.collectAsStateWithLifecycle()
                 val currentWeather by vm.currentWeather.collectAsStateWithLifecycle()
                 val currentAirQuality by vm.currentAirQuality.collectAsStateWithLifecycle()
 
@@ -71,6 +72,7 @@ class MainActivity : ComponentActivity() {
                     streamResolver = appContainer.streamUrlResolver,
                     onAction = vm::dispatch,
                     onTelemetryChanged = vm::updateTelemetry,
+                    streamRetryNonce = streamRetryNonce,
                 )
             }
         }

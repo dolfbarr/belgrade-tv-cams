@@ -113,8 +113,8 @@ class TvHomeChannelSynchronizer(
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
         val transportTag = if (cam.isLiveVideo) "LIVE" else "SNAP"
-        val countryLabel = cam.resolvedCountry.displayLabel()
-        val cityLabel = cam.city.displayLabel()
+        val countryLabel = cam.resolvedCountryLabel
+        val cityLabel = cam.resolvedCityLabel
         val streetsLabel = cam.streets.joinToString(" · ")
         return PreviewProgram.Builder()
             .setChannelId(channelId)

@@ -34,3 +34,8 @@ uv run --project tools/catalog-probe pytest tools/catalog-probe/tests
 # 3. Lint & assemble Android TV debug APK
 ./gradlew :app:lintDebug :app:assembleDebug
 ```
+
+## Contributing a New City or Country
+
+New cities and countries can be contributed via a **single JSON file** under `catalog/d/<country>-<city>.json` with zero Kotlin or Python code changes — see [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`catalog/schema/contribution.schema.json`](catalog/schema/contribution.schema.json).
+

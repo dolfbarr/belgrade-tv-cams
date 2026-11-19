@@ -28,6 +28,7 @@ sealed interface FailoverDecision {
     data class RetryAfterBackoff(
         val nextStream: StreamDescriptor,
         val delayMillis: Long,
+        val exhaustedCycles: Int = 1,
     ) : FailoverDecision
 }
 
@@ -46,6 +47,12 @@ class StreamFailoverTracker(
         exhaustedCycles = 0
     }
 
+    fun resetForManualRetry(): StreamDescriptor {
+        activeIndex = 0
+        exhaustedCycles = 0
+        return candidates[0]
+    }
+
     fun onTransportFailure(): FailoverDecision {
         val nextIndex = activeIndex + 1
         if (nextIndex < candidates.size) {
@@ -59,6 +66,7 @@ class StreamFailoverTracker(
         return FailoverDecision.RetryAfterBackoff(
             nextStream = candidates[activeIndex],
             delayMillis = backoff,
+            exhaustedCycles = exhaustedCycles,
         )
     }
 

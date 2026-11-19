@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 
+from catalog_probe.contributions import load_contributed_cameras, validate_camera_entry
 from catalog_probe.models import (
     CameraCategory,
     CameraCity,
@@ -574,11 +576,11 @@ def _tomsk_snapshot_camera(
     )
 
 
-def build_curated_cameras() -> list[CameraEntry]:
-    country_order: dict[CameraCountry, int] = {
-        country: idx for idx, country in enumerate(CameraCountry)
+def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraEntry]:
+    country_order: dict[str, int] = {
+        country.value: idx for idx, country in enumerate(CameraCountry.BUILT_IN)
     }
-    city_order: dict[CameraCity, int] = {city: idx for idx, city in enumerate(CameraCity)}
+    city_order: dict[str, int] = {city.value: idx for idx, city in enumerate(CameraCity.BUILT_IN)}
     raw_cameras = [
         # =========================================================================
         # BELGRADE (40 cameras: 21 HD [11 2K QHD + 10 720p] + 19 SD)
@@ -3650,6 +3652,8 @@ def build_curated_cameras() -> list[CameraEntry]:
             lat=40.7564,
             lon=-73.9865,
             video_id="ZxCeWQ3Lcig",
+            secondary_video_id="KHy_n-EMWY8",
+            windy_fallback_id="1793910950",
             featured=True,
         ),
         _youtube_live_camera(
@@ -4161,15 +4165,26 @@ def build_curated_cameras() -> list[CameraEntry]:
             video_id="NsFHt76uwh8",
         ),
     ]
+    contributed = load_contributed_cameras(contributions_dir)
+    combined = raw_cameras + contributed
     enriched = [
         replace(cam, country=cam.resolved_country) if cam.country is None else cam
-        for cam in raw_cameras
+        for cam in combined
     ]
+    seen_ids: set[str] = set()
+    for cam in enriched:
+        if cam.id in seen_ids:
+            raise ValueError(f"Duplicate camera id detected across catalog: {cam.id!r}")
+        seen_ids.add(cam.id)
+        validate_camera_entry(cam)
+
     return sorted(
         enriched,
         key=lambda cam: (
-            country_order[cam.resolved_country],
-            city_order[cam.city],
+            country_order.get(cam.resolved_country.value, 10_000),
+            cam.resolved_country.value,
+            city_order.get(cam.city.value, 10_000),
+            cam.city.value,
             0 if cam.is_live_video else 1,
             cam.quality.sort_rank,
         ),

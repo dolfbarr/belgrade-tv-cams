@@ -1,57 +1,164 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Any
 
-
-class CameraCountry(StrEnum):
-    SERBIA = "SERBIA"
-    RUSSIA = "RUSSIA"
-    SPAIN = "SPAIN"
-    ROMANIA = "ROMANIA"
-    UK = "UK"
-    FRANCE = "FRANCE"
-    NETHERLANDS = "NETHERLANDS"
-    GERMANY = "GERMANY"
-    GEORGIA = "GEORGIA"
-    ARMENIA = "ARMENIA"
-    USA = "USA"
-    SOUTH_KOREA = "SOUTH_KOREA"
-    JAPAN = "JAPAN"
+_LOCATION_CODE_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
+_ISO_ALPHA2_RE = re.compile(r"^[A-Z]{2}$")
 
 
-class CameraCity(StrEnum):
-    BELGRADE = "BELGRADE"
-    ZEMUN = "ZEMUN"
-    NOVI_SAD = "NOVI_SAD"
-    SUBOTICA = "SUBOTICA"
-    NIS = "NIS"
-    MOSCOW = "MOSCOW"
-    SAINT_PETERSBURG = "SAINT_PETERSBURG"
-    ROSTOV_ON_DON = "ROSTOV_ON_DON"
-    TOMSK = "TOMSK"
-    MAGADAN = "MAGADAN"
-    BARCELONA = "BARCELONA"
-    MADRID = "MADRID"
-    BUCHAREST = "BUCHAREST"
-    LONDON = "LONDON"
-    PARIS = "PARIS"
-    AMSTERDAM = "AMSTERDAM"
-    BERLIN = "BERLIN"
-    TBILISI = "TBILISI"
-    YEREVAN = "YEREVAN"
-    NEW_YORK = "NEW_YORK"
-    SEOUL = "SEOUL"
-    TOKYO = "TOKYO"
+class CameraCountry(str):
+    SERBIA: CameraCountry
+    RUSSIA: CameraCountry
+    SPAIN: CameraCountry
+    ROMANIA: CameraCountry
+    UK: CameraCountry
+    FRANCE: CameraCountry
+    NETHERLANDS: CameraCountry
+    GERMANY: CameraCountry
+    GEORGIA: CameraCountry
+    ARMENIA: CameraCountry
+    USA: CameraCountry
+    SOUTH_KOREA: CameraCountry
+    JAPAN: CameraCountry
+    BUILT_IN: tuple[CameraCountry, ...]
+
+    def __new__(cls, raw: str) -> CameraCountry:
+        normalized = str(raw).strip().upper()
+        if not _LOCATION_CODE_RE.match(normalized):
+            raise ValueError(
+                f"Invalid country code {raw!r}: expected UPPER_SNAKE_CASE (e.g. 'AUSTRIA')"
+            )
+        return super().__new__(cls, normalized)
 
     @property
-    def default_country(self) -> CameraCountry:
-        return _CITY_COUNTRY_MAP[self]
+    def value(self) -> str:
+        return str(self)
 
 
-_CITY_COUNTRY_MAP: dict[CameraCity, CameraCountry] = {
+CameraCountry.SERBIA = CameraCountry("SERBIA")
+CameraCountry.RUSSIA = CameraCountry("RUSSIA")
+CameraCountry.SPAIN = CameraCountry("SPAIN")
+CameraCountry.ROMANIA = CameraCountry("ROMANIA")
+CameraCountry.UK = CameraCountry("UK")
+CameraCountry.FRANCE = CameraCountry("FRANCE")
+CameraCountry.NETHERLANDS = CameraCountry("NETHERLANDS")
+CameraCountry.GERMANY = CameraCountry("GERMANY")
+CameraCountry.GEORGIA = CameraCountry("GEORGIA")
+CameraCountry.ARMENIA = CameraCountry("ARMENIA")
+CameraCountry.USA = CameraCountry("USA")
+CameraCountry.SOUTH_KOREA = CameraCountry("SOUTH_KOREA")
+CameraCountry.JAPAN = CameraCountry("JAPAN")
+CameraCountry.BUILT_IN = (
+    CameraCountry.SERBIA,
+    CameraCountry.RUSSIA,
+    CameraCountry.SPAIN,
+    CameraCountry.ROMANIA,
+    CameraCountry.UK,
+    CameraCountry.FRANCE,
+    CameraCountry.NETHERLANDS,
+    CameraCountry.GERMANY,
+    CameraCountry.GEORGIA,
+    CameraCountry.ARMENIA,
+    CameraCountry.USA,
+    CameraCountry.SOUTH_KOREA,
+    CameraCountry.JAPAN,
+)
+
+
+class CameraCity(str):
+    BELGRADE: CameraCity
+    ZEMUN: CameraCity
+    NOVI_SAD: CameraCity
+    SUBOTICA: CameraCity
+    NIS: CameraCity
+    MOSCOW: CameraCity
+    SAINT_PETERSBURG: CameraCity
+    ROSTOV_ON_DON: CameraCity
+    TOMSK: CameraCity
+    MAGADAN: CameraCity
+    BARCELONA: CameraCity
+    MADRID: CameraCity
+    BUCHAREST: CameraCity
+    LONDON: CameraCity
+    PARIS: CameraCity
+    AMSTERDAM: CameraCity
+    BERLIN: CameraCity
+    TBILISI: CameraCity
+    YEREVAN: CameraCity
+    NEW_YORK: CameraCity
+    SEOUL: CameraCity
+    TOKYO: CameraCity
+    BUILT_IN: tuple[CameraCity, ...]
+
+    def __new__(cls, raw: str) -> CameraCity:
+        normalized = str(raw).strip().upper()
+        if not _LOCATION_CODE_RE.match(normalized):
+            raise ValueError(
+                f"Invalid city code {raw!r}: expected UPPER_SNAKE_CASE (e.g. 'VIENNA')"
+            )
+        return super().__new__(cls, normalized)
+
+    @property
+    def value(self) -> str:
+        return str(self)
+
+    @property
+    def default_country(self) -> CameraCountry | None:
+        return _CITY_COUNTRY_MAP.get(self)
+
+
+CameraCity.BELGRADE = CameraCity("BELGRADE")
+CameraCity.ZEMUN = CameraCity("ZEMUN")
+CameraCity.NOVI_SAD = CameraCity("NOVI_SAD")
+CameraCity.SUBOTICA = CameraCity("SUBOTICA")
+CameraCity.NIS = CameraCity("NIS")
+CameraCity.MOSCOW = CameraCity("MOSCOW")
+CameraCity.SAINT_PETERSBURG = CameraCity("SAINT_PETERSBURG")
+CameraCity.ROSTOV_ON_DON = CameraCity("ROSTOV_ON_DON")
+CameraCity.TOMSK = CameraCity("TOMSK")
+CameraCity.MAGADAN = CameraCity("MAGADAN")
+CameraCity.BARCELONA = CameraCity("BARCELONA")
+CameraCity.MADRID = CameraCity("MADRID")
+CameraCity.BUCHAREST = CameraCity("BUCHAREST")
+CameraCity.LONDON = CameraCity("LONDON")
+CameraCity.PARIS = CameraCity("PARIS")
+CameraCity.AMSTERDAM = CameraCity("AMSTERDAM")
+CameraCity.BERLIN = CameraCity("BERLIN")
+CameraCity.TBILISI = CameraCity("TBILISI")
+CameraCity.YEREVAN = CameraCity("YEREVAN")
+CameraCity.NEW_YORK = CameraCity("NEW_YORK")
+CameraCity.SEOUL = CameraCity("SEOUL")
+CameraCity.TOKYO = CameraCity("TOKYO")
+CameraCity.BUILT_IN = (
+    CameraCity.BELGRADE,
+    CameraCity.ZEMUN,
+    CameraCity.NOVI_SAD,
+    CameraCity.SUBOTICA,
+    CameraCity.NIS,
+    CameraCity.MOSCOW,
+    CameraCity.SAINT_PETERSBURG,
+    CameraCity.ROSTOV_ON_DON,
+    CameraCity.TOMSK,
+    CameraCity.MAGADAN,
+    CameraCity.BARCELONA,
+    CameraCity.MADRID,
+    CameraCity.BUCHAREST,
+    CameraCity.LONDON,
+    CameraCity.PARIS,
+    CameraCity.AMSTERDAM,
+    CameraCity.BERLIN,
+    CameraCity.TBILISI,
+    CameraCity.YEREVAN,
+    CameraCity.NEW_YORK,
+    CameraCity.SEOUL,
+    CameraCity.TOKYO,
+)
+
+_CITY_COUNTRY_MAP: dict[str, CameraCountry] = {
     CameraCity.BELGRADE: CameraCountry.SERBIA,
     CameraCity.ZEMUN: CameraCountry.SERBIA,
     CameraCity.NOVI_SAD: CameraCountry.SERBIA,
@@ -183,7 +290,10 @@ class CameraEntry:
     coordinates: GeoCoordinates
     streams: tuple[StreamDescriptor, ...]
     country: CameraCountry | None = None
+    country_name: str | None = None
+    country_iso: str | None = None
     city: CameraCity = CameraCity.BELGRADE
+    city_name: str | None = None
     quality: VideoQuality = VideoQuality.SD
     featured: bool | None = None
     timezone: str = "Europe/Belgrade"
@@ -191,7 +301,14 @@ class CameraEntry:
 
     @property
     def resolved_country(self) -> CameraCountry:
-        return self.country if self.country is not None else self.city.default_country
+        if self.country is not None:
+            return self.country
+        default = self.city.default_country
+        if default is not None:
+            return default
+        raise ValueError(
+            f"Camera {self.id!r} uses custom city {self.city!r} without explicit 'country'"
+        )
 
     @property
     def is_featured(self) -> bool:
@@ -208,7 +325,13 @@ class CameraEntry:
         }
         if self.country is not None:
             payload["country"] = self.country.value
+        if self.country_name is not None:
+            payload["country_name"] = self.country_name
+        if self.country_iso is not None:
+            payload["country_iso"] = self.country_iso
         payload["city"] = self.city.value
+        if self.city_name is not None:
+            payload["city_name"] = self.city_name
         payload["quality"] = self.quality.value
         if self.featured is not None:
             payload["featured"] = self.featured
@@ -236,7 +359,15 @@ class CameraEntry:
         )
         raw_country = raw.get("country")
         country = CameraCountry(str(raw_country)) if raw_country is not None else None
+        raw_country_name = raw.get("country_name")
+        country_name = str(raw_country_name).strip() if raw_country_name else None
+        raw_country_iso = raw.get("country_iso")
+        country_iso = str(raw_country_iso).strip().upper() if raw_country_iso else None
+        if country_iso is not None and not _ISO_ALPHA2_RE.match(country_iso):
+            raise ValueError(f"Invalid country_iso {country_iso!r}: expected 2-letter ISO code")
         raw_city = raw.get("city", CameraCity.BELGRADE.value)
+        raw_city_name = raw.get("city_name")
+        city_name = str(raw_city_name).strip() if raw_city_name else None
         raw_quality = raw.get("quality", VideoQuality.SD.value)
         raw_featured = raw.get("featured")
         featured = bool(raw_featured) if raw_featured is not None else None
@@ -245,7 +376,10 @@ class CameraEntry:
             id=str(raw["id"]),
             name=str(raw["name"]),
             country=country,
+            country_name=country_name,
+            country_iso=country_iso,
             city=CameraCity(str(raw_city)),
+            city_name=city_name,
             quality=VideoQuality(str(raw_quality)),
             featured=featured,
             timezone=str(raw_timezone),

@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import json
 from dataclasses import replace
+from pathlib import Path
 
 import httpx
+import pytest
 
+from catalog_probe.cli import main as cli_main
+from catalog_probe.contributions import parse_contribution_file
 from catalog_probe.curated import build_curated_cameras
 from catalog_probe.models import (
     CameraCategory,
@@ -51,8 +55,8 @@ def test_curated_v5_world_catalog_invariants() -> None:
 
     seen_ids: set[str] = set()
     categories: set[CameraCategory] = set()
-    country_counts: dict[CameraCountry, int] = {country: 0 for country in CameraCountry}
-    city_counts: dict[CameraCity, int] = {city: 0 for city in CameraCity}
+    country_counts: dict[CameraCountry, int] = {country: 0 for country in CameraCountry.BUILT_IN}
+    city_counts: dict[CameraCity, int] = {city: 0 for city in CameraCity.BUILT_IN}
     quality_counts: dict[VideoQuality, int] = {q: 0 for q in VideoQuality}
 
     expected_timezones: dict[CameraCity, str] = {
@@ -192,7 +196,7 @@ def test_curated_v5_world_catalog_invariants() -> None:
 
     # Every single one of the 22 cities must have >= 1 live motion video camera,
     # and live video cameras must be sorted ahead of snapshots (then highest resolution first).
-    for city in CameraCity:
+    for city in CameraCity.BUILT_IN:
         city_cams = [c for c in cameras if c.city == city]
         live_count = sum(1 for c in city_cams if c.is_live_video)
         assert live_count >= 1, f"City {city} has zero live video streams!"
@@ -478,3 +482,87 @@ def test_whole_graph_json_round_trip_fixed_point() -> None:
     assert "country" not in legacy_dict
     assert "featured" not in legacy_dict
     assert list(legacy_dict.keys())[:5] == ["id", "name", "city", "quality", "timezone"]
+
+
+def test_drop_in_community_contribution_file_loads_and_validates(tmp_path: Path) -> None:
+    contrib_dir = tmp_path / "d"
+    contrib_dir.mkdir()
+
+    # Template files starting with '_' are ignored
+    (contrib_dir / "_ignored.json").write_text("{}", encoding="utf-8")
+
+    vienna_file = contrib_dir / "austria-vienna.json"
+    vienna_file.write_text(
+        json.dumps(
+            {
+                "country": "AUSTRIA",
+                "country_name": "Austria",
+                "country_iso": "AT",
+                "city": "VIENNA",
+                "city_name": "Vienna",
+                "timezone": "Europe/Vienna",
+                "cameras": [
+                    {
+                        "id": "at-vie-stephansplatz",
+                        "name": "Stephansplatz & St. Stephen's Cathedral",
+                        "quality": "FHD_1080P",
+                        "featured": True,
+                        "streets": ["Stephansplatz", "Kärntner Straße"],
+                        "municipality": "Innere Stadt",
+                        "category": "SQUARES",
+                        "direction": "Live panorama over Stephansplatz",
+                        "poster_url": "https://example.com/stephansplatz.jpg",
+                        "coordinates": {"lat": 48.2082, "lon": 16.3738},
+                        "streams": [
+                            {"type": "HLS", "url": "https://example.com/stephansplatz.m3u8"}
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    merged = build_curated_cameras(contributions_dir=contrib_dir)
+    assert len(merged) == 226
+    vienna = next(c for c in merged if c.id == "at-vie-stephansplatz")
+    assert vienna.country == CameraCountry("AUSTRIA")
+    assert vienna.country_name == "Austria"
+    assert vienna.country_iso == "AT"
+    assert vienna.city == CameraCity("VIENNA")
+    assert vienna.city_name == "Vienna"
+    assert vienna.timezone == "Europe/Vienna"
+
+    exit_code = cli_main(
+        ["--check-contributions", "--offline", "--contributions-dir", str(contrib_dir)]
+    )
+    assert exit_code == 0
+
+    bad_tz_file = tmp_path / "bad-tz.json"
+    bad_tz_file.write_text(
+        json.dumps(
+            {
+                "country": "AUSTRIA",
+                "city": "VIENNA",
+                "timezone": "Mars/Olympus_Mons",
+                "cameras": [
+                    {
+                        "id": "at-vie-bad-tz",
+                        "name": "Bad TZ",
+                        "quality": "SD",
+                        "streets": ["Main"],
+                        "municipality": "Center",
+                        "category": "SQUARES",
+                        "direction": "North",
+                        "poster_url": "https://example.com/p.jpg",
+                        "coordinates": {"lat": 48.2, "lon": 16.3},
+                        "streams": [{"type": "HLS", "url": "https://example.com/s.m3u8"}],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="invalid IANA timezone"):
+        parse_contribution_file(bad_tz_file)
+

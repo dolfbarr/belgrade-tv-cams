@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dolfbarr.github.io/belgrade-tv-cams/schema/contribution.schema.json",
+  "title": "World Live Cams — City / Country Contribution File",
+  "description": "Drop-in declarative camera contribution file under catalog/d/<country>-<city>.json.",
+  "type": "object",
+  "required": ["country", "city", "timezone", "cameras"],
+  "additionalProperties": false,
+  "properties": {
+    "country": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "description": "Country code in UPPER_SNAKE_CASE (e.g. AUSTRIA, CZECHIA, NEW_ZEALAND)"
+    },
+    "country_name": {
+      "type": "string",
+      "minLength": 2,
+      "description": "Optional display name override (e.g. Czechia). Auto-derived from country code if omitted."
+    },
+    "country_iso": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "ISO 3166-1 alpha-2 country code (e.g. AT, CZ, NZ) used for flag rendering."
+    },
+    "city": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$",
+      "description": "City code in UPPER_SNAKE_CASE (e.g. VIENNA, PRAGUE, BUENOS_AIRES)"
+    },
+    "city_name": {
+      "type": "string",
+      "minLength": 2,
+      "description": "Optional display name override (e.g. São Paulo). Auto-derived from city code if omitted."
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Valid IANA timezone identifier (e.g. Europe/Vienna, America/Sao_Paulo)"
+    },
+    "cameras": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "quality",
+          "streets",
+          "municipality",
+          "category",
+          "direction",
+          "poster_url",
+          "coordinates",
+          "streams"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]{2,63}$",
+            "description": "Globally unique lowercase slug (<iso2>-<city3>-<landmark>)"
+          },
+          "name": { "type": "string", "minLength": 2 },
+          "quality": {
+            "type": "string",
+            "enum": ["UHD_4K", "UHD_2K", "FHD_1080P", "HD_720P", "SD"]
+          },
+          "featured": { "type": "boolean" },
+          "streets": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "municipality": { "type": "string", "minLength": 1 },
+          "category": {
+            "type": "string",
+            "enum": ["BRIDGES", "SQUARES", "BOULEVARDS", "HIGHWAYS"]
+          },
+          "direction": { "type": "string", "minLength": 3 },
+          "poster_url": { "type": "string", "pattern": "^https://" },
+          "poster_headers": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "coordinates": {
+            "type": "object",
+            "required": ["lat", "lon"],
+            "additionalProperties": false,
+            "properties": {
+              "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+              "lon": { "type": "number", "minimum": -180, "maximum": 180 }
+            }
+          },
+          "streams": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["type", "url"],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["HLS", "YOUTUBE_LIVE", "RUTUBE_LIVE", "IPCAMLIVE", "SNAPSHOT_POLL"]
+                },
+                "url": { "type": "string", "pattern": "^https://" },
+                "interval_ms": { "type": "integer", "minimum": 1000 },
+                "cache_buster_param": { "type": "string", "minLength": 1 },
+                "headers": {
+                  "type": "object",
+                  "additionalProperties": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1032,4 +1032,88 @@ class DomainSuiteTest {
         assertEquals(firstEncode, secondEncode)
         assertEquals(rawDiskJson, firstEncode)
     }
+
+    @Test
+    fun `open-world country and city identifiers support community PR additions without code changes`() {
+        val viennaCam = Camera(
+            id = "at-vie-stephansplatz",
+            name = "Stephansplatz & St. Stephen's Cathedral",
+            country = CameraCountry("AUSTRIA"),
+            countryName = "Austria",
+            countryIso = "AT",
+            city = CameraCity("VIENNA"),
+            cityName = "Vienna",
+            quality = VideoQuality.UHD_4K,
+            featured = true,
+            timezone = "Europe/Vienna",
+            streets = listOf("Stephansplatz", "Kärntner Straße"),
+            municipality = "Innere Stadt",
+            category = CameraCategory.SQUARES,
+            direction = "Live view over Stephansplatz",
+            posterUrl = "https://example.com/vienna.jpg",
+            coordinates = GeoCoordinates(lat = 48.2082, lon = 16.3738),
+            streams = listOf(
+                StreamDescriptor(
+                    type = StreamTransportType.HLS,
+                    url = "https://example.com/vienna.m3u8",
+                ),
+            ),
+        )
+        val buenosAiresAutoNamed = sampleCamera(
+            id = "ar-bue-obelisco",
+            name = "Obelisco — Av. 9 de Julio",
+            city = CameraCity("BUENOS_AIRES"),
+            quality = VideoQuality.FHD_1080P,
+        ).copy(
+            country = CameraCountry("ARGENTINA"),
+            timezone = "America/Argentina/Buenos_Aires",
+        )
+
+        val manifest = CatalogManifest(
+            schemaVersion = 5,
+            revision = 2026111821L,
+            updatedAt = "2026-11-18T21:20:00Z",
+            cameras = listOf(sampleCamera("bg-1", "Slavija"), viennaCam, buenosAiresAutoNamed),
+        )
+        val encoded = CatalogJsonCodec.encode(manifest)
+        val roundTripped = CatalogJsonCodec.decode(encoded)
+        assertEquals(manifest, roundTripped)
+
+        // Humanizer handles unknown codes automatically without enum registration
+        assertEquals("Buenos Aires", CameraCity("BUENOS_AIRES").displayLabel())
+        assertEquals("Argentina", CameraCountry("ARGENTINA").displayLabel())
+        assertEquals("AT", viennaCam.resolvedCountryIso)
+
+        var state = TvStageState.initial(cameras = roundTripped.cameras)
+        assertEquals(
+            listOf(CameraCountry.SERBIA, CameraCountry("ARGENTINA"), CameraCountry("AUSTRIA")),
+            state.availableCountries,
+        )
+        assertEquals(listOf(CameraCity("VIENNA")), state.citiesForCountry(CameraCountry("AUSTRIA")))
+        assertEquals("Vienna", state.cityDisplayLabel(CameraCity("VIENNA")))
+
+        // Selecting a community city resolves its parent country dynamically from catalog data
+        state = TvStageReducer.reduce(
+            state,
+            TvRemoteAction.SelectStripFilter(StripFilter.City(CameraCity("VIENNA"))),
+        ).state
+        assertEquals(CameraCountry("AUSTRIA"), state.selectedStripCountry)
+
+        // Empty-filter recovery actions restore visibility without losing city selection
+        state = state.copy(transportFilter = TransportFilter.SNAPSHOT_ONLY)
+        assertTrue(state.stripCameras.isEmpty())
+        state = TvStageReducer.reduce(state, TvRemoteAction.ShowAllTransports).state
+        assertEquals(1, state.stripCameras.size)
+
+        state = state.copy(qualityFilter = QualityFilter.SD_ONLY)
+        assertTrue(state.stripCameras.isEmpty())
+        state = TvStageReducer.reduce(state, TvRemoteAction.ResetFilters).state
+        assertEquals(StripFilter.All, state.stripFilter)
+        assertEquals(QualityFilter.ALL, state.qualityFilter)
+        assertEquals(TransportFilter.ALL, state.transportFilter)
+
+        // Featured row automatically surfaces featured cameras from newly contributed countries
+        val channel = HomeChannelSelector.selectChannelCameras(roundTripped.cameras, emptySet(), maxItems = 4)
+        assertTrue(channel.cameras.any { it.id == "at-vie-stephansplatz" })
+    }
 }

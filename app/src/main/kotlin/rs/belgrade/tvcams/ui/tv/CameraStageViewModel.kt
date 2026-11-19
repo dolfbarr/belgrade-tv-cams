@@ -30,6 +30,7 @@ import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.SerbiaCity
 import rs.belgrade.tvcams.domain.model.StreamTransportType
+import rs.belgrade.tvcams.domain.tv.CatalogBootstrapState
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.TvRemoteAction
 import rs.belgrade.tvcams.domain.tv.TvStageReducer
@@ -53,6 +54,7 @@ class CameraStageViewModel(
         TvStageState.initial(
             cameras = emptyList(),
             initialOverlayMode = if (isScreensaverMode) OverlayMode.PURE_CAMERA else OverlayMode.HUD_VISIBLE,
+            catalogBootstrapState = CatalogBootstrapState.Loading,
         ),
     )
     val stageState: StateFlow<TvStageState> = _stageState.asStateFlow()
@@ -61,6 +63,9 @@ class CameraStageViewModel(
         PlaybackTelemetry.Connecting(StreamTransportType.HLS),
     )
     val telemetry: StateFlow<PlaybackTelemetry> = _telemetry.asStateFlow()
+
+    private val _streamRetryNonce = MutableStateFlow(0)
+    val streamRetryNonce: StateFlow<Int> = _streamRetryNonce.asStateFlow()
 
     private val _currentWeather = MutableStateFlow<CurrentWeather?>(null)
     val currentWeather: StateFlow<CurrentWeather?> = _currentWeather.asStateFlow()
@@ -98,54 +103,87 @@ class CameraStageViewModel(
 
     private fun bootstrap() {
         viewModelScope.launch {
-            val prefs = favoritesRepository.preferences.first()
-            autoHideEnabled = prefs.autoHideHud
+            _stageState.value = _stageState.value.copy(
+                catalogBootstrapState = CatalogBootstrapState.Loading,
+            )
+            val prefs = runCatching { favoritesRepository.preferences.first() }.getOrNull()
+            if (prefs != null) {
+                autoHideEnabled = prefs.autoHideHud
+            }
 
-            val initialManifest = catalogCoordinator.loadInitial()
-            val targetCameraId = pendingDeepLinkCameraId ?: prefs.lastCameraId
+            val initialManifestResult = runCatching { catalogCoordinator.loadInitial() }
+            val initialManifest = initialManifestResult.getOrNull()
+            if (initialManifest == null || initialManifest.cameras.isEmpty()) {
+                val errMsg = initialManifestResult.exceptionOrNull()?.message
+                    ?.takeIf { it.isNotBlank() }
+                    ?: "Seed and cached camera manifests could not be read"
+                _stageState.value = _stageState.value.copy(
+                    catalogBootstrapState = CatalogBootstrapState.Failed(errMsg),
+                    isSyncingRemoteCatalog = false,
+                )
+                return@launch
+            }
+
+            val targetCameraId = pendingDeepLinkCameraId ?: prefs?.lastCameraId
             pendingDeepLinkCameraId = null
 
-            _stageState.value = TvStageState.initial(
-                cameras = initialManifest.cameras,
-                favoriteIds = prefs.favoriteIds,
-                initialCameraId = targetCameraId,
-                zapScope = prefs.zapScope,
-                qualityFilter = prefs.qualityFilter,
-                transportFilter = prefs.transportFilter,
-                performanceMode = prefs.performanceMode,
-                autoRotateInterval = prefs.autoRotateInterval,
-                infoPanelPosition = prefs.infoPanelPosition,
-                showClockOverlay = prefs.showClockOverlay,
-                showWeatherOverlay = prefs.showWeatherOverlay,
-                showAirQualityOverlay = prefs.showAirQualityOverlay,
-                showSolarOverlay = prefs.showSolarOverlay,
-                oledProtectionEnabled = prefs.oledProtectionEnabled,
-                initialOverlayMode = if (isScreensaverMode) OverlayMode.PURE_CAMERA else OverlayMode.HUD_VISIBLE,
-            )
+            _stageState.value = if (prefs != null) {
+                TvStageState.initial(
+                    cameras = initialManifest.cameras,
+                    favoriteIds = prefs.favoriteIds,
+                    initialCameraId = targetCameraId,
+                    zapScope = prefs.zapScope,
+                    qualityFilter = prefs.qualityFilter,
+                    transportFilter = prefs.transportFilter,
+                    performanceMode = prefs.performanceMode,
+                    autoRotateInterval = prefs.autoRotateInterval,
+                    infoPanelPosition = prefs.infoPanelPosition,
+                    showClockOverlay = prefs.showClockOverlay,
+                    showWeatherOverlay = prefs.showWeatherOverlay,
+                    showAirQualityOverlay = prefs.showAirQualityOverlay,
+                    showSolarOverlay = prefs.showSolarOverlay,
+                    oledProtectionEnabled = prefs.oledProtectionEnabled,
+                    initialOverlayMode = if (isScreensaverMode) OverlayMode.PURE_CAMERA else OverlayMode.HUD_VISIBLE,
+                    catalogBootstrapState = CatalogBootstrapState.Ready,
+                    isSyncingRemoteCatalog = true,
+                )
+            } else {
+                TvStageState.initial(
+                    cameras = initialManifest.cameras,
+                    initialCameraId = targetCameraId,
+                    initialOverlayMode = if (isScreensaverMode) OverlayMode.PURE_CAMERA else OverlayMode.HUD_VISIBLE,
+                    catalogBootstrapState = CatalogBootstrapState.Ready,
+                    isSyncingRemoteCatalog = true,
+                )
+            }
             scheduleAutoHideIfEligible()
 
             if (!isScreensaverMode) {
                 homeChannelSynchronizer?.syncChannel(
                     cameras = initialManifest.cameras,
-                    favoriteIds = prefs.favoriteIds,
+                    favoriteIds = prefs?.favoriteIds.orEmpty(),
                 )
             }
 
-            when (val sync = catalogCoordinator.syncRemote(initialManifest.revision)) {
-                is CatalogSyncOutcome.Applied -> {
-                    val freshCameras = sync.manifest.cameras
-                    dispatch(TvRemoteAction.CatalogRefreshed(freshCameras))
-                    if (!isScreensaverMode) {
-                        homeChannelSynchronizer?.syncChannel(
-                            cameras = freshCameras,
-                            favoriteIds = _stageState.value.favoriteIds,
-                        )
+            try {
+                when (val sync = catalogCoordinator.syncRemote(initialManifest.revision)) {
+                    is CatalogSyncOutcome.Applied -> {
+                        val freshCameras = sync.manifest.cameras
+                        dispatch(TvRemoteAction.CatalogRefreshed(freshCameras))
+                        if (!isScreensaverMode) {
+                            homeChannelSynchronizer?.syncChannel(
+                                cameras = freshCameras,
+                                favoriteIds = _stageState.value.favoriteIds,
+                            )
+                        }
                     }
+                    CatalogSyncOutcome.UpToDate,
+                    is CatalogSyncOutcome.Rejected,
+                    is CatalogSyncOutcome.Offline,
+                    -> Unit
                 }
-                CatalogSyncOutcome.UpToDate,
-                is CatalogSyncOutcome.Rejected,
-                is CatalogSyncOutcome.Offline,
-                -> Unit
+            } finally {
+                _stageState.value = _stageState.value.copy(isSyncingRemoteCatalog = false)
             }
         }
     }
@@ -250,6 +288,15 @@ class CameraStageViewModel(
     }
 
     fun dispatch(action: TvRemoteAction) {
+        if (action == TvRemoteAction.RetryCatalogLoad) {
+            bootstrap()
+            return
+        }
+        if (action == TvRemoteAction.RetryActiveStream) {
+            _streamRetryNonce.value += 1
+            return
+        }
+
         val previous = _stageState.value
         val transition = TvStageReducer.reduce(previous, action)
         val next = transition.state

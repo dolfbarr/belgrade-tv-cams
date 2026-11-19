@@ -29,7 +29,7 @@ class OkHttpStreamUrlResolver(
 
     suspend fun invalidate(streamUrl: String) {
         mutex.withLock {
-            cache.remove(streamUrl)
+            cache.keys.removeAll { key -> key == streamUrl || key.endsWith(":$streamUrl") }
         }
     }
 

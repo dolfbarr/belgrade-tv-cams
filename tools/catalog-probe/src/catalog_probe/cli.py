@@ -5,6 +5,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+from catalog_probe.contributions import default_contributions_dir, load_contributed_cameras
 from catalog_probe.curated import build_curated_cameras
 from catalog_probe.models import CatalogManifest, manifest_from_json, manifest_to_json
 from catalog_probe.prober import (
@@ -18,19 +19,32 @@ from catalog_probe.prober import (
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="catalog-probe",
-        description="Probe world camera endpoints and write static catalog.v5.json manifests.",
+        description="Validate & probe world camera endpoints and write catalog.v5.json manifests.",
     )
     parser.add_argument(
         "--output",
         type=Path,
         action="append",
-        required=True,
         help="Destination path(s) for catalog.v5.json (may be specified multiple times).",
+    )
+    parser.add_argument(
+        "--contributions-dir",
+        type=Path,
+        default=None,
+        help="Optional directory for community drop-in JSON files (defaults to catalog/d).",
+    )
+    parser.add_argument(
+        "--check-contributions",
+        action="store_true",
+        help=(
+            "Validate catalog + community catalog/d/*.json files "
+            "(and probe contributed streams unless --offline)."
+        ),
     )
     parser.add_argument(
         "--offline",
         action="store_true",
-        help="Write curated catalog without executing live HTTP probes.",
+        help="Validate or write curated catalog without executing live HTTP probes.",
     )
     parser.add_argument(
         "--timeout",
@@ -43,7 +57,42 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    cameras = build_curated_cameras()
+    if not args.output and not args.check_contributions:
+        print(
+            "Error: specify at least --output <path> or --check-contributions.",
+            file=sys.stderr,
+        )
+        return 2
+
+    cameras = build_curated_cameras(contributions_dir=args.contributions_dir)
+
+    if args.check_contributions and not args.output:
+        contrib_dir = args.contributions_dir or default_contributions_dir()
+        contributed = load_contributed_cameras(contrib_dir)
+        print(
+            f"Validated {len(cameras)} total cameras ({len(contributed)} from {contrib_dir}).",
+            file=sys.stderr,
+        )
+        if contributed and not args.offline:
+            results = probe_cameras_live(contributed, timeout_seconds=args.timeout)
+            unreachable = [
+                f"  - {cam.id} ({stream.type.value}): {stream.url}"
+                for cam in contributed
+                for stream in cam.streams
+                if not results.get(stream.url) or not results[stream.url].reachable
+            ]
+            if unreachable:
+                print(
+                    "Contributed stream reachability check failed on endpoints:\n"
+                    + "\n".join(unreachable),
+                    file=sys.stderr,
+                )
+                return 1
+            print(
+                f"All {len(results)} contributed stream endpoint(s) responded healthy.",
+                file=sys.stderr,
+            )
+        return 0
 
     if not args.offline:
         cameras = refresh_rutube_live_urls(cameras, timeout_seconds=args.timeout)
@@ -76,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
         print("Serialization fixed-point invariant failed.", file=sys.stderr)
         return 2
 
-    for target in args.output:
+    for target in args.output or []:
         target.parent.mkdir(parents=True, exist_ok=True)
         tmp_path = target.with_suffix(target.suffix + ".tmp")
         tmp_path.write_text(rendered, encoding="utf-8")

@@ -1,10 +1,22 @@
 package rs.belgrade.tvcams.ui.tv
 
+import android.provider.Settings
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
@@ -18,8 +30,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.tv.material3.ExperimentalTvMaterial3Api
+import androidx.tv.material3.Text
 import rs.belgrade.tvcams.domain.model.CameraCountry
 import rs.belgrade.tvcams.domain.solar.SolarPhase
 import rs.belgrade.tvcams.domain.weather.WeatherCondition
@@ -29,13 +46,42 @@ import kotlin.math.sin
 private val FlagShape = RoundedCornerShape(2.5.dp)
 private val FlagBorderColor = Color(0x4DFFFFFF)
 
+private val VECTOR_FLAG_ISOS: Set<String> = setOf(
+    "RS", "RU", "ES", "RO", "GB", "FR", "NL", "DE", "GE", "AM", "US", "KR", "JP",
+    "AT", "CH", "IT", "BE", "IE", "PL", "UA", "CZ", "HU", "BG", "SE", "NO", "FI", "DK", "CA",
+)
+
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun CountryFlagIcon(
     country: CameraCountry,
+    isoOverride: String? = null,
     width: Dp = 20.dp,
     height: Dp = 14.dp,
     modifier: Modifier = Modifier,
 ) {
+    val iso = country.isoAlpha2(isoOverride)
+    if (iso !in VECTOR_FLAG_ISOS) {
+        // Universal open-world ISO monogram flag badge for community-contributed countries
+        Box(
+            modifier = modifier
+                .size(width = width, height = height)
+                .clip(FlagShape)
+                .background(Color(0xFF1E3A5F))
+                .border(0.75.dp, Color(0x8838BDF8), FlagShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = iso.take(2),
+                color = Color(0xFFF8FAFC),
+                fontSize = 7.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+            )
+        }
+        return
+    }
+
     Canvas(
         modifier = modifier
             .size(width = width, height = height)
@@ -44,8 +90,8 @@ fun CountryFlagIcon(
     ) {
         val w = size.width
         val h = size.height
-        when (country) {
-            CameraCountry.SERBIA -> {
+        when (iso) {
+            "RS" -> {
                 val bandH = h / 3f
                 drawRect(color = Color(0xFFC6363C), topLeft = Offset(0f, 0f), size = Size(w, bandH))
                 drawRect(color = Color(0xFF0C4076), topLeft = Offset(0f, bandH), size = Size(w, bandH))
@@ -81,19 +127,15 @@ fun CountryFlagIcon(
                 )
             }
 
-            CameraCountry.RUSSIA -> {
-                val bandH = h / 3f
-                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, bandH))
-                drawRect(color = Color(0xFF0039A6), topLeft = Offset(0f, bandH), size = Size(w, bandH))
-                drawRect(color = Color(0xFFD52B1E), topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+            "RU" -> {
+                drawHorizontalTricolor(w, h, Color(0xFFF8FAFC), Color(0xFF0039A6), Color(0xFFD52B1E))
             }
 
-            CameraCountry.SPAIN -> {
+            "ES" -> {
                 val q = h * 0.25f
                 drawRect(color = Color(0xFFAA151B), topLeft = Offset(0f, 0f), size = Size(w, q))
                 drawRect(color = Color(0xFFF1BF00), topLeft = Offset(0f, q), size = Size(w, q * 2f))
                 drawRect(color = Color(0xFFAA151B), topLeft = Offset(0f, q * 3f), size = Size(w, q))
-                // Coat-of-arms crest mark on gualda band
                 drawRoundRect(
                     color = Color(0xFFAA151B),
                     topLeft = Offset(w * 0.24f, h * 0.34f),
@@ -102,77 +144,50 @@ fun CountryFlagIcon(
                 )
             }
 
-            CameraCountry.ROMANIA -> {
-                val colW = w / 3f
-                drawRect(color = Color(0xFF002B7F), topLeft = Offset(0f, 0f), size = Size(colW, h))
-                drawRect(color = Color(0xFFFCD116), topLeft = Offset(colW, 0f), size = Size(colW, h))
-                drawRect(color = Color(0xFFCE1126), topLeft = Offset(colW * 2f, 0f), size = Size(colW, h))
+            "RO" -> {
+                drawVerticalTricolor(w, h, Color(0xFF002B7F), Color(0xFFFCD116), Color(0xFFCE1126))
             }
 
-            CameraCountry.UK -> {
+            "GB" -> {
                 drawRect(color = Color(0xFF012169), topLeft = Offset(0f, 0f), size = Size(w, h))
-                // White diagonals
                 drawLine(color = Color.White, start = Offset(0f, 0f), end = Offset(w, h), strokeWidth = h * 0.20f)
                 drawLine(color = Color.White, start = Offset(w, 0f), end = Offset(0f, h), strokeWidth = h * 0.20f)
-                // Red diagonals
                 drawLine(color = Color(0xFFC8102E), start = Offset(0f, 0f), end = Offset(w, h), strokeWidth = h * 0.09f)
                 drawLine(color = Color(0xFFC8102E), start = Offset(w, 0f), end = Offset(0f, h), strokeWidth = h * 0.09f)
-                // White St George cross backing
                 drawRect(color = Color.White, topLeft = Offset(0f, h * 0.34f), size = Size(w, h * 0.32f))
                 drawRect(color = Color.White, topLeft = Offset(w * 0.38f, 0f), size = Size(w * 0.24f, h))
-                // Red St George cross
                 drawRect(color = Color(0xFFC8102E), topLeft = Offset(0f, h * 0.40f), size = Size(w, h * 0.20f))
                 drawRect(color = Color(0xFFC8102E), topLeft = Offset(w * 0.42f, 0f), size = Size(w * 0.16f, h))
             }
 
-            CameraCountry.FRANCE -> {
-                val colW = w / 3f
-                drawRect(color = Color(0xFF002654), topLeft = Offset(0f, 0f), size = Size(colW, h))
-                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(colW, 0f), size = Size(colW, h))
-                drawRect(color = Color(0xFFED2939), topLeft = Offset(colW * 2f, 0f), size = Size(colW, h))
+            "FR" -> {
+                drawVerticalTricolor(w, h, Color(0xFF002654), Color(0xFFF8FAFC), Color(0xFFED2939))
             }
 
-            CameraCountry.NETHERLANDS -> {
-                val bandH = h / 3f
-                drawRect(color = Color(0xFFAE1C28), topLeft = Offset(0f, 0f), size = Size(w, bandH))
-                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, bandH), size = Size(w, bandH))
-                drawRect(color = Color(0xFF21468B), topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+            "NL" -> {
+                drawHorizontalTricolor(w, h, Color(0xFFAE1C28), Color(0xFFF8FAFC), Color(0xFF21468B))
             }
 
-            CameraCountry.GERMANY -> {
-                val bandH = h / 3f
-                drawRect(color = Color(0xFF09090B), topLeft = Offset(0f, 0f), size = Size(w, bandH))
-                drawRect(color = Color(0xFFDD0000), topLeft = Offset(0f, bandH), size = Size(w, bandH))
-                drawRect(color = Color(0xFFFFCE00), topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+            "DE" -> {
+                drawHorizontalTricolor(w, h, Color(0xFF09090B), Color(0xFFDD0000), Color(0xFFFFCE00))
             }
 
-            CameraCountry.GEORGIA -> {
+            "GE" -> {
                 drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h))
                 val georgiaRed = Color(0xFFFF0000)
                 drawRect(color = georgiaRed, topLeft = Offset(0f, h * 0.39f), size = Size(w, h * 0.22f))
                 drawRect(color = georgiaRed, topLeft = Offset(w * 0.42f, 0f), size = Size(w * 0.16f, h))
                 for ((cx, cy) in listOf(0.21f to 0.20f, 0.79f to 0.20f, 0.21f to 0.80f, 0.79f to 0.80f)) {
-                    drawRect(
-                        color = georgiaRed,
-                        topLeft = Offset(w * cx - 2f, h * cy - 1f),
-                        size = Size(4f, 2f),
-                    )
-                    drawRect(
-                        color = georgiaRed,
-                        topLeft = Offset(w * cx - 1f, h * cy - 2f),
-                        size = Size(2f, 4f),
-                    )
+                    drawRect(color = georgiaRed, topLeft = Offset(w * cx - 2f, h * cy - 1f), size = Size(4f, 2f))
+                    drawRect(color = georgiaRed, topLeft = Offset(w * cx - 1f, h * cy - 2f), size = Size(2f, 4f))
                 }
             }
 
-            CameraCountry.ARMENIA -> {
-                val bandH = h / 3f
-                drawRect(color = Color(0xFFD90012), topLeft = Offset(0f, 0f), size = Size(w, bandH))
-                drawRect(color = Color(0xFF0033A0), topLeft = Offset(0f, bandH), size = Size(w, bandH))
-                drawRect(color = Color(0xFFF2A800), topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+            "AM" -> {
+                drawHorizontalTricolor(w, h, Color(0xFFD90012), Color(0xFF0033A0), Color(0xFFF2A800))
             }
 
-            CameraCountry.USA -> {
+            "US" -> {
                 val stripeH = h / 7f
                 for (i in 0 until 7) {
                     val color = if (i % 2 == 0) Color(0xFFB22234) else Color(0xFFF8FAFC)
@@ -195,7 +210,7 @@ fun CountryFlagIcon(
                 }
             }
 
-            CameraCountry.SOUTH_KOREA -> {
+            "KR" -> {
                 drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h))
                 val r = h * 0.26f
                 val center = Offset(w * 0.5f, h * 0.5f)
@@ -222,16 +237,96 @@ fun CountryFlagIcon(
                 drawLine(color = barColor, start = Offset(w * 0.74f, h * 0.84f), end = Offset(w * 0.84f, h * 0.72f), strokeWidth = 1.3f)
             }
 
-            CameraCountry.JAPAN -> {
+            "JP" -> {
                 drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h))
-                drawCircle(
-                    color = Color(0xFFBC002D),
-                    radius = h * 0.29f,
-                    center = Offset(w * 0.5f, h * 0.5f),
-                )
+                drawCircle(color = Color(0xFFBC002D), radius = h * 0.29f, center = Offset(w * 0.5f, h * 0.5f))
+            }
+
+            "AT" -> drawHorizontalTricolor(w, h, Color(0xFFED2939), Color(0xFFF8FAFC), Color(0xFFED2939))
+            "IT" -> drawVerticalTricolor(w, h, Color(0xFF009246), Color(0xFFF8FAFC), Color(0xFFCE2B37))
+            "BE" -> drawVerticalTricolor(w, h, Color(0xFF09090B), Color(0xFFFDDA24), Color(0xFFEF3340))
+            "IE" -> drawVerticalTricolor(w, h, Color(0xFF169B62), Color(0xFFF8FAFC), Color(0xFFFF883E))
+            "HU" -> drawHorizontalTricolor(w, h, Color(0xFFCE2939), Color(0xFFF8FAFC), Color(0xFF477050))
+            "BG" -> drawHorizontalTricolor(w, h, Color(0xFFF8FAFC), Color(0xFF00966E), Color(0xFFD62612))
+            "HR" -> drawHorizontalTricolor(w, h, Color(0xFFFF0000), Color(0xFFF8FAFC), Color(0xFF171796))
+            "PL" -> {
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h * 0.5f))
+                drawRect(color = Color(0xFFDC143C), topLeft = Offset(0f, h * 0.5f), size = Size(w, h * 0.5f))
+            }
+            "UA" -> {
+                drawRect(color = Color(0xFF0057B7), topLeft = Offset(0f, 0f), size = Size(w, h * 0.5f))
+                drawRect(color = Color(0xFFFFDD00), topLeft = Offset(0f, h * 0.5f), size = Size(w, h * 0.5f))
+            }
+            "CZ" -> {
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h * 0.5f))
+                drawRect(color = Color(0xFFD7141A), topLeft = Offset(0f, h * 0.5f), size = Size(w, h * 0.5f))
+                val wedge = Path().apply {
+                    moveTo(0f, 0f)
+                    lineTo(w * 0.48f, h * 0.5f)
+                    lineTo(0f, h)
+                    close()
+                }
+                drawPath(wedge, Color(0xFF11457E))
+            }
+            "CH" -> {
+                drawRect(color = Color(0xFFFF0000), topLeft = Offset(0f, 0f), size = Size(w, h))
+                drawRect(color = Color.White, topLeft = Offset(w * 0.28f, h * 0.40f), size = Size(w * 0.44f, h * 0.20f))
+                drawRect(color = Color.White, topLeft = Offset(w * 0.42f, h * 0.20f), size = Size(w * 0.16f, h * 0.60f))
+            }
+            "SE" -> drawNordicCross(w, h, bg = Color(0xFF006AA7), cross = Color(0xFFFECC02))
+            "FI" -> drawNordicCross(w, h, bg = Color(0xFFF8FAFC), cross = Color(0xFF003580))
+            "DK" -> drawNordicCross(w, h, bg = Color(0xFFC8102E), cross = Color(0xFFF8FAFC))
+            "NO" -> {
+                drawNordicCross(w, h, bg = Color(0xFFBA0C2F), cross = Color(0xFFF8FAFC), thickness = 0.26f)
+                drawRect(color = Color(0xFF00205B), topLeft = Offset(0f, h * 0.43f), size = Size(w, h * 0.14f))
+                drawRect(color = Color(0xFF00205B), topLeft = Offset(w * 0.31f, 0f), size = Size(w * 0.10f, h))
+            }
+            "CA" -> {
+                drawRect(color = Color(0xFFFF0000), topLeft = Offset(0f, 0f), size = Size(w * 0.25f, h))
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(w * 0.25f, 0f), size = Size(w * 0.50f, h))
+                drawRect(color = Color(0xFFFF0000), topLeft = Offset(w * 0.75f, 0f), size = Size(w * 0.25f, h))
+                drawCircle(color = Color(0xFFFF0000), radius = h * 0.22f, center = Offset(w * 0.50f, h * 0.50f))
             }
         }
     }
+}
+
+private fun DrawScope.drawHorizontalTricolor(
+    w: Float,
+    h: Float,
+    top: Color,
+    mid: Color,
+    bottom: Color,
+) {
+    val bandH = h / 3f
+    drawRect(color = top, topLeft = Offset(0f, 0f), size = Size(w, bandH))
+    drawRect(color = mid, topLeft = Offset(0f, bandH), size = Size(w, bandH))
+    drawRect(color = bottom, topLeft = Offset(0f, bandH * 2f), size = Size(w, bandH))
+}
+
+private fun DrawScope.drawVerticalTricolor(
+    w: Float,
+    h: Float,
+    left: Color,
+    mid: Color,
+    right: Color,
+) {
+    val colW = w / 3f
+    drawRect(color = left, topLeft = Offset(0f, 0f), size = Size(colW, h))
+    drawRect(color = mid, topLeft = Offset(colW, 0f), size = Size(colW, h))
+    drawRect(color = right, topLeft = Offset(colW * 2f, 0f), size = Size(colW, h))
+}
+
+private fun DrawScope.drawNordicCross(
+    w: Float,
+    h: Float,
+    bg: Color,
+    cross: Color,
+    thickness: Float = 0.20f,
+) {
+    drawRect(color = bg, topLeft = Offset(0f, 0f), size = Size(w, h))
+    drawRect(color = cross, topLeft = Offset(0f, h * (0.5f - thickness / 2f)), size = Size(w, h * thickness))
+    drawRect(color = cross, topLeft = Offset(w * 0.30f, 0f), size = Size(w * (thickness * 0.75f), h))
 }
 
 @Composable
@@ -572,4 +667,141 @@ private fun DrawScope.drawCloudShape(
         radius = height * 0.34f,
         center = Offset(left + width * 0.68f, top + height * 0.52f),
     )
+}
+
+@Composable
+fun rememberReducedMotionEnabled(): Boolean {
+    val context = LocalContext.current
+    return remember(context) {
+        val scale = runCatching {
+            Settings.Global.getFloat(
+                context.contentResolver,
+                Settings.Global.ANIMATOR_DURATION_SCALE,
+                1f,
+            )
+        }.getOrDefault(1f)
+        scale == 0f
+    }
+}
+
+@Composable
+fun LoadingSpinnerIcon(
+    size: Dp = 16.dp,
+    color: Color = Color(0xFF38BDF8),
+    modifier: Modifier = Modifier,
+) {
+    val reducedMotion = rememberReducedMotionEnabled()
+    val angle = if (reducedMotion) {
+        -90f
+    } else {
+        val transition = rememberInfiniteTransition(label = "spinnerRotation")
+        val animated by transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 360f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 900, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart,
+            ),
+            label = "spinnerAngle",
+        )
+        animated
+    }
+
+    Canvas(modifier = modifier.size(size)) {
+        val stroke = this.size.width * 0.14f
+        val pad = stroke / 2f
+        val arcSize = Size(this.size.width - stroke, this.size.height - stroke)
+        drawArc(
+            color = color.copy(alpha = 0.22f),
+            startAngle = 0f,
+            sweepAngle = 360f,
+            useCenter = false,
+            topLeft = Offset(pad, pad),
+            size = arcSize,
+            style = Stroke(width = stroke),
+        )
+        drawArc(
+            color = color,
+            startAngle = angle,
+            sweepAngle = 250f,
+            useCenter = false,
+            topLeft = Offset(pad, pad),
+            size = arcSize,
+            style = Stroke(width = stroke, cap = StrokeCap.Round),
+        )
+    }
+}
+
+@Composable
+fun CameraSignalOffIcon(
+    size: Dp = 28.dp,
+    color: Color = Color(0xFF94A3B8),
+    accentColor: Color = Color(0xFFFBBF24),
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = w * 0.085f
+        drawRoundRect(
+            color = color,
+            topLeft = Offset(w * 0.12f, h * 0.26f),
+            size = Size(w * 0.56f, h * 0.48f),
+            cornerRadius = CornerRadius(w * 0.09f, w * 0.09f),
+            style = Stroke(width = stroke),
+        )
+        val lensCone = Path().apply {
+            moveTo(w * 0.68f, h * 0.42f)
+            lineTo(w * 0.88f, h * 0.30f)
+            lineTo(w * 0.88f, h * 0.70f)
+            lineTo(w * 0.68f, h * 0.58f)
+            close()
+        }
+        drawPath(
+            path = lensCone,
+            color = color,
+            style = Stroke(width = stroke, join = StrokeJoin.Round),
+        )
+        drawLine(
+            color = accentColor,
+            start = Offset(w * 0.16f, h * 0.84f),
+            end = Offset(w * 0.84f, h * 0.16f),
+            strokeWidth = stroke * 1.1f,
+            cap = StrokeCap.Round,
+        )
+    }
+}
+
+@Composable
+fun WorldGlobeMarkIcon(
+    size: Dp = 44.dp,
+    primaryColor: Color = Color(0xFF38BDF8),
+    accentColor: Color = Color(0xFFEF4444),
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val r = w * 0.42f
+        val c = Offset(w * 0.5f, h * 0.5f)
+        val stroke = w * 0.065f
+        drawCircle(color = primaryColor, radius = r, center = c, style = Stroke(width = stroke))
+        drawOval(
+            color = primaryColor.copy(alpha = 0.7f),
+            topLeft = Offset(c.x - r * 0.52f, c.y - r),
+            size = Size(r * 1.04f, r * 2f),
+            style = Stroke(width = stroke * 0.85f),
+        )
+        drawLine(
+            color = primaryColor.copy(alpha = 0.7f),
+            start = Offset(c.x - r, c.y),
+            end = Offset(c.x + r, c.y),
+            strokeWidth = stroke * 0.85f,
+        )
+        drawCircle(
+            color = accentColor,
+            radius = w * 0.09f,
+            center = Offset(c.x + r * 0.55f, c.y - r * 0.55f),
+        )
+    }
 }

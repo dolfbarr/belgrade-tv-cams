@@ -32,8 +32,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -92,6 +95,7 @@ import rs.belgrade.tvcams.domain.solar.SolarStatus
 import rs.belgrade.tvcams.domain.solar.SolarWindow
 import rs.belgrade.tvcams.domain.time.CameraClockFormatter
 import rs.belgrade.tvcams.domain.time.DualClockReading
+import rs.belgrade.tvcams.domain.tv.CatalogBootstrapState
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.StripFilter
 import rs.belgrade.tvcams.domain.tv.TvKeyCode
@@ -137,14 +141,40 @@ fun CameraStageScreen(
     streamResolver: OkHttpStreamUrlResolver,
     onAction: (TvRemoteAction) -> Unit,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
+    streamRetryNonce: Int = 0,
     enableBackHandler: Boolean = true,
     isScreensaverMode: Boolean = false,
 ) {
+    when (val boot = state.catalogBootstrapState) {
+        CatalogBootstrapState.Loading -> {
+            CatalogLoadingStage()
+            return
+        }
+        is CatalogBootstrapState.Failed -> {
+            CatalogErrorStage(
+                reason = boot.reason,
+                onRetry = { onAction(TvRemoteAction.RetryCatalogLoad) },
+            )
+            return
+        }
+        CatalogBootstrapState.Ready -> Unit
+    }
+
     val stageFocusRequester = remember { FocusRequester() }
     val keyRouter = remember { TvKeyRouter() }
     val activeCam = state.activeCamera
     val timezoneId = activeCam?.timezone ?: "Europe/Belgrade"
     val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
+
+    var showConnectingBanner by remember { mutableStateOf(false) }
+    LaunchedEffect(telemetry) {
+        if (telemetry is PlaybackTelemetry.Connecting) {
+            delay(350L)
+            showConnectingBanner = true
+        } else {
+            showConnectingBanner = false
+        }
+    }
 
     val clockState = rememberDualCameraClock(
         timezoneId = timezoneId,
@@ -191,7 +221,14 @@ fun CameraStageScreen(
                     repeatCount = keyEvent.nativeKeyEvent.repeatCount,
                     overlayMode = state.overlayMode,
                 )
-                decision.action?.let(onAction)
+                if (decision.action == TvRemoteAction.ToggleInfoOrSelect &&
+                    telemetry is PlaybackTelemetry.DegradedRetrying &&
+                    state.overlayMode != OverlayMode.QUICK_STRIP
+                ) {
+                    onAction(TvRemoteAction.RetryActiveStream)
+                } else {
+                    decision.action?.let(onAction)
+                }
                 decision.consumed
             }
             .focusRequester(stageFocusRequester)
@@ -205,6 +242,7 @@ fun CameraStageScreen(
             performanceMode = state.performanceMode,
             oledOrbitOffset = oledOrbit,
             onTelemetryChanged = onTelemetryChanged,
+            manualRetryNonce = streamRetryNonce,
             modifier = Modifier.fillMaxSize(),
         )
 
@@ -220,10 +258,12 @@ fun CameraStageScreen(
             Alignment.End
         }
 
-        // Layer 1: Non-blocking top status / notice badges inside TV safe area
+        // Layer 1: Non-blocking top status / spinner / notice badges inside TV safe area
         TopStatusLayer(
             noticeMessage = state.noticeMessage,
             telemetry = telemetry,
+            showConnectingBanner = showConnectingBanner,
+            isSyncingRemoteCatalog = state.isSyncingRemoteCatalog,
             horizontalAlignment = statusHorizontalAlignment,
             modifier = Modifier
                 .align(statusBoxAlignment)
@@ -236,10 +276,29 @@ fun CameraStageScreen(
                 },
         )
 
+        // Layer 1B: Persistent Stream Offline / Reconnecting Card when all stream candidates fail
+        if (telemetry is PlaybackTelemetry.DegradedRetrying &&
+            state.overlayMode != OverlayMode.QUICK_STRIP
+        ) {
+            StreamUnavailableBanner(
+                retryDelayMs = telemetry.retryDelayMs,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .offset {
+                        IntOffset(
+                            x = oledOrbit.dxDp.dp.roundToPx(),
+                            y = oledOrbit.dyDp.dp.roundToPx(),
+                        )
+                    },
+            )
+        }
+
         // Layer 2: Configurable Info Panel (default Bottom Center) with Current View Name + Ambient Telemetry
         val cameraName = activeCam?.name
-        val cityLabel = activeCam?.city?.displayLabel()
+        val cityLabel = activeCam?.resolvedCityLabel
         val country = activeCam?.resolvedCountry
+        val countryIso = activeCam?.resolvedCountryIso
+        val countryFallbackLabel = activeCam?.resolvedCountryLabel
         val clockReading = if (state.showClockOverlay) clockState.value else null
         val weatherModel = if (state.showWeatherOverlay) currentWeather else null
         val aqiModel = if (state.showAirQualityOverlay) currentAirQuality else null
@@ -299,6 +358,8 @@ fun CameraStageScreen(
                         cameraName = cameraName,
                         cityLabel = cityLabel,
                         country = country,
+                        countryIso = countryIso,
+                        countryFallbackLabel = countryFallbackLabel,
                         clockReading = clockReading,
                         weather = weatherModel,
                         airQuality = aqiModel,
@@ -330,6 +391,8 @@ fun CameraStageScreen(
                         cameraName = cameraName,
                         cityLabel = cityLabel,
                         country = country,
+                        countryIso = countryIso,
+                        countryFallbackLabel = countryFallbackLabel,
                         clockReading = clockReading,
                         weather = weatherModel,
                         airQuality = aqiModel,
@@ -430,6 +493,8 @@ private fun AmbientClockWeatherBar(
     cameraName: String?,
     cityLabel: String?,
     country: CameraCountry?,
+    countryIso: String?,
+    countryFallbackLabel: String?,
     clockReading: DualClockReading?,
     weather: CurrentWeather?,
     airQuality: CurrentAirQuality?,
@@ -464,14 +529,12 @@ private fun AmbientClockWeatherBar(
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.widthIn(max = 540.dp),
+                    modifier = Modifier.widthIn(max = 560.dp),
                 )
-                val countryLabel = country?.displayLabel()
+                // Omit country name when rendering the country flag; display city only
                 val locationTag = when {
-                    !cityLabel.isNullOrBlank() && !countryLabel.isNullOrBlank() ->
-                        "$cityLabel, $countryLabel"
                     !cityLabel.isNullOrBlank() -> cityLabel
-                    !countryLabel.isNullOrBlank() -> countryLabel
+                    country == null && !countryFallbackLabel.isNullOrBlank() -> countryFallbackLabel
                     else -> null
                 }
                 if (locationTag != null || country != null) {
@@ -483,6 +546,7 @@ private fun AmbientClockWeatherBar(
                         if (country != null) {
                             CountryFlagIcon(
                                 country = country,
+                                isoOverride = countryIso,
                                 width = 18.dp,
                                 height = 12.dp,
                             )
@@ -658,6 +722,8 @@ private fun mapAndroidKeyCode(keyCode: Int): TvKeyCode = when (keyCode) {
 private fun TopStatusLayer(
     noticeMessage: String?,
     telemetry: PlaybackTelemetry,
+    showConnectingBanner: Boolean,
+    isSyncingRemoteCatalog: Boolean,
     horizontalAlignment: Alignment.Horizontal = Alignment.End,
     modifier: Modifier = Modifier,
 ) {
@@ -672,11 +738,35 @@ private fun TopStatusLayer(
                 accentColor = AccentSky,
             )
         }
-        if (telemetry is PlaybackTelemetry.DegradedRetrying) {
+        if (isSyncingRemoteCatalog) {
             StatusPill(
-                text = stringResource(R.string.status_retrying),
-                accentColor = AccentAmber,
+                text = stringResource(R.string.status_syncing_catalog),
+                accentColor = AccentSky,
+                showSpinner = true,
             )
+        }
+        when {
+            telemetry is PlaybackTelemetry.SwitchingFallback -> {
+                StatusPill(
+                    text = stringResource(R.string.status_switching_fallback),
+                    accentColor = AccentAmber,
+                    showSpinner = true,
+                )
+            }
+            telemetry is PlaybackTelemetry.Connecting && showConnectingBanner -> {
+                StatusPill(
+                    text = stringResource(R.string.status_connecting),
+                    accentColor = AccentSky,
+                    showSpinner = true,
+                )
+            }
+            telemetry is PlaybackTelemetry.DegradedRetrying -> {
+                StatusPill(
+                    text = stringResource(R.string.status_retrying),
+                    accentColor = AccentAmber,
+                    showSpinner = true,
+                )
+            }
         }
     }
 }
@@ -685,6 +775,7 @@ private fun TopStatusLayer(
 private fun StatusPill(
     text: String,
     accentColor: Color,
+    showSpinner: Boolean = false,
 ) {
     Row(
         modifier = Modifier
@@ -695,18 +786,176 @@ private fun StatusPill(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Box(
-            modifier = Modifier
-                .width(8.dp)
-                .height(8.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(accentColor),
-        )
+        if (showSpinner) {
+            LoadingSpinnerIcon(
+                size = 14.dp,
+                color = accentColor,
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .width(8.dp)
+                    .height(8.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(accentColor),
+            )
+        }
         Text(
             text = text,
             color = TextPrimary,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
+        )
+    }
+}
+
+@Composable
+private fun CatalogLoadingStage() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF060A14))
+            .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical),
+    ) {
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            WorldGlobeMarkIcon(size = 52.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                LoadingSpinnerIcon(size = 18.dp, color = AccentSky)
+                Text(
+                    text = stringResource(R.string.catalog_loading_heading),
+                    color = TextPrimary,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+        }
+
+        // Bottom ambient panel skeleton shaped like loaded content
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .width(520.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0x990F172A))
+                .border(1.dp, PillBorder, RoundedCornerShape(10.dp))
+                .padding(horizontal = 18.dp, vertical = 12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(280.dp)
+                    .height(14.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color(0x3394A3B8)),
+            )
+            Box(
+                modifier = Modifier
+                    .width(360.dp)
+                    .height(12.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color(0x2494A3B8)),
+            )
+        }
+    }
+}
+
+@Composable
+private fun CatalogErrorStage(
+    reason: String,
+    onRetry: () -> Unit,
+) {
+    val retryFocusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        retryFocusRequester.requestFocus()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF060A14))
+            .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .widthIn(max = 560.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(HudCardSurface)
+                .border(1.dp, Color(0x66FBBF24), RoundedCornerShape(16.dp))
+                .padding(horizontal = 28.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CameraSignalOffIcon(size = 38.dp)
+            Text(
+                text = stringResource(R.string.catalog_error_heading),
+                color = TextPrimary,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = reason,
+                color = TextSecondary,
+                fontSize = 14.sp,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Button(
+                onClick = onRetry,
+                modifier = Modifier.focusRequester(retryFocusRequester),
+            ) {
+                Text(text = stringResource(R.string.catalog_error_retry))
+            }
+        }
+    }
+}
+
+@Composable
+private fun StreamUnavailableBanner(
+    retryDelayMs: Long,
+    modifier: Modifier = Modifier,
+) {
+    val seconds = (retryDelayMs / 1000L).coerceAtLeast(1L)
+    Column(
+        modifier = modifier
+            .widthIn(max = 520.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color(0xEB080D1A))
+            .border(1.dp, Color(0x66FBBF24), RoundedCornerShape(14.dp))
+            .padding(horizontal = 22.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            CameraSignalOffIcon(size = 22.dp)
+            Text(
+                text = stringResource(R.string.stream_offline_heading),
+                color = TextPrimary,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        Text(
+            text = "Retrying automatically in ${seconds}s",
+            style = TabularStyle,
+            color = AccentAmber,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+        )
+        Text(
+            text = "OK: Retry now · ▶: Next camera · ▼: Browse cameras",
+            color = TextSecondary,
+            fontSize = 12.sp,
         )
     }
 }
@@ -742,9 +991,11 @@ private fun StreetInfoHud(
                 fontWeight = FontWeight.SemiBold,
             )
 
-            CountryBadge(country = camera.resolvedCountry)
-
-            CityBadge(cityLabel = camera.city.displayLabel())
+            LocationBadge(
+                country = camera.resolvedCountry,
+                countryIso = camera.resolvedCountryIso,
+                cityLabel = camera.resolvedCityLabel,
+            )
 
             QualityBadge(quality = camera.resolvedQuality)
 
@@ -809,39 +1060,26 @@ private fun StreetInfoHud(
 }
 
 @Composable
-private fun CountryBadge(country: CameraCountry) {
+private fun LocationBadge(
+    country: CameraCountry,
+    countryIso: String,
+    cityLabel: String,
+) {
     Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
-            .background(Color(0x331E293B))
-            .border(1.dp, PillBorder, RoundedCornerShape(6.dp))
-            .padding(horizontal = 8.dp, vertical = 3.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        CountryFlagIcon(
-            country = country,
-            width = 16.dp,
-            height = 11.dp,
-        )
-        Text(
-            text = country.displayLabel(),
-            color = TextPrimary,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-        )
-    }
-}
-
-@Composable
-private fun CityBadge(cityLabel: String) {
-    Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
             .background(Color(0x3338BDF8))
             .border(1.dp, Color(0x6638BDF8), RoundedCornerShape(6.dp))
             .padding(horizontal = 9.dp, vertical = 3.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        CountryFlagIcon(
+            country = country,
+            isoOverride = countryIso,
+            width = 16.dp,
+            height = 11.dp,
+        )
         Text(
             text = cityLabel,
             color = AccentSky,
@@ -881,6 +1119,7 @@ private fun QualityBadge(quality: VideoQuality) {
 private fun TransportBadge(telemetry: PlaybackTelemetry) {
     val (dotColor, label) = when (telemetry) {
         is PlaybackTelemetry.Connecting -> AccentAmber to stringResource(R.string.status_connecting)
+        is PlaybackTelemetry.SwitchingFallback -> AccentAmber to stringResource(R.string.status_switching_fallback)
         is PlaybackTelemetry.PlayingLive -> when (telemetry.transport) {
             StreamTransportType.HLS,
             StreamTransportType.YOUTUBE_LIVE,
@@ -1156,12 +1395,12 @@ private fun CameraQuickStrip(
                     currentStripFilter == StripFilter.Favorites,
                 ),
             )
-            for (country in CameraCountry.entries) {
+            for (country in state.availableCountries) {
                 val count = countryCounts[country] ?: 0
                 add(
                     Triple(
                         StripFilter.Country(country),
-                        "${country.displayLabel()} ($count)",
+                        "${state.countryDisplayLabel(country)} ($count)",
                         selectedCountry == country,
                     ),
                 )
@@ -1220,6 +1459,7 @@ private fun CameraQuickStrip(
                         ) {
                             CountryFlagIcon(
                                 country = filterItem.country,
+                                isoOverride = state.countryIsoCode(filterItem.country),
                                 width = 18.dp,
                                 height = 12.dp,
                             )
@@ -1238,16 +1478,16 @@ private fun CameraQuickStrip(
                 val totalCountry = countryCounts[selectedCountry] ?: 0
                 add(
                     StripFilter.Country(selectedCountry) to
-                        "All ${selectedCountry.displayLabel()} ($totalCountry)",
+                        "All ${state.countryDisplayLabel(selectedCountry)} ($totalCountry)",
                 )
-                for (city in CameraCity.citiesFor(selectedCountry)) {
+                for (city in state.citiesForCountry(selectedCountry)) {
                     val count = cityCounts[city] ?: 0
-                    add(StripFilter.City(city) to "${city.displayLabel()} ($count)")
+                    add(StripFilter.City(city) to "${state.cityDisplayLabel(city)} ($count)")
                 }
             } else {
-                for (city in CameraCity.entries) {
+                for (city in state.availableCities) {
                     val count = cityCounts[city] ?: 0
-                    add(StripFilter.City(city) to "${city.displayLabel()} ($count)")
+                    add(StripFilter.City(city) to "${state.cityDisplayLabel(city)} ($count)")
                 }
             }
         }
@@ -1270,6 +1510,7 @@ private fun CameraQuickStrip(
                         ) {
                             CountryFlagIcon(
                                 country = filterItem.country,
+                                isoOverride = state.countryIsoCode(filterItem.country),
                                 width = 18.dp,
                                 height = 12.dp,
                             )
@@ -1288,15 +1529,10 @@ private fun CameraQuickStrip(
         val activeId = state.activeCamera?.id
         val favIds = state.favoriteIds
         if (visibleCameras.isEmpty()) {
-            if (state.stripFilter == StripFilter.Favorites && state.favoriteIds.isEmpty()) {
-                EmptyFavoritesStripNotice(
-                    onBrowseAll = { onAction(TvRemoteAction.SelectStripFilter(StripFilter.All)) },
-                )
-            } else {
-                EmptyQualityStripNotice(
-                    onCycleQuality = { onAction(TvRemoteAction.CycleQualityFilter) },
-                )
-            }
+            EmptyStripStateCard(
+                state = state,
+                onAction = onAction,
+            )
         } else {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
@@ -1308,6 +1544,8 @@ private fun CameraQuickStrip(
                         item(key = "section_hd_${group.country.name}") {
                             QualitySectionCard(
                                 country = group.country,
+                                countryLabel = group.countryLabel,
+                                countryIso = group.countryIso,
                                 isHd = true,
                                 count = group.hdCameras.size,
                             )
@@ -1328,6 +1566,8 @@ private fun CameraQuickStrip(
                         item(key = "section_sd_${group.country.name}") {
                             QualitySectionCard(
                                 country = group.country,
+                                countryLabel = group.countryLabel,
+                                countryIso = group.countryIso,
                                 isHd = false,
                                 count = group.sdCameras.size,
                             )
@@ -1353,6 +1593,8 @@ private fun CameraQuickStrip(
 @Composable
 private fun QualitySectionCard(
     country: CameraCountry,
+    countryLabel: String,
+    countryIso: String,
     isHd: Boolean,
     count: Int,
 ) {
@@ -1384,11 +1626,12 @@ private fun QualitySectionCard(
             ) {
                 CountryFlagIcon(
                     country = country,
+                    isoOverride = countryIso,
                     width = 18.dp,
                     height = 12.dp,
                 )
                 Text(
-                    text = country.displayLabel().uppercase(),
+                    text = countryLabel.uppercase(),
                     color = AccentSky,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
@@ -1434,60 +1677,101 @@ private fun QualitySectionCard(
 }
 
 @Composable
-private fun EmptyQualityStripNotice(
-    onCycleQuality: () -> Unit,
+private fun EmptyStripStateCard(
+    state: TvStageState,
+    onAction: (TvRemoteAction) -> Unit,
 ) {
-    Column(
+    val scopeName = when (val f = state.stripFilter) {
+        StripFilter.All -> "All World"
+        StripFilter.Popular -> "Popular"
+        StripFilter.Favorites -> "Favorites"
+        is StripFilter.Country -> state.countryDisplayLabel(f.country)
+        is StripFilter.City -> state.cityDisplayLabel(f.city)
+        is StripFilter.Category -> f.category.displayLabel()
+    }
+    val scopeCams = state.stripScopeCamerasUnfiltered
+    val isEmptyFavorites = state.stripFilter == StripFilter.Favorites && state.favoriteIds.isEmpty()
+    val blockedByTransport = scopeCams.isNotEmpty() &&
+        state.transportFilter != TransportFilter.ALL &&
+        scopeCams.any { state.qualityFilter.matches(it.resolvedQuality) }
+    val blockedByQuality = scopeCams.isNotEmpty() &&
+        state.qualityFilter != QualityFilter.ALL &&
+        scopeCams.any { state.transportFilter.matches(it.isLiveVideo) }
+
+    val (heading, body, actionLabel, recoveryAction) = when {
+        isEmptyFavorites -> EmptyStripModel(
+            heading = stringResource(R.string.empty_favorites_heading),
+            body = stringResource(R.string.empty_favorites_body),
+            actionLabel = stringResource(R.string.empty_favorites_action),
+            action = TvRemoteAction.SelectStripFilter(StripFilter.All),
+        )
+        blockedByTransport -> {
+            val kind = if (state.transportFilter == TransportFilter.SNAPSHOT_ONLY) {
+                "snapshot feeds"
+            } else {
+                "live video feeds"
+            }
+            EmptyStripModel(
+                heading = "No $kind in $scopeName",
+                body = "${scopeCams.size} cameras are available in $scopeName under other stream types",
+                actionLabel = stringResource(R.string.empty_transport_action),
+                action = TvRemoteAction.ShowAllTransports,
+            )
+        }
+        blockedByQuality -> EmptyStripModel(
+            heading = "No ${state.qualityFilter.displayLabel()} streams in $scopeName",
+            body = "${scopeCams.size} cameras are available in $scopeName across other resolutions",
+            actionLabel = stringResource(R.string.empty_quality_action),
+            action = TvRemoteAction.ShowAllQualities,
+        )
+        else -> EmptyStripModel(
+            heading = stringResource(R.string.empty_quality_heading),
+            body = stringResource(R.string.empty_quality_body),
+            actionLabel = stringResource(R.string.empty_reset_action),
+            action = TvRemoteAction.ResetFilters,
+        )
+    }
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = TvOverscanHorizontal, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = TvOverscanHorizontal, vertical = 10.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xCC0F172A))
+            .border(1.dp, PillBorder, RoundedCornerShape(12.dp))
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(
-            text = stringResource(R.string.empty_quality_heading),
-            color = TextPrimary,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Text(
-            text = stringResource(R.string.empty_quality_body),
-            color = TextSecondary,
-            fontSize = 14.sp,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Button(onClick = onCycleQuality) {
-            Text(text = stringResource(R.string.empty_quality_action))
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = heading,
+                color = TextPrimary,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = body,
+                color = TextSecondary,
+                fontSize = 13.sp,
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Button(onClick = { onAction(recoveryAction) }) {
+            Text(text = actionLabel)
         }
     }
 }
 
-@Composable
-private fun EmptyFavoritesStripNotice(
-    onBrowseAll: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = TvOverscanHorizontal, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.empty_favorites_heading),
-            color = TextPrimary,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Text(
-            text = stringResource(R.string.empty_favorites_body),
-            color = TextSecondary,
-            fontSize = 14.sp,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Button(onClick = onBrowseAll) {
-            Text(text = stringResource(R.string.empty_favorites_action))
-        }
-    }
-}
+private data class EmptyStripModel(
+    val heading: String,
+    val body: String,
+    val actionLabel: String,
+    val action: TvRemoteAction,
+)
 
 @Composable
 private fun CameraPreviewCard(
@@ -1511,6 +1795,9 @@ private fun CameraPreviewCard(
             .build()
     }
 
+    var posterLoading by remember(posterUrl) { mutableStateOf(true) }
+    var posterError by remember(posterUrl) { mutableStateOf(false) }
+
     Card(
         onClick = onSelect,
         modifier = Modifier.width(228.dp),
@@ -1523,14 +1810,35 @@ private fun CameraPreviewCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(16f / 9f)
-                    .background(Color(0xFF0F172A)),
+                    .background(if (posterLoading) Color(0xFF162032) else Color(0xFF0F172A)),
             ) {
-                AsyncImage(
-                    model = imageRequest,
-                    contentDescription = camera.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                if (posterError) {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        CameraSignalOffIcon(size = 20.dp)
+                        Text(
+                            text = stringResource(R.string.preview_unavailable),
+                            color = TextMuted,
+                            fontSize = 10.sp,
+                        )
+                    }
+                } else {
+                    AsyncImage(
+                        model = imageRequest,
+                        contentDescription = camera.name,
+                        contentScale = ContentScale.Crop,
+                        onLoading = { posterLoading = true },
+                        onSuccess = { posterLoading = false },
+                        onError = {
+                            posterLoading = false
+                            posterError = true
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
 
                 if (isPlaying) {
                     Box(
@@ -1645,9 +1953,9 @@ private fun CameraPreviewCard(
                 )
                 val firstStreet = camera.streets.firstOrNull().orEmpty()
                 val subtitle = if (firstStreet.isNotBlank()) {
-                    "${camera.city.displayLabel()} · $firstStreet"
+                    "${camera.resolvedCityLabel} · $firstStreet"
                 } else {
-                    camera.city.displayLabel()
+                    camera.resolvedCityLabel
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -1655,6 +1963,7 @@ private fun CameraPreviewCard(
                 ) {
                     CountryFlagIcon(
                         country = camera.resolvedCountry,
+                        isoOverride = camera.resolvedCountryIso,
                         width = 15.dp,
                         height = 10.dp,
                     )

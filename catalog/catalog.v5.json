@@ -6397,6 +6397,16 @@
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=ZxCeWQ3Lcig"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=KHy_n-EMWY8"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793910950/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },

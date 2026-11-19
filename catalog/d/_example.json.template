@@ -1,0 +1,31 @@
+{
+  "country": "AUSTRIA",
+  "country_name": "Austria",
+  "country_iso": "AT",
+  "city": "VIENNA",
+  "city_name": "Vienna",
+  "timezone": "Europe/Vienna",
+  "cameras": [
+    {
+      "id": "at-vie-stephansplatz",
+      "name": "Stephansplatz & St. Stephen's Cathedral",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": ["Stephansplatz", "Kärntner Straße"],
+      "municipality": "Innere Stadt",
+      "category": "SQUARES",
+      "direction": "Panoramic view across Stephansplatz in central Vienna",
+      "poster_url": "https://i.ytimg.com/vi/EXAMPLE1234/hqdefault.jpg",
+      "coordinates": {
+        "lat": 48.2082,
+        "lon": 16.3738
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=EXAMPLE1234"
+        }
+      ]
+    }
+  ]
+}

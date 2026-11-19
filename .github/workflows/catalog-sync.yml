@@ -5,6 +5,11 @@ on:
     # Probe world camera endpoints every 6 hours
     - cron: "15 */6 * * *"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "catalog/**"
+      - "tools/catalog-probe/**"
+      - ".github/workflows/catalog-sync.yml"
   push:
     branches:
       - main
@@ -19,12 +24,39 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "catalog-pages"
-  cancel-in-progress: false
+  group: "catalog-pages-${{ github.ref }}"
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  validate-pr:
+    name: Validate Community Camera Contribution (PR)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "tools/catalog-probe/uv.lock"
+
+      - name: Lint & test catalog-probe
+        working-directory: tools/catalog-probe
+        run: |
+          uv run ruff check .
+          uv run pytest
+
+      - name: Verify contributed catalog/d/*.json files & stream reachability
+        run: |
+          uv run --project tools/catalog-probe catalog-probe --check-contributions
+
   probe-catalog:
     name: Probe Upstream Streams & Validate Manifest
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -67,7 +99,7 @@ jobs:
   deploy-pages:
     name: Publish Static Catalog to GitHub Pages
     needs: probe-catalog
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
