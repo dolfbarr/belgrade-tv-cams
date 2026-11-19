@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026111915,
-  "updated_at": "2026-11-19T15:45:53Z",
+  "revision": 2026111918,
+  "updated_at": "2026-11-19T18:00:45Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -7107,7 +7107,7 @@
       "municipality": "Sumida-ku / Taito-ku",
       "category": "BRIDGES",
       "direction": "4K UHD skyline broadcast framing the 634 m Tokyo Skytree and Sumida bridges",
-      "poster_url": "https://i.ytimg.com/vi/iycgnGq-h14/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/Jw9tsexipts/hqdefault.jpg",
       "coordinates": {
         "lat": 35.7101,
         "lon": 139.8107
@@ -7115,7 +7115,11 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=iycgnGq-h14"
+          "url": "https://www.youtube.com/watch?v=Jw9tsexipts"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=TjsZWmKhDK0"
         }
       ]
     },
@@ -7252,7 +7256,7 @@
       "municipality": "Shibuya-ku, Tokyo",
       "category": "SQUARES",
       "direction": "Iconic overhead view of Shibuya Scramble pedestrian crossing in Tokyo",
-      "poster_url": "https://i.ytimg.com/vi/dfVK7ld38Ys/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/5B4LmH4JbnY/hqdefault.jpg",
       "coordinates": {
         "lat": 35.6595,
         "lon": 139.7005
@@ -7266,11 +7270,17 @@
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=dfVK7ld38Ys"
+          "url": "https://www.youtube.com/watch?v=5B4LmH4JbnY"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=5B4LmH4JbnY"
+          "url": "https://www.youtube.com/watch?v=dfVK7ld38Ys"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1586454316/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },

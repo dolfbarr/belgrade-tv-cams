@@ -4,6 +4,10 @@ All notable user-visible changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- **YouTube Live Stream Playback Across USA, Armenia, Japan & Global Cities (`YOUTUBE_LIVE` `HTTP 403` Segment Fix):** Switched on-device `YOUTUBE_LIVE` resolution and `catalog-probe` health checks from mobile web (`m.youtube.com`, whose HLS media segments now enforce JS `/n/` challenges and reject `.ts` chunk requests with `HTTP 403 Forbidden`) to the native YouTube Innertube `ANDROID` player endpoint (`POST /youtubei/v1/player`), restoring uninterrupted `4K UHD` and `1080p` live video playback across **New York (USA)**, **Yerevan (Armenia)**, **Tokyo (Japan)**, **Seoul**, **London**, **Amsterdam**, **Berlin**, **Paris**, **Madrid**, **Barcelona**, **Bucharest**, **Moscow**, and **Tbilisi**.
+- **Tokyo Skytree & Shibuya Scramble Stream Refresh:** Updated `jp-tyo-skytree-sumida-4k` to the active `4K UHD` Tokyo Skytree broadcast (`Jw9tsexipts`) with a secondary Sumida River live backup (`TjsZWmKhDK0`), and promoted the active TV Asahi / ANN Shibuya Scramble broadcast (`5B4LmH4JbnY`) to primary on `jp-tyo-shibuya-scramble`.
+
 ### Added
 - **Global Expansion to 13 Countries & 22 Cities (`catalog.v5.json`, 225 Verified Cameras with Live Video in Every City):** Expanded the world catalog to **225 verified public cameras** across **13 countries and 22 cities**, guaranteeing **at least 1 live motion video stream (`HLS`, `YOUTUBE_LIVE`, `RUTUBE_LIVE`, or `IPCAMLIVE`) in every city**:
   - **Serbia (`78`):** Belgrade (`40`), Zemun (`8`), Novi Sad (`8`), Subotica (`9` — upgraded `su-gradski-trg-korzo` primary feed to `1080p` live `IPCAMLIVE`), Niš (`13`).

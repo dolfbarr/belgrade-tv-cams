@@ -4,8 +4,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import rs.belgrade.tvcams.domain.model.StreamDescriptor
 import rs.belgrade.tvcams.domain.model.StreamTransportType
 import rs.belgrade.tvcams.domain.stream.ResolvedHlsStream
@@ -21,7 +23,12 @@ class OkHttpStreamUrlResolver(
 
     private data class CachedResolution(
         val resolved: ResolvedHlsStream,
-        val resolvedAtMs: Long,
+        val expiresAtMs: Long,
+    )
+
+    private data class TimedResolution(
+        val resolved: ResolvedHlsStream,
+        val ttlMillis: Long,
     )
 
     private val mutex = Mutex()
@@ -45,34 +52,76 @@ class OkHttpStreamUrlResolver(
         val cacheKey = "${stream.type.name}:${stream.url}"
         mutex.withLock {
             val hit = cache[cacheKey]
-            if (hit != null && clockMillis() - hit.resolvedAtMs < cacheTtlMillis) {
+            if (hit != null && clockMillis() < hit.expiresAtMs) {
                 return hit.resolved
             }
         }
 
-        val resolved = withContext(Dispatchers.IO) {
+        val timed = withContext(Dispatchers.IO) {
             when (stream.type) {
                 StreamTransportType.YOUTUBE_LIVE -> resolveYouTubeLive(stream)
                 StreamTransportType.RUTUBE_LIVE -> resolveRutubeLive(stream)
+                    ?.let { TimedResolution(it, cacheTtlMillis) }
                 StreamTransportType.IPCAMLIVE -> resolveIpCamLive(stream)
-                StreamTransportType.HLS -> ResolvedHlsStream(stream.url, stream.headers.orEmpty())
+                    ?.let { TimedResolution(it, cacheTtlMillis) }
+                StreamTransportType.HLS -> TimedResolution(
+                    ResolvedHlsStream(stream.url, stream.headers.orEmpty()),
+                    cacheTtlMillis,
+                )
                 StreamTransportType.SNAPSHOT_POLL -> null
             }
         }
 
-        if (resolved != null) {
+        if (timed != null) {
             mutex.withLock {
                 cache[cacheKey] = CachedResolution(
-                    resolved = resolved,
-                    resolvedAtMs = clockMillis(),
+                    resolved = timed.resolved,
+                    expiresAtMs = clockMillis() + timed.ttlMillis,
                 )
             }
         }
-        return resolved
+        return timed?.resolved
     }
 
-    private fun resolveYouTubeLive(stream: StreamDescriptor): ResolvedHlsStream? = runCatching {
-        val watchUrl = StreamPayloadParsers.normalizeYouTubeLiveWatchUrl(stream.url)
+    private fun resolveYouTubeLive(stream: StreamDescriptor): TimedResolution? = runCatching {
+        val videoId = StreamPayloadParsers.extractYouTubeVideoId(stream.url)
+            ?: resolveCanonicalYouTubeLiveId(stream.url)
+            ?: return@runCatching null
+
+        val requestBody = StreamPayloadParsers.buildYouTubeInnertubePlayerPayload(videoId)
+            .toRequestBody(JSON_MEDIA_TYPE)
+
+        val req = Request.Builder()
+            .url(StreamPayloadParsers.YOUTUBE_INNERTUBE_PLAYER_URL)
+            .post(requestBody)
+            .header("User-Agent", StreamPayloadParsers.YOUTUBE_ANDROID_APP_UA)
+            .header("X-YouTube-Client-Name", StreamPayloadParsers.YOUTUBE_ANDROID_CLIENT_NAME_ID)
+            .header("X-YouTube-Client-Version", StreamPayloadParsers.YOUTUBE_ANDROID_CLIENT_VERSION)
+            .header("Origin", "https://www.youtube.com")
+            .header("Accept-Language", "en-US,en;q=0.9")
+            .build()
+
+        generalHttpClient.newCall(req).execute().use { resp ->
+            if (!resp.isSuccessful) return@use null
+            val body = resp.body?.string() ?: return@use null
+            val yt = StreamPayloadParsers.extractYouTubeInnertubeHls(body) ?: return@use null
+            val effectiveTtlMs = yt.expiresInSeconds
+                ?.let { sec -> ((sec - 60L).coerceAtLeast(30L)) * 1000L }
+                ?.let { minOf(cacheTtlMillis, it) }
+                ?: cacheTtlMillis
+
+            TimedResolution(
+                resolved = ResolvedHlsStream(
+                    hlsUrl = yt.hlsUrl,
+                    headers = mapOf("User-Agent" to StreamPayloadParsers.YOUTUBE_ANDROID_APP_UA),
+                ),
+                ttlMillis = effectiveTtlMs,
+            )
+        }
+    }.getOrNull()
+
+    private fun resolveCanonicalYouTubeLiveId(channelLiveUrl: String): String? = runCatching {
+        val watchUrl = StreamPayloadParsers.normalizeYouTubeLiveWatchUrl(channelLiveUrl)
         val req = Request.Builder()
             .url(watchUrl)
             .get()
@@ -83,12 +132,8 @@ class OkHttpStreamUrlResolver(
 
         generalHttpClient.newCall(req).execute().use { resp ->
             if (!resp.isSuccessful) return@use null
-            val body = resp.body?.string() ?: return@use null
-            val hlsUrl = StreamPayloadParsers.extractYouTubeHlsUrl(body) ?: return@use null
-            ResolvedHlsStream(
-                hlsUrl = hlsUrl,
-                headers = mapOf("User-Agent" to StreamPayloadParsers.YOUTUBE_IOS_SAFARI_UA),
-            )
+            val html = resp.body?.string() ?: return@use null
+            StreamPayloadParsers.extractYouTubeCanonicalVideoId(html)
         }
     }.getOrNull()
 
@@ -145,5 +190,6 @@ class OkHttpStreamUrlResolver(
 
     companion object {
         const val DEFAULT_CACHE_TTL_MS: Long = 20L * 60L * 1000L
+        private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
 }

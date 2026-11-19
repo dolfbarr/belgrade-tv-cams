@@ -409,6 +409,7 @@ private fun HlsStreamRenderer(
             putAll(activeResolved.headers)
         }
         val dataSourceFactory = OkHttpDataSource.Factory(httpClient)
+            .setUserAgent(mergedHeaders["User-Agent"])
             .setDefaultRequestProperties(mergedHeaders)
         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
             .setAllowChunklessPreparation(true)

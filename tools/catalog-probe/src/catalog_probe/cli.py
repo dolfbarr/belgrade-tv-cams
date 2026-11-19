@@ -52,6 +52,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=6.0,
         help="Per-request timeout in seconds for live HTTP probes.",
     )
+    parser.add_argument(
+        "--report-unreachable",
+        action="store_true",
+        help="Log unreachable stream endpoints and failure reasons to stderr.",
+    )
     return parser
 
 
@@ -104,6 +109,17 @@ def main(argv: list[str] | None = None) -> int:
             f"Probed {total_count} unique endpoints: {reachable_count} reachable.",
             file=sys.stderr,
         )
+        if args.report_unreachable:
+            for cam in cameras:
+                for stream in cam.streams:
+                    res = results.get(stream.url)
+                    if res is not None and not res.reachable:
+                        detail = res.error or f"HTTP {res.status_code}"
+                        print(
+                            f"UNREACHABLE [{cam.city.value}] {cam.id} "
+                            f"({stream.type.value}): {stream.url} -> {detail}",
+                            file=sys.stderr,
+                        )
         if reachable_count == 0:
             print("Aborting update: zero endpoints reachable.", file=sys.stderr)
             return 1

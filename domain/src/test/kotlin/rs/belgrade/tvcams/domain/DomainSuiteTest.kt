@@ -882,26 +882,81 @@ class DomainSuiteTest {
     }
 
     @Test
-    fun `stream payload parsers extract YouTube Live, Rutube, and IPCamLive HLS manifests accurately`() {
+    fun `stream payload parsers extract YouTube Live Innertube Android HLS, Rutube, and IPCamLive manifests accurately`() {
+        assertEquals("5B4LmH4JbnY", StreamPayloadParsers.extractYouTubeVideoId("5B4LmH4JbnY"))
         assertEquals(
-            "https://m.youtube.com/watch?v=dfVK7ld38Ys",
-            StreamPayloadParsers.normalizeYouTubeLiveWatchUrl("dfVK7ld38Ys"),
+            "ZxCeWQ3Lcig",
+            StreamPayloadParsers.extractYouTubeVideoId("https://www.youtube.com/watch?v=ZxCeWQ3Lcig&ab_channel=EarthCam"),
         )
         assertEquals(
-            "https://m.youtube.com/watch?v=ZxCeWQ3Lcig",
-            StreamPayloadParsers.normalizeYouTubeLiveWatchUrl("https://www.youtube.com/watch?v=ZxCeWQ3Lcig&ab_channel=EarthCam"),
+            "Y4G5H53X7Tw",
+            StreamPayloadParsers.extractYouTubeVideoId("https://youtu.be/Y4G5H53X7Tw?si=test"),
         )
+        assertEquals(
+            "Jw9tsexipts",
+            StreamPayloadParsers.extractYouTubeVideoId("https://www.youtube.com/live/Jw9tsexipts"),
+        )
+        assertNull(StreamPayloadParsers.extractYouTubeVideoId("https://www.youtube.com/@MadridSkyLive/live"))
+
+        val channelLiveHtml = """
+            <link rel="canonical" href="https://www.youtube.com/watch?v=Jw9tsexipts"><script>var x={"isLive":true};</script>
+        """.trimIndent()
+        assertEquals("Jw9tsexipts", StreamPayloadParsers.extractYouTubeCanonicalVideoId(channelLiveHtml))
+        val vodHtml = """
+            <link rel="canonical" href="https://www.youtube.com/watch?v=iycgnGq-h14"><script>var x={"isLive":false};</script>
+        """.trimIndent()
+        assertNull(StreamPayloadParsers.extractYouTubeCanonicalVideoId(vodHtml))
+
+        val playerReqJson = StreamPayloadParsers.buildYouTubeInnertubePlayerPayload("Y4G5H53X7Tw")
+        assertTrue(playerReqJson.contains("\"videoId\":\"Y4G5H53X7Tw\""))
+        assertTrue(playerReqJson.contains("\"clientName\":\"ANDROID\""))
+        assertTrue(playerReqJson.contains("\"androidSdkVersion\":30"))
+
+        val validAndroidPlayerJson = """
+            {
+              "playabilityStatus": {"status": "OK"},
+              "videoDetails": {"videoId": "Y4G5H53X7Tw", "isLive": true},
+              "streamingData": {
+                "expiresInSeconds": "21540",
+                "hlsManifestUrl": "https://manifest.googlevideo.com/api/manifest/hls_variant/id/Y4G5H53X7Tw.1/itag/0/playlist_type/DVR/file/index.m3u8"
+              }
+            }
+        """.trimIndent()
+        val resolvedYt = StreamPayloadParsers.extractYouTubeInnertubeHls(validAndroidPlayerJson)
+        assertNotNull(resolvedYt)
+        assertEquals(
+            "https://manifest.googlevideo.com/api/manifest/hls_variant/id/Y4G5H53X7Tw.1/itag/0/playlist_type/DVR/file/index.m3u8",
+            resolvedYt.hlsUrl,
+        )
+        assertEquals(21540L, resolvedYt.expiresInSeconds)
+
+        // Reject offline streams, non-live VODs, and MWEB /n/ JS-challenged URLs that 403 on .ts segments
+        val offlinePlayerJson = """
+            {"playabilityStatus":{"status":"LIVE_STREAM_OFFLINE","reason":"Offline"}}
+        """.trimIndent()
+        assertNull(StreamPayloadParsers.extractYouTubeInnertubeHls(offlinePlayerJson))
+
+        val endedVodJson = """
+            {
+              "playabilityStatus": {"status": "OK"},
+              "videoDetails": {"videoId": "iycgnGq-h14", "isLive": false},
+              "streamingData": {"hlsManifestUrl": "https://manifest.googlevideo.com/api/manifest/hls_variant/id/iycgnGq-h14.1/file/index.m3u8"}
+            }
+        """.trimIndent()
+        assertNull(StreamPayloadParsers.extractYouTubeInnertubeHls(endedVodJson))
+
+        val nChallengedMwebJson = """
+            {
+              "playabilityStatus": {"status": "OK"},
+              "videoDetails": {"videoId": "Y4G5H53X7Tw", "isLive": true},
+              "streamingData": {"hlsManifestUrl": "https://manifest.googlevideo.com/api/manifest/hls_variant/id/Y4G5H53X7Tw.1/n/50EWK9Ulv22tNsoSR/file/index.m3u8"}
+            }
+        """.trimIndent()
+        assertNull(StreamPayloadParsers.extractYouTubeInnertubeHls(nChallengedMwebJson))
+
         assertEquals(
             "https://m.youtube.com/@MadridSkyLive/live",
             StreamPayloadParsers.normalizeYouTubeLiveWatchUrl("https://www.youtube.com/@MadridSkyLive/live"),
-        )
-
-        val ytWatchHtml = """
-            {"streamingData":{"expiresInSeconds":"21540","hlsManifestUrl":"https:\/\/manifest.googlevideo.com\/api\/manifest\/hls_variant\/id\/dfVK7ld38Ys.5\/file\/index.m3u8\u0026keepalive=yes"}}
-        """.trimIndent()
-        assertEquals(
-            "https://manifest.googlevideo.com/api/manifest/hls_variant/id/dfVK7ld38Ys.5/file/index.m3u8&keepalive=yes",
-            StreamPayloadParsers.extractYouTubeHlsUrl(ytWatchHtml),
         )
 
         val rutubeJson = """

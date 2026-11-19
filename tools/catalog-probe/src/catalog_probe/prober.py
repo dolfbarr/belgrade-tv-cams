@@ -23,17 +23,37 @@ _ROSTELECOM_HLS_RE = re.compile(
     r"^https://live-[a-z0-9-]+\.camera\.rt\.ru/public/master\.m3u8\?sid=(?P<uid>[0-9a-f-]{36})$"
 )
 
-_YOUTUBE_PROBE_HEADERS: dict[str, str] = {
-    "User-Agent": (
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) "
-        "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1"
-    ),
+_YOUTUBE_ANDROID_CLIENT_VERSION = "21.26.364"
+_YOUTUBE_ANDROID_UA = (
+    f"com.google.android.youtube/{_YOUTUBE_ANDROID_CLIENT_VERSION} (Linux; U; Android 11) gzip"
+)
+_YOUTUBE_INNERTUBE_PLAYER_URL = "https://www.youtube.com/youtubei/v1/player?prettyPrint=false"
+_YOUTUBE_INNERTUBE_HEADERS: dict[str, str] = {
+    "User-Agent": _YOUTUBE_ANDROID_UA,
+    "X-YouTube-Client-Name": "3",
+    "X-YouTube-Client-Version": _YOUTUBE_ANDROID_CLIENT_VERSION,
+    "Origin": "https://www.youtube.com",
     "Accept-Language": "en-US,en;q=0.9",
-    "Cookie": (
-        "SOCS=CAISNQgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVy"
-        "XzIwMjMwODI5LjA3X3AxGgJlbiACGgYIgJnPpwY"
-    ),
 }
+
+
+def build_youtube_innertube_payload(video_id: str) -> dict[str, object]:
+    return {
+        "videoId": video_id,
+        "context": {
+            "client": {
+                "clientName": "ANDROID",
+                "clientVersion": _YOUTUBE_ANDROID_CLIENT_VERSION,
+                "androidSdkVersion": 30,
+                "userAgent": _YOUTUBE_ANDROID_UA,
+                "osName": "Android",
+                "osVersion": "11",
+                "hl": "en",
+                "gl": "US",
+            }
+        },
+    }
+
 
 _NAXI_HQ_RE = re.compile(
     r'<li[^>]*data-id="camera-(?P<id>\d+)"[^>]*>.*?'
@@ -244,12 +264,41 @@ def _probe_single_stream(
             if video_id is None:
                 return ProbeResult(stream.url, False, None, "Invalid YouTube video ID")
             with youtube_sem:
-                resp = client.get(
-                    f"https://m.youtube.com/watch?v={video_id}",
-                    headers=_YOUTUBE_PROBE_HEADERS,
+                resp = client.post(
+                    _YOUTUBE_INNERTUBE_PLAYER_URL,
+                    headers=_YOUTUBE_INNERTUBE_HEADERS,
+                    json=build_youtube_innertube_payload(video_id),
                 )
-            ok = 200 <= resp.status_code < 300 and '"hlsManifestUrl"' in resp.text
-            return ProbeResult(url=stream.url, reachable=ok, status_code=resp.status_code)
+            if not (200 <= resp.status_code < 300):
+                return ProbeResult(
+                    url=stream.url,
+                    reachable=False,
+                    status_code=resp.status_code,
+                    error=f"HTTP {resp.status_code}",
+                )
+            payload = resp.json()
+            playability = payload.get("playabilityStatus", {})
+            status = playability.get("status")
+            video_details = payload.get("videoDetails", {})
+            is_live_ok = video_details.get("isLive", True) is True
+            hls_url = payload.get("streamingData", {}).get("hlsManifestUrl")
+            has_playable_hls = (
+                isinstance(hls_url, str)
+                and hls_url.startswith("https://")
+                and ".m3u8" in hls_url
+                and "/n/" not in hls_url
+            )
+            ok = status == "OK" and is_live_ok and has_playable_hls
+            err = None
+            if not ok:
+                reason = playability.get("reason") or ("not live" if not is_live_ok else "no HLS")
+                err = f"status={status} ({reason})"
+            return ProbeResult(
+                url=stream.url,
+                reachable=ok,
+                status_code=resp.status_code,
+                error=err,
+            )
 
         if stream.type == StreamTransportType.RUTUBE_LIVE:
             match = _RUTUBE_PAGE_RE.search(stream.url)

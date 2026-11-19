@@ -351,12 +351,59 @@ def test_prober_supports_youtube_rutube_ipcamlive_and_windy_content_type() -> No
         ),
     ]
 
+    sample_cameras.append(
+        CameraEntry(
+            id="t-yt-offline",
+            name="YT Offline",
+            country=CameraCountry.USA,
+            city=CameraCity.NEW_YORK,
+            quality=VideoQuality.FHD_1080P,
+            timezone="America/New_York",
+            streets=("Broadway",),
+            municipality="Manhattan",
+            category=CameraCategory.SQUARES,
+            direction="Dir",
+            poster_url="https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+            coordinates=GeoCoordinates(40.75, -73.98),
+            streams=(
+                StreamDescriptor(
+                    StreamTransportType.YOUTUBE_LIVE,
+                    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                ),
+            ),
+        )
+    )
+
     def handler(request: httpx.Request) -> httpx.Response:
         url = str(request.url)
-        if "m.youtube.com/watch" in url:
+        if "youtubei/v1/player" in url and request.method == "POST":
+            assert request.headers.get("x-youtube-client-name") == "3"
+            assert "com.google.android.youtube/" in request.headers.get("user-agent", "")
+            payload = json.loads(request.content.decode("utf-8"))
+            assert payload["context"]["client"]["clientName"] == "ANDROID"
+            vid = payload.get("videoId")
+            if vid == "ZxCeWQ3Lcig":
+                return httpx.Response(
+                    200,
+                    json={
+                        "playabilityStatus": {"status": "OK"},
+                        "videoDetails": {"videoId": vid, "isLive": True},
+                        "streamingData": {
+                            "hlsManifestUrl": (
+                                "https://manifest.googlevideo.com/api/manifest/hls_variant/"
+                                "id/ZxCeWQ3Lcig.1/file/index.m3u8"
+                            )
+                        },
+                    },
+                )
             return httpx.Response(
                 200,
-                text='{"streamingData":{"hlsManifestUrl":"https://manifest.googlevideo.com/x.m3u8"}}',
+                json={
+                    "playabilityStatus": {
+                        "status": "LIVE_STREAM_OFFLINE",
+                        "reason": "This live stream recording is not available.",
+                    }
+                },
             )
         if "rutube.ru/api/play/options/" in url:
             return httpx.Response(
@@ -380,6 +427,7 @@ def test_prober_supports_youtube_rutube_ipcamlive_and_windy_content_type() -> No
         transport=httpx.MockTransport(handler),
     )
     assert results["https://www.youtube.com/watch?v=ZxCeWQ3Lcig"].reachable is True
+    assert results["https://www.youtube.com/watch?v=dQw4w9WgXcQ"].reachable is False
     assert results["https://rutube.ru/video/849eda0a248516e770a6172f10a14308/"].reachable is True
     assert results["https://ipcamlive.com/kameratrg"].reachable is True
     assert (
@@ -565,4 +613,3 @@ def test_drop_in_community_contribution_file_loads_and_validates(tmp_path: Path)
     )
     with pytest.raises(ValueError, match="invalid IANA timezone"):
         parse_contribution_file(bad_tz_file)
-
