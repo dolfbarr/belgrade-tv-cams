@@ -9,6 +9,15 @@
     <string name="category_squares">Squares</string>
     <string name="category_boulevards">Boulevards</string>
     <string name="category_highways">Highway &amp; border</string>
+    <string name="action_search">Search</string>
+    <string name="action_settings">Settings</string>
+    <string name="settings_heading">Settings</string>
+    <string name="settings_section_playback">Filtering &amp; playback</string>
+    <string name="settings_section_display">Display &amp; overlays</string>
+    <string name="search_heading">Search world cameras</string>
+    <string name="search_placeholder">Select letters or type city, country, street, or landmark…</string>
+    <string name="search_empty_heading">No cameras match your search</string>
+    <string name="search_clear_action">Clear</string>
     <string name="toggle_clock_on">Clock: On</string>
     <string name="toggle_clock_off">Clock: Off</string>
     <string name="toggle_weather_on">Weather: On</string>
@@ -46,5 +55,5 @@
     <string name="empty_quality_body">Adjust stream or resolution filters to view cameras in this location</string>
     <string name="empty_quality_action">Show all qualities</string>
     <string name="empty_reset_action">Reset all filters</string>
-    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Camera · ▼: Menu &amp; perf · ▲: Scope</string>
+    <string name="hud_remote_hints">OK: Pure view · Hold OK: Favorite · ◀ ▶: Camera · ▼: Browse · MENU: Settings · 0–9: Channel</string>
 </resources>

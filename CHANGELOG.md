@@ -4,6 +4,16 @@ All notable user-visible changes to this project are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- **Dedicated TV Search Overlay (`OverlayMode.SEARCH`) & `1.2s` Numeric Channel Jump (`0–9` Keypad):** Added a diacritic-insensitive live camera search overlay (`A–Z` / `0–9` D-pad key strip + physical/Bluetooth keyboard capture + `SEARCH` remote shortcut) matching camera names, cities, countries, streets, and landmarks, plus `1–3` digit numeric channel jump (`CH 01`–`225` preview pill with `1.2s` auto-commit or instant `OK` tune-in).
+- **Settings Side-Drawer (`OverlayMode.SETTINGS`) & Compact 2-Row Quick Strip with Active-Camera Focus Lock:** Separated playback, filter, and display preferences into a right-hand `Settings` side-drawer (`MENU` key or Quick Strip `Settings` chip), hid the 22-city bar unless a country tab is active, and locked Quick Strip initial scroll and D-pad focus directly onto the currently watched camera card.
+- **Tour & Screensaver Offline Auto-Skip with Outage Circuit Breaker:** `Auto-Rotate` and Android TV `DreamService` screensaver sessions now automatically advance past unreachable cameras after `1.5s`, guarded by a full-playlist circuit breaker that halts runaway zapping if local network connectivity drops.
+- **Self-Healing Single-Camera YouTube Channel Rotation:** Added opt-in single-camera `/channel/<id>/live` fallback and scheduled `catalog-probe` promotion so 24/7 single-camera YouTube channels automatically recover across broadcast reconnects without risking multi-camera channel mixups.
+- **Full-Stack `:app` Test Suite, Coverage Gates (`>=85%` / `>=80%`) & R8 Release Verification in CI:** Added `:app` coroutine ViewModel tests, real loopback HTTP data/resolver tests, Robolectric Compose D-pad/focus UI tests, Kover + `pytest-cov` coverage gates, and shrunk R8 `:app:assembleRelease` verification in GitHub Actions CI.
+
+### Removed
+- **Legacy Bundled Seed Manifests (`seed_catalog.v1`–`v4.json`):** Removed 4 unused legacy seed JSON files (`-331 KB` uncompressed) from APK assets while retaining `catalog/catalog.v1`–`v4.json` for backward compatibility.
+
 ### Fixed
 - **YouTube Live Stream Playback Across USA, Armenia, Japan & Global Cities (`YOUTUBE_LIVE` `HTTP 403` Segment Fix):** Switched on-device `YOUTUBE_LIVE` resolution and `catalog-probe` health checks from mobile web (`m.youtube.com`, whose HLS media segments now enforce JS `/n/` challenges and reject `.ts` chunk requests with `HTTP 403 Forbidden`) to the native YouTube Innertube `ANDROID` player endpoint (`POST /youtubei/v1/player`), restoring uninterrupted `4K UHD` and `1080p` live video playback across **New York (USA)**, **Yerevan (Armenia)**, **Tokyo (Japan)**, **Seoul**, **London**, **Amsterdam**, **Berlin**, **Paris**, **Madrid**, **Barcelona**, **Bucharest**, **Moscow**, and **Tbilisi**.
 - **Tokyo Skytree & Shibuya Scramble Stream Refresh:** Updated `jp-tyo-skytree-sumida-4k` to the active `4K UHD` Tokyo Skytree broadcast (`Jw9tsexipts`) with a secondary Sumida River live backup (`TjsZWmKhDK0`), and promoted the active TV Asahi / ANN Shibuya Scramble broadcast (`5B4LmH4JbnY`) to primary on `jp-tyo-shibuya-scramble`.

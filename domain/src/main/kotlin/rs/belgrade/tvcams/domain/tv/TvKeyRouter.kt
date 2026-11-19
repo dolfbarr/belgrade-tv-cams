@@ -11,8 +11,34 @@ enum class TvKeyCode {
     INFO,
     BOOKMARK,
     MENU,
+    SEARCH,
     BACK,
+    DIGIT_0,
+    DIGIT_1,
+    DIGIT_2,
+    DIGIT_3,
+    DIGIT_4,
+    DIGIT_5,
+    DIGIT_6,
+    DIGIT_7,
+    DIGIT_8,
+    DIGIT_9,
     OTHER,
+    ;
+
+    fun digitValue(): Int? = when (this) {
+        DIGIT_0 -> 0
+        DIGIT_1 -> 1
+        DIGIT_2 -> 2
+        DIGIT_3 -> 3
+        DIGIT_4 -> 4
+        DIGIT_5 -> 5
+        DIGIT_6 -> 6
+        DIGIT_7 -> 7
+        DIGIT_8 -> 8
+        DIGIT_9 -> 9
+        else -> null
+    }
 }
 
 enum class TvKeyPhase {
@@ -41,14 +67,27 @@ class TvKeyRouter {
                 TvKeyCode.CHANNEL_DOWN -> return KeyRouteDecision(true, TvRemoteAction.ZapPrevious)
                 TvKeyCode.INFO -> return KeyRouteDecision(true, TvRemoteAction.ToggleInfoOrSelect)
                 TvKeyCode.BOOKMARK -> return KeyRouteDecision(true, TvRemoteAction.ToggleFavoriteCurrent)
-                TvKeyCode.MENU -> return KeyRouteDecision(true, TvRemoteAction.OpenQuickStrip)
+                TvKeyCode.MENU -> return KeyRouteDecision(true, TvRemoteAction.OpenSettings)
+                TvKeyCode.SEARCH -> return KeyRouteDecision(true, TvRemoteAction.OpenSearch)
                 else -> Unit
             }
         }
 
-        // When Quick Strip carousel is open, allow Compose focus system to navigate chips and cards
-        if (overlayMode == OverlayMode.QUICK_STRIP) {
+        // When Quick Strip, Settings drawer, or Search overlay is open, allow Compose focus to handle navigation
+        if (overlayMode == OverlayMode.QUICK_STRIP ||
+            overlayMode == OverlayMode.SETTINGS ||
+            overlayMode == OverlayMode.SEARCH
+        ) {
             return KeyRouteDecision(consumed = false)
+        }
+
+        val digit = keyCode.digitValue()
+        if (digit != null) {
+            return if (phase == TvKeyPhase.DOWN && repeatCount == 0) {
+                KeyRouteDecision(consumed = true, action = TvRemoteAction.AppendChannelDigit(digit))
+            } else {
+                KeyRouteDecision(consumed = true, action = null)
+            }
         }
 
         return when (keyCode) {

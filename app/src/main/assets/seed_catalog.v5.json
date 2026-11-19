@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
   "revision": 2026111918,
-  "updated_at": "2026-11-19T18:00:45Z",
+  "updated_at": "2026-11-19T18:37:30Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -5992,14 +5992,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=tw9PIVnDbbA"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1360420099/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=tw9PIVnDbbA"
         }
       ]
     },
@@ -6315,6 +6315,10 @@
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=Y4G5H53X7Tw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UCYG_AHrHc8VzgzYQIhstnEw/live"
         }
       ]
     },
@@ -6395,18 +6399,18 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://imgproxy.windy.com/_/full/plain/current/1793910950/original.jpg",
-          "interval_ms": 60000,
-          "cache_buster_param": "v"
-        },
-        {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=ZxCeWQ3Lcig"
         },
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=KHy_n-EMWY8"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793910950/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },
@@ -6904,14 +6908,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=vk5BHoDxXf0"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1689176350/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=vk5BHoDxXf0"
         }
       ]
     },
@@ -7052,14 +7056,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=ErHJBXTmm2Q"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1349760603/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=ErHJBXTmm2Q"
         }
       ]
     },
@@ -7120,6 +7124,10 @@
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=TjsZWmKhDK0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UC3DrGPmCHsrionkmduqX0qg/live"
         }
       ]
     },
@@ -7146,14 +7154,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=_k-5U7IeK8g"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1793916441/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=_k-5U7IeK8g"
         }
       ]
     },
@@ -7263,12 +7271,6 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://imgproxy.windy.com/_/full/plain/current/1586454316/original.jpg",
-          "interval_ms": 60000,
-          "cache_buster_param": "v"
-        },
-        {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=5B4LmH4JbnY"
         },
@@ -7306,14 +7308,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=ZN4gh5IOowM"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1793916374/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=ZN4gh5IOowM"
         }
       ]
     },
@@ -7366,14 +7368,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Pmdk2kHf-l8"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1586457854/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=Pmdk2kHf-l8"
         }
       ]
     },

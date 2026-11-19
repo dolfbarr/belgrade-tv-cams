@@ -805,3 +805,64 @@ fun WorldGlobeMarkIcon(
         )
     }
 }
+
+@Composable
+fun SearchLensIcon(
+    size: Dp = 15.dp,
+    color: Color = Color.Unspecified,
+    modifier: Modifier = Modifier,
+) {
+    val resolvedColor = if (color == Color.Unspecified) Color(0xFFF8FAFC) else color
+    Canvas(modifier = modifier.size(size)) {
+        val w = this.size.width
+        val stroke = w * 0.13f
+        val r = w * 0.30f
+        val center = Offset(w * 0.42f, w * 0.42f)
+        drawCircle(
+            color = resolvedColor,
+            radius = r,
+            center = center,
+            style = Stroke(width = stroke),
+        )
+        drawLine(
+            color = resolvedColor,
+            start = Offset(w * 0.64f, w * 0.64f),
+            end = Offset(w * 0.88f, w * 0.88f),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+    }
+}
+
+@Composable
+fun SettingsSlidersIcon(
+    size: Dp = 15.dp,
+    color: Color = Color.Unspecified,
+    modifier: Modifier = Modifier,
+) {
+    val resolvedColor = if (color == Color.Unspecified) Color(0xFFF8FAFC) else color
+    Canvas(modifier = modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = w * 0.11f
+        val knobR = w * 0.11f
+        // Top slider
+        drawLine(
+            color = resolvedColor,
+            start = Offset(w * 0.12f, h * 0.28f),
+            end = Offset(w * 0.88f, h * 0.28f),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+        drawCircle(color = resolvedColor, radius = knobR, center = Offset(w * 0.34f, h * 0.28f))
+        // Bottom slider
+        drawLine(
+            color = resolvedColor,
+            start = Offset(w * 0.12f, h * 0.72f),
+            end = Offset(w * 0.88f, h * 0.72f),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+        drawCircle(color = resolvedColor, radius = knobR, center = Offset(w * 0.68f, h * 0.72f))
+    }
+}

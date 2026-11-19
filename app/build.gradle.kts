@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -13,8 +14,8 @@ android {
         applicationId = "rs.belgrade.tvcams"
         minSdk = 26
         targetSdk = 36
-        versionCode = 7
-        versionName = "0.6.1"
+        versionCode = 8
+        versionName = "0.7.0"
 
         buildConfigField(
             "String",
@@ -24,11 +25,22 @@ android {
     }
 
     signingConfigs {
-        getByName("debug") {
+        val debugConfig = getByName("debug") {
             storeFile = file("debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
+        }
+        create("releaseSigning") {
+            val envStorePath = System.getenv("RELEASE_STORE_FILE")?.takeIf { it.isNotBlank() }
+            if (envStorePath != null && file(envStorePath).exists()) {
+                storeFile = file(envStorePath)
+                storePassword = System.getenv("RELEASE_STORE_PASSWORD").orEmpty()
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS").orEmpty()
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD").orEmpty()
+            } else {
+                initWith(debugConfig)
+            }
         }
     }
 
@@ -38,6 +50,8 @@ android {
         }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("releaseSigning")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -59,8 +73,52 @@ android {
         buildConfig = true
     }
 
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                it.maxHeapSize = "2048m"
+                it.systemProperty("robolectric.logging.enabled", "false")
+            }
+        }
+    }
+
     lint {
         disable += setOf("ExpiredTargetSdkVersion", "GradleDependency")
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withBuildType("release")) { variantBuilder ->
+        variantBuilder.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = false
+    }
+}
+
+kover {
+    reports {
+        filters {
+            includes {
+                packages(
+                    "rs.belgrade.tvcams.data.*",
+                )
+                classes(
+                    "rs.belgrade.tvcams.ui.tv.CameraStageViewModel",
+                    "rs.belgrade.tvcams.ui.tv.CameraStageViewModel$*",
+                )
+            }
+            excludes {
+                classes(
+                    "*$\$serializer",
+                    "*Companion*",
+                    "rs.belgrade.tvcams.ui.tv.CameraStageViewModel\$Factory*",
+                )
+            }
+        }
+        verify {
+            rule {
+                minBound(80)
+            }
+        }
     }
 }
 
@@ -94,4 +152,15 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    debugImplementation(platform(libs.androidx.compose.bom))
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    testImplementation(kotlin("test"))
+    testImplementation(libs.junit4)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.robolectric)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
 }

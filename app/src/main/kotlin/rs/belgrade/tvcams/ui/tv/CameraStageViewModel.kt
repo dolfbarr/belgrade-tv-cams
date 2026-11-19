@@ -89,16 +89,21 @@ class CameraStageViewModel(
 
     private var autoHideJob: Job? = null
     private var noticeDismissJob: Job? = null
+    private var channelCommitJob: Job? = null
     private var autoHideEnabled: Boolean = true
     private var lastWeatherCity: SerbiaCity? = null
     private var lastAqiCity: SerbiaCity? = null
     private var pendingDeepLinkCameraId: String? = initialDeepLinkCameraId
+
+    private val _consecutiveAutoSkips = MutableStateFlow(0)
+    val consecutiveAutoSkips: StateFlow<Int> = _consecutiveAutoSkips.asStateFlow()
 
     init {
         bootstrap()
         observeActiveCameraWeather()
         observeActiveCameraAirQuality()
         observeAutoRotation()
+        observeOfflineAutoSkip()
     }
 
     private fun bootstrap() {
@@ -246,7 +251,7 @@ class CameraStageViewModel(
 
     private data class AutoRotationTrigger(
         val effectiveInterval: AutoRotateInterval,
-        val isQuickStripOpen: Boolean,
+        val isInteractiveOverlayOpen: Boolean,
         val activeCameraId: String?,
         val hasMultipleCameras: Boolean,
     )
@@ -255,9 +260,12 @@ class CameraStageViewModel(
         viewModelScope.launch {
             _stageState
                 .map { state ->
+                    val interactiveOpen = state.overlayMode == OverlayMode.QUICK_STRIP ||
+                        state.overlayMode == OverlayMode.SETTINGS ||
+                        state.overlayMode == OverlayMode.SEARCH
                     AutoRotationTrigger(
                         effectiveInterval = state.autoRotateInterval.effectiveFor(isScreensaverMode),
-                        isQuickStripOpen = state.overlayMode == OverlayMode.QUICK_STRIP,
+                        isInteractiveOverlayOpen = interactiveOpen,
                         activeCameraId = state.activeCameraId,
                         hasMultipleCameras = state.cameras.size > 1,
                     )
@@ -265,7 +273,7 @@ class CameraStageViewModel(
                 .distinctUntilChanged()
                 .collectLatest { trigger ->
                     if (!trigger.effectiveInterval.enabled ||
-                        trigger.isQuickStripOpen ||
+                        trigger.isInteractiveOverlayOpen ||
                         !trigger.hasMultipleCameras
                     ) {
                         return@collectLatest
@@ -274,6 +282,45 @@ class CameraStageViewModel(
                         delay(trigger.effectiveInterval.intervalMillis)
                         dispatch(TvRemoteAction.ZapNextSilent)
                     }
+                }
+        }
+    }
+
+    private data class OfflineSkipCandidate(
+        val shouldSkip: Boolean,
+        val activeCameraId: String?,
+        val skippedCount: Int,
+    )
+
+    private fun observeOfflineAutoSkip() {
+        viewModelScope.launch {
+            combine(
+                _stageState,
+                _telemetry,
+                _consecutiveAutoSkips,
+            ) { state, telemetry, skipped ->
+                val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
+                val interactiveOpen = state.overlayMode == OverlayMode.QUICK_STRIP ||
+                    state.overlayMode == OverlayMode.SETTINGS ||
+                    state.overlayMode == OverlayMode.SEARCH
+                val playlistSize = state.zapPlaylist.size
+                val canSkip = effectiveRotate.enabled &&
+                    !interactiveOpen &&
+                    playlistSize > 1 &&
+                    telemetry is PlaybackTelemetry.DegradedRetrying &&
+                    skipped < playlistSize - 1
+                OfflineSkipCandidate(
+                    shouldSkip = canSkip,
+                    activeCameraId = state.activeCameraId,
+                    skippedCount = skipped,
+                )
+            }
+                .distinctUntilChanged()
+                .collectLatest { candidate ->
+                    if (!candidate.shouldSkip) return@collectLatest
+                    delay(OFFLINE_AUTO_SKIP_GRACE_MS)
+                    _consecutiveAutoSkips.value = candidate.skippedCount + 1
+                    dispatch(TvRemoteAction.AutoSkipOfflineCamera)
                 }
         }
     }
@@ -293,8 +340,16 @@ class CameraStageViewModel(
             return
         }
         if (action == TvRemoteAction.RetryActiveStream) {
+            _consecutiveAutoSkips.value = 0
             _streamRetryNonce.value += 1
             return
+        }
+        if (action is TvRemoteAction.SelectCamera ||
+            action == TvRemoteAction.ZapNext ||
+            action == TvRemoteAction.ZapPrevious ||
+            action == TvRemoteAction.CommitChannelDigits
+        ) {
+            _consecutiveAutoSkips.value = 0
         }
 
         val previous = _stageState.value
@@ -305,6 +360,16 @@ class CameraStageViewModel(
         if (transition.shouldExitApp) {
             _exitEvents.tryEmit(Unit)
             return
+        }
+
+        if (next.pendingChannelDigits != previous.pendingChannelDigits) {
+            channelCommitJob?.cancel()
+            if (next.pendingChannelDigits.isNotEmpty()) {
+                channelCommitJob = viewModelScope.launch {
+                    delay(CHANNEL_COMMIT_DELAY_MS)
+                    dispatch(TvRemoteAction.CommitChannelDigits)
+                }
+            }
         }
 
         val nextCameraId = next.activeCameraId
@@ -417,6 +482,9 @@ class CameraStageViewModel(
     }
 
     fun updateTelemetry(newTelemetry: PlaybackTelemetry) {
+        if (newTelemetry is PlaybackTelemetry.PlayingLive) {
+            _consecutiveAutoSkips.value = 0
+        }
         _telemetry.value = newTelemetry
     }
 
@@ -464,10 +532,12 @@ class CameraStageViewModel(
         }
     }
 
-    private companion object {
+    internal companion object {
         const val ZAP_DEBOUNCE_MS = 250L
         const val HUD_AUTO_HIDE_MS = 5_000L
         const val NOTICE_VISIBLE_MS = 2_800L
+        const val CHANNEL_COMMIT_DELAY_MS = 1_200L
+        const val OFFLINE_AUTO_SKIP_GRACE_MS = 1_500L
         const val WEATHER_POLL_MS = 15L * 60L * 1_000L
         const val AIR_QUALITY_POLL_MS = 30L * 60L * 1_000L
     }

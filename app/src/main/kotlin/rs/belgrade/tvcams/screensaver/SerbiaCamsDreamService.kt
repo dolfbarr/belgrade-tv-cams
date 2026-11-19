@@ -121,6 +121,9 @@ class SerbiaCamsDreamService : DreamService() {
                     val currentAirQuality by stageViewModel.currentAirQuality.collectAsStateWithLifecycle(
                         lifecycleOwner = owner,
                     )
+                    val streamRetryNonce by stageViewModel.streamRetryNonce.collectAsStateWithLifecycle(
+                        lifecycleOwner = owner,
+                    )
 
                     LaunchedEffect(stageViewModel) {
                         stageViewModel.exitEvents.collect {
@@ -138,6 +141,7 @@ class SerbiaCamsDreamService : DreamService() {
                         streamResolver = appContainer.streamUrlResolver,
                         onAction = stageViewModel::dispatch,
                         onTelemetryChanged = stageViewModel::updateTelemetry,
+                        streamRetryNonce = streamRetryNonce,
                         enableBackHandler = false,
                         isScreensaverMode = true,
                     )

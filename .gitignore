@@ -24,6 +24,7 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
+.coverage
 .ruff_cache/
 .mypy_cache/
 dist/

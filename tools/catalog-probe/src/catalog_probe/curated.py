@@ -319,6 +319,7 @@ def _youtube_live_camera(
     lon: float,
     video_id: str,
     secondary_video_id: str | None = None,
+    single_cam_channel_id: str | None = None,
     windy_fallback_id: str | None = None,
     featured: bool | None = None,
 ) -> CameraEntry:
@@ -333,6 +334,13 @@ def _youtube_live_camera(
             StreamDescriptor(
                 type=StreamTransportType.YOUTUBE_LIVE,
                 url=f"https://www.youtube.com/watch?v={secondary_video_id}",
+            )
+        )
+    if single_cam_channel_id is not None:
+        streams.append(
+            StreamDescriptor(
+                type=StreamTransportType.YOUTUBE_LIVE,
+                url=f"https://www.youtube.com/channel/{single_cam_channel_id}/live",
             )
         )
     if windy_fallback_id is not None:
@@ -3606,6 +3614,7 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             lat=40.1937,
             lon=44.4927,
             video_id="Y4G5H53X7Tw",
+            single_cam_channel_id="UCYG_AHrHc8VzgzYQIhstnEw",
             featured=True,
         ),
         _youtube_live_camera(
@@ -4026,6 +4035,7 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             lon=139.8107,
             video_id="Jw9tsexipts",
             secondary_video_id="TjsZWmKhDK0",
+            single_cam_channel_id="UC3DrGPmCHsrionkmduqX0qg",
             featured=True,
         ),
         _youtube_live_camera(

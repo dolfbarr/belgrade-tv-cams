@@ -16,6 +16,12 @@ _RUTUBE_LIVE_RE = re.compile(
 )
 _RUTUBE_PAGE_RE = re.compile(r"rutube\.ru/(?:video|live)/(?P<video_id>[0-9a-f]{32})")
 _YOUTUBE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
+_YOUTUBE_CHANNEL_LIVE_PATH_RE = re.compile(
+    r"^/(?:channel/UC[A-Za-z0-9_-]{22}|@[A-Za-z0-9_.-]+)/live/?$"
+)
+_YOUTUBE_CANONICAL_WATCH_RE = re.compile(
+    r'rel="canonical"\s+href="https://www\.youtube\.com/watch\?v=(?P<vid>[A-Za-z0-9_-]{11})"'
+)
 _IPCAMLIVE_ALIAS_RE = re.compile(
     r"ipcamlive\.com/(?:player/player\.php\?alias=)?(?P<alias>[A-Za-z0-9_-]+)"
 )
@@ -33,6 +39,17 @@ _YOUTUBE_INNERTUBE_HEADERS: dict[str, str] = {
     "X-YouTube-Client-Name": "3",
     "X-YouTube-Client-Version": _YOUTUBE_ANDROID_CLIENT_VERSION,
     "Origin": "https://www.youtube.com",
+    "Accept-Language": "en-US,en;q=0.9",
+}
+_YOUTUBE_WEB_CONSENT_HEADERS: dict[str, str] = {
+    "User-Agent": (
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) "
+        "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1"
+    ),
+    "Cookie": (
+        "SOCS=CAISNQgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVy"
+        "XzIwMjMwODI5LjA3X3AxGgJlbiACGgYIgJnPpwY"
+    ),
     "Accept-Language": "en-US,en;q=0.9",
 }
 
@@ -109,6 +126,73 @@ def extract_youtube_video_id(url: str) -> str | None:
             candidate = segments[1]
             return candidate if _YOUTUBE_ID_RE.match(candidate) else None
     return None
+
+
+def extract_youtube_channel_live_url(url: str) -> str | None:
+    trimmed = url.strip()
+    parts = urlsplit(trimmed)
+    host = parts.netloc.lower()
+    if not host.endswith("youtube.com"):
+        return None
+    if not _YOUTUBE_CHANNEL_LIVE_PATH_RE.match(parts.path):
+        return None
+    normalized_path = parts.path.rstrip("/")
+    return f"https://www.youtube.com{normalized_path}"
+
+
+def _resolve_youtube_canonical_live_id(
+    client: httpx.Client,
+    channel_live_url: str,
+) -> str | None:
+    resp = client.get(channel_live_url, headers=_YOUTUBE_WEB_CONSENT_HEADERS)
+    if not (200 <= resp.status_code < 300):
+        return None
+    if '"isLive":true' not in resp.text:
+        return None
+    match = _YOUTUBE_CANONICAL_WATCH_RE.search(resp.text)
+    return match.group("vid") if match is not None else None
+
+
+def _probe_youtube_video_id(
+    client: httpx.Client,
+    video_id: str,
+    stream_url: str,
+) -> ProbeResult:
+    resp = client.post(
+        _YOUTUBE_INNERTUBE_PLAYER_URL,
+        headers=_YOUTUBE_INNERTUBE_HEADERS,
+        json=build_youtube_innertube_payload(video_id),
+    )
+    if not (200 <= resp.status_code < 300):
+        return ProbeResult(
+            url=stream_url,
+            reachable=False,
+            status_code=resp.status_code,
+            error=f"HTTP {resp.status_code}",
+        )
+    payload = resp.json()
+    playability = payload.get("playabilityStatus", {})
+    status = playability.get("status")
+    video_details = payload.get("videoDetails", {})
+    is_live_ok = video_details.get("isLive", True) is True
+    hls_url = payload.get("streamingData", {}).get("hlsManifestUrl")
+    has_playable_hls = (
+        isinstance(hls_url, str)
+        and hls_url.startswith("https://")
+        and ".m3u8" in hls_url
+        and "/n/" not in hls_url
+    )
+    ok = status == "OK" and is_live_ok and has_playable_hls
+    err = None
+    if not ok:
+        reason = playability.get("reason") or ("not live" if not is_live_ok else "no HLS")
+        err = f"status={status} ({reason})"
+    return ProbeResult(
+        url=stream_url,
+        reachable=ok,
+        status_code=resp.status_code,
+        error=err,
+    )
 
 
 def extract_naxi_hq_streams(page_html: str) -> dict[str, tuple[str, str]]:
@@ -253,6 +337,97 @@ def refresh_rostelecom_live_urls(
     return updated_cameras
 
 
+def refresh_youtube_live_urls(
+    cameras: list[CameraEntry],
+    timeout_seconds: float = 6.0,
+    transport: httpx.BaseTransport | None = None,
+) -> list[CameraEntry]:
+    channel_live_cache: dict[str, str | None] = {}
+    vid_health_cache: dict[str, bool] = {}
+
+    with httpx.Client(
+        http2=False,
+        timeout=timeout_seconds,
+        follow_redirects=True,
+        transport=transport,
+    ) as client:
+        updated_cameras: list[CameraEntry] = []
+        for camera in cameras:
+            if len(camera.streams) < 2:
+                updated_cameras.append(camera)
+                continue
+            primary = camera.streams[0]
+            if primary.type != StreamTransportType.YOUTUBE_LIVE:
+                updated_cameras.append(camera)
+                continue
+            primary_vid = extract_youtube_video_id(primary.url)
+            if primary_vid is None:
+                updated_cameras.append(camera)
+                continue
+
+            channel_live_url = next(
+                (
+                    url
+                    for s in camera.streams[1:]
+                    if s.type == StreamTransportType.YOUTUBE_LIVE
+                    and (url := extract_youtube_channel_live_url(s.url)) is not None
+                ),
+                None,
+            )
+            if channel_live_url is None:
+                updated_cameras.append(camera)
+                continue
+
+            if primary_vid not in vid_health_cache:
+                try:
+                    res = _probe_youtube_video_id(client, primary_vid, primary.url)
+                    vid_health_cache[primary_vid] = res.reachable
+                except (httpx.HTTPError, ValueError, KeyError):
+                    vid_health_cache[primary_vid] = False
+
+            if vid_health_cache[primary_vid]:
+                updated_cameras.append(camera)
+                continue
+
+            if channel_live_url not in channel_live_cache:
+                try:
+                    channel_live_cache[channel_live_url] = _resolve_youtube_canonical_live_id(
+                        client,
+                        channel_live_url,
+                    )
+                except (httpx.HTTPError, ValueError, KeyError):
+                    channel_live_cache[channel_live_url] = None
+
+            fresh_vid = channel_live_cache[channel_live_url]
+            if fresh_vid is None or fresh_vid == primary_vid:
+                updated_cameras.append(camera)
+                continue
+
+            if fresh_vid not in vid_health_cache:
+                try:
+                    fresh_res = _probe_youtube_video_id(
+                        client,
+                        fresh_vid,
+                        f"https://www.youtube.com/watch?v={fresh_vid}",
+                    )
+                    vid_health_cache[fresh_vid] = fresh_res.reachable
+                except (httpx.HTTPError, ValueError, KeyError):
+                    vid_health_cache[fresh_vid] = False
+
+            if not vid_health_cache[fresh_vid]:
+                updated_cameras.append(camera)
+                continue
+
+            new_primary = replace(primary, url=f"https://www.youtube.com/watch?v={fresh_vid}")
+            new_streams = (new_primary, *camera.streams[1:])
+            new_poster = camera.poster_url.replace(
+                f"https://i.ytimg.com/vi/{primary_vid}/",
+                f"https://i.ytimg.com/vi/{fresh_vid}/",
+            )
+            updated_cameras.append(replace(camera, poster_url=new_poster, streams=new_streams))
+    return updated_cameras
+
+
 def _probe_single_stream(
     client: httpx.Client,
     stream: StreamDescriptor,
@@ -261,44 +436,22 @@ def _probe_single_stream(
     try:
         if stream.type == StreamTransportType.YOUTUBE_LIVE:
             video_id = extract_youtube_video_id(stream.url)
-            if video_id is None:
+            if video_id is not None:
+                with youtube_sem:
+                    return _probe_youtube_video_id(client, video_id, stream.url)
+            channel_live_url = extract_youtube_channel_live_url(stream.url)
+            if channel_live_url is None:
                 return ProbeResult(stream.url, False, None, "Invalid YouTube video ID")
             with youtube_sem:
-                resp = client.post(
-                    _YOUTUBE_INNERTUBE_PLAYER_URL,
-                    headers=_YOUTUBE_INNERTUBE_HEADERS,
-                    json=build_youtube_innertube_payload(video_id),
-                )
-            if not (200 <= resp.status_code < 300):
-                return ProbeResult(
-                    url=stream.url,
-                    reachable=False,
-                    status_code=resp.status_code,
-                    error=f"HTTP {resp.status_code}",
-                )
-            payload = resp.json()
-            playability = payload.get("playabilityStatus", {})
-            status = playability.get("status")
-            video_details = payload.get("videoDetails", {})
-            is_live_ok = video_details.get("isLive", True) is True
-            hls_url = payload.get("streamingData", {}).get("hlsManifestUrl")
-            has_playable_hls = (
-                isinstance(hls_url, str)
-                and hls_url.startswith("https://")
-                and ".m3u8" in hls_url
-                and "/n/" not in hls_url
-            )
-            ok = status == "OK" and is_live_ok and has_playable_hls
-            err = None
-            if not ok:
-                reason = playability.get("reason") or ("not live" if not is_live_ok else "no HLS")
-                err = f"status={status} ({reason})"
-            return ProbeResult(
-                url=stream.url,
-                reachable=ok,
-                status_code=resp.status_code,
-                error=err,
-            )
+                resolved_id = _resolve_youtube_canonical_live_id(client, channel_live_url)
+                if resolved_id is None:
+                    return ProbeResult(
+                        stream.url,
+                        False,
+                        200,
+                        "No active live broadcast on channel",
+                    )
+                return _probe_youtube_video_id(client, resolved_id, stream.url)
 
         if stream.type == StreamTransportType.RUTUBE_LIVE:
             match = _RUTUBE_PAGE_RE.search(stream.url)

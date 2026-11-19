@@ -19,6 +19,9 @@ class OkHttpStreamUrlResolver(
     private val mediaHttpClient: OkHttpClient,
     private val clockMillis: () -> Long = System::currentTimeMillis,
     private val cacheTtlMillis: Long = DEFAULT_CACHE_TTL_MS,
+    private val youtubeInnertubeUrl: String = StreamPayloadParsers.YOUTUBE_INNERTUBE_PLAYER_URL,
+    private val rutubeOptionsBaseUrl: String = DEFAULT_RUTUBE_OPTIONS_BASE_URL,
+    private val ipCamLiveStateUrl: String = DEFAULT_IPCAMLIVE_STATE_URL,
 ) : StreamUrlResolver {
 
     private data class CachedResolution(
@@ -92,7 +95,7 @@ class OkHttpStreamUrlResolver(
             .toRequestBody(JSON_MEDIA_TYPE)
 
         val req = Request.Builder()
-            .url(StreamPayloadParsers.YOUTUBE_INNERTUBE_PLAYER_URL)
+            .url(youtubeInnertubeUrl)
             .post(requestBody)
             .header("User-Agent", StreamPayloadParsers.YOUTUBE_ANDROID_APP_UA)
             .header("X-YouTube-Client-Name", StreamPayloadParsers.YOUTUBE_ANDROID_CLIENT_NAME_ID)
@@ -140,7 +143,7 @@ class OkHttpStreamUrlResolver(
     private fun resolveRutubeLive(stream: StreamDescriptor): ResolvedHlsStream? = runCatching {
         val videoId = StreamPayloadParsers.extractRutubeVideoId(stream.url)
         if (videoId != null) {
-            val apiUrl = "https://rutube.ru/api/play/options/$videoId/" +
+            val apiUrl = "${rutubeOptionsBaseUrl.trimEnd('/')}/$videoId/" +
                 "?no_404=true&referer=https%3A%2F%2Frutube.ru"
             val req = Request.Builder()
                 .url(apiUrl)
@@ -169,7 +172,7 @@ class OkHttpStreamUrlResolver(
 
     private fun resolveIpCamLive(stream: StreamDescriptor): ResolvedHlsStream? = runCatching {
         val alias = StreamPayloadParsers.extractIpCamLiveAlias(stream.url) ?: return@runCatching null
-        val stateUrl = "https://ipcamlive.com/ajax/getcamerastreamstate.php?cameraalias=$alias"
+        val stateUrl = "$ipCamLiveStateUrl?cameraalias=$alias"
         val req = Request.Builder()
             .url(stateUrl)
             .get()
@@ -190,6 +193,8 @@ class OkHttpStreamUrlResolver(
 
     companion object {
         const val DEFAULT_CACHE_TTL_MS: Long = 20L * 60L * 1000L
+        const val DEFAULT_RUTUBE_OPTIONS_BASE_URL: String = "https://rutube.ru/api/play/options"
+        const val DEFAULT_IPCAMLIVE_STATE_URL: String = "https://ipcamlive.com/ajax/getcamerastreamstate.php"
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
 }

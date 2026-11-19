@@ -29,11 +29,13 @@ from catalog_probe.prober import (
     extract_naxi_hq_streams,
     extract_naxi_lq_snapshots,
     extract_toll4all_streams,
+    extract_youtube_channel_live_url,
     extract_youtube_video_id,
     normalize_snapshot_url,
     probe_cameras_live,
     refresh_rostelecom_live_urls,
     refresh_rutube_live_urls,
+    refresh_youtube_live_urls,
 )
 
 
@@ -485,6 +487,123 @@ def test_refresh_rutube_and_rostelecom_live_urls() -> None:
         ),
     )
     assert updated_gdx[0].streams[0].url == expected_rostelecom
+
+
+def test_self_healing_single_cam_youtube_channel_refresh_and_channel_probing(
+    tmp_path: Path,
+) -> None:
+    assert (
+        extract_youtube_channel_live_url(
+            "https://www.youtube.com/channel/UC3DrGPmCHsrionkmduqX0qg/live"
+        )
+        == "https://www.youtube.com/channel/UC3DrGPmCHsrionkmduqX0qg/live"
+    )
+    assert extract_youtube_channel_live_url("https://www.youtube.com/@MadridSkyLive/live") == (
+        "https://www.youtube.com/@MadridSkyLive/live"
+    )
+    assert extract_youtube_channel_live_url("https://www.youtube.com/watch?v=Jw9tsexipts") is None
+
+    rotated_single_cam = CameraEntry(
+        id="jp-tyo-skytree-test",
+        name="Skytree",
+        country=CameraCountry.JAPAN,
+        city=CameraCity.TOKYO,
+        quality=VideoQuality.UHD_4K,
+        featured=True,
+        timezone="Asia/Tokyo",
+        streets=("Sumida",),
+        municipality="Sumida-ku",
+        category=CameraCategory.BRIDGES,
+        direction="Dir",
+        poster_url="https://i.ytimg.com/vi/iycgnGq-h14/hqdefault.jpg",
+        coordinates=GeoCoordinates(35.71, 139.81),
+        streams=(
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/watch?v=iycgnGq-h14",
+            ),
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/channel/UC3DrGPmCHsrionkmduqX0qg/live",
+            ),
+        ),
+    )
+    multicam_no_channel_fallback = CameraEntry(
+        id="us-nyc-earthcam-test",
+        name="Times Square",
+        country=CameraCountry.USA,
+        city=CameraCity.NEW_YORK,
+        quality=VideoQuality.UHD_4K,
+        timezone="America/New_York",
+        streets=("Broadway",),
+        municipality="Manhattan",
+        category=CameraCategory.SQUARES,
+        direction="Dir",
+        poster_url="https://i.ytimg.com/vi/ZxCeWQ3Lcig/hqdefault.jpg",
+        coordinates=GeoCoordinates(40.75, -73.98),
+        streams=(
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/watch?v=ZxCeWQ3Lcig",
+            ),
+        ),
+    )
+
+    def yt_handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if "/channel/UC3DrGPmCHsrionkmduqX0qg/live" in url:
+            html_body = (
+                '<link rel="canonical" href="https://www.youtube.com/watch?v=Jw9tsexipts">'
+                '<script>var yt={"isLive":true};</script>'
+            )
+            return httpx.Response(200, text=html_body)
+        if "youtubei/v1/player" in url and request.method == "POST":
+            vid = json.loads(request.content.decode("utf-8")).get("videoId")
+            if vid == "Jw9tsexipts":
+                return httpx.Response(
+                    200,
+                    json={
+                        "playabilityStatus": {"status": "OK"},
+                        "videoDetails": {"videoId": vid, "isLive": True},
+                        "streamingData": {
+                            "hlsManifestUrl": (
+                                "https://manifest.googlevideo.com/api/manifest/hls_variant/"
+                                "id/Jw9tsexipts.1/file/index.m3u8"
+                            )
+                        },
+                    },
+                )
+            return httpx.Response(
+                200,
+                json={
+                    "playabilityStatus": {"status": "OK"},
+                    "videoDetails": {"videoId": vid, "isLive": False},
+                    "streamingData": {},
+                },
+            )
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(yt_handler)
+    refreshed = refresh_youtube_live_urls(
+        [rotated_single_cam, multicam_no_channel_fallback],
+        timeout_seconds=2.0,
+        transport=transport,
+    )
+    assert refreshed[0].streams[0].url == "https://www.youtube.com/watch?v=Jw9tsexipts"
+    assert refreshed[0].poster_url == "https://i.ytimg.com/vi/Jw9tsexipts/hqdefault.jpg"
+    # Multi-cam entry without single_cam_channel_id must never be rewritten
+    assert refreshed[1] == multicam_no_channel_fallback
+
+    probe_res = probe_cameras_live([refreshed[0]], timeout_seconds=2.0, transport=transport)
+    assert probe_res["https://www.youtube.com/watch?v=Jw9tsexipts"].reachable is True
+    assert (
+        probe_res["https://www.youtube.com/channel/UC3DrGPmCHsrionkmduqX0qg/live"].reachable is True
+    )
+
+    out_manifest = tmp_path / "out_v5.json"
+    assert cli_main([]) == 2
+    assert cli_main(["--offline", "--output", str(out_manifest)]) == 0
+    assert out_manifest.exists()
 
 
 def test_whole_graph_json_round_trip_fixed_point() -> None:

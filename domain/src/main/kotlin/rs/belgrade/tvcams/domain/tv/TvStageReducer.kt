@@ -21,6 +21,8 @@ enum class OverlayMode {
     HUD_VISIBLE,
     PURE_CAMERA,
     QUICK_STRIP,
+    SETTINGS,
+    SEARCH,
 }
 
 sealed interface CatalogBootstrapState {
@@ -53,9 +55,19 @@ sealed interface TvRemoteAction {
     data object ZapNext : TvRemoteAction
     data object ZapPrevious : TvRemoteAction
     data object ZapNextSilent : TvRemoteAction
+    data object AutoSkipOfflineCamera : TvRemoteAction
     data object ToggleInfoOrSelect : TvRemoteAction
     data object ToggleFavoriteCurrent : TvRemoteAction
     data object OpenQuickStrip : TvRemoteAction
+    data object OpenSettings : TvRemoteAction
+    data object OpenSearch : TvRemoteAction
+    data class UpdateSearchQuery(val query: String) : TvRemoteAction
+    data class AppendSearchChar(val text: String) : TvRemoteAction
+    data object BackspaceSearchQuery : TvRemoteAction
+    data object ClearSearchQuery : TvRemoteAction
+    data class AppendChannelDigit(val digit: Int) : TvRemoteAction
+    data object CommitChannelDigits : TvRemoteAction
+    data object CancelChannelDigits : TvRemoteAction
     data object ToggleZapScope : TvRemoteAction
     data object CycleQualityFilter : TvRemoteAction
     data object CycleTransportFilter : TvRemoteAction
@@ -91,6 +103,9 @@ data class TvStageState(
     val autoRotateInterval: AutoRotateInterval,
     val infoPanelPosition: InfoPanelPosition = InfoPanelPosition.BOTTOM_CENTER,
     val overlayMode: OverlayMode,
+    val modalReturnOverlayMode: OverlayMode = OverlayMode.PURE_CAMERA,
+    val searchQuery: String = "",
+    val pendingChannelDigits: String = "",
     val hudPinned: Boolean,
     val stripFilter: StripFilter,
     val showClockOverlay: Boolean,
@@ -125,6 +140,17 @@ data class TvStageState(
 
     val featuredTotalCount: Int
         get() = qualityFilteredCameras.count { it.isFeatured }
+
+    val searchResults: List<Camera>
+        get() = CameraSearchMatcher.filterCameras(cameras, searchQuery, this)
+
+    val pendingChannelPreviewCamera: Camera?
+        get() {
+            if (pendingChannelDigits.isEmpty()) return null
+            val num = pendingChannelDigits.toIntOrNull() ?: return null
+            val playlist = zapPlaylist
+            return if (num in 1..playlist.size) playlist[num - 1] else null
+        }
 
     /**
      * Dynamically discovers all countries present in the catalog, preserving curated order
@@ -264,6 +290,32 @@ data class TvStageState(
             }
         }
 
+    /**
+     * Exact item index of [activeCamera] inside Quick Strip's camera LazyRow,
+     * accounting for preceding [QualitySectionCard] HD/SD headers per country.
+     * Returns -1 when [activeCamera] is not present in [stripCameras].
+     */
+    val activeStripLazyItemIndex: Int
+        get() {
+            val targetId = activeCamera?.id ?: return -1
+            var cursor = 0
+            for (group in stripCountryGroups) {
+                if (group.hdCameras.isNotEmpty()) {
+                    cursor += 1 // section_hd_<country>
+                    val idx = group.hdCameras.indexOfFirst { it.id == targetId }
+                    if (idx >= 0) return cursor + idx
+                    cursor += group.hdCameras.size
+                }
+                if (group.sdCameras.isNotEmpty()) {
+                    cursor += 1 // section_sd_<country>
+                    val idx = group.sdCameras.indexOfFirst { it.id == targetId }
+                    if (idx >= 0) return cursor + idx
+                    cursor += group.sdCameras.size
+                }
+            }
+            return -1
+        }
+
     companion object {
         fun initial(
             cameras: List<Camera>,
@@ -331,34 +383,56 @@ data class TvStageTransition(
 )
 
 object TvStageReducer {
+    private const val MAX_SEARCH_QUERY_LEN = 40
+
     fun reduce(
         state: TvStageState,
         action: TvRemoteAction,
     ): TvStageTransition = when (action) {
-        TvRemoteAction.ZapNext -> TvStageTransition(zapBy(state, step = 1, preserveOverlay = false))
-        TvRemoteAction.ZapPrevious -> TvStageTransition(zapBy(state, step = -1, preserveOverlay = false))
-        TvRemoteAction.ZapNextSilent -> TvStageTransition(zapBy(state, step = 1, preserveOverlay = true))
+        TvRemoteAction.ZapNext -> TvStageTransition(
+            zapBy(state.copy(pendingChannelDigits = ""), step = 1, preserveOverlay = false),
+        )
+        TvRemoteAction.ZapPrevious -> TvStageTransition(
+            zapBy(state.copy(pendingChannelDigits = ""), step = -1, preserveOverlay = false),
+        )
+        TvRemoteAction.ZapNextSilent -> TvStageTransition(
+            zapBy(state, step = 1, preserveOverlay = true),
+        )
+        TvRemoteAction.AutoSkipOfflineCamera -> TvStageTransition(
+            zapBy(state, step = 1, preserveOverlay = true).copy(
+                noticeMessage = "Stream offline — skipping…",
+            ),
+        )
 
-        TvRemoteAction.ToggleInfoOrSelect -> when (state.overlayMode) {
-            OverlayMode.HUD_VISIBLE -> TvStageTransition(
-                state.copy(
-                    overlayMode = OverlayMode.PURE_CAMERA,
-                    hudPinned = false,
-                    noticeMessage = null,
-                ),
-            )
-            OverlayMode.PURE_CAMERA -> TvStageTransition(
-                state.copy(
-                    overlayMode = OverlayMode.HUD_VISIBLE,
-                    hudPinned = true,
-                ),
-            )
-            OverlayMode.QUICK_STRIP -> TvStageTransition(
-                state.copy(
-                    overlayMode = OverlayMode.HUD_VISIBLE,
-                    hudPinned = false,
-                ),
-            )
+        TvRemoteAction.ToggleInfoOrSelect -> {
+            if (state.pendingChannelDigits.isNotEmpty()) {
+                commitChannelDigits(state)
+            } else {
+                when (state.overlayMode) {
+                    OverlayMode.HUD_VISIBLE -> TvStageTransition(
+                        state.copy(
+                            overlayMode = OverlayMode.PURE_CAMERA,
+                            hudPinned = false,
+                            noticeMessage = null,
+                        ),
+                    )
+                    OverlayMode.PURE_CAMERA -> TvStageTransition(
+                        state.copy(
+                            overlayMode = OverlayMode.HUD_VISIBLE,
+                            hudPinned = true,
+                        ),
+                    )
+                    OverlayMode.QUICK_STRIP -> TvStageTransition(
+                        state.copy(
+                            overlayMode = OverlayMode.HUD_VISIBLE,
+                            hudPinned = false,
+                        ),
+                    )
+                    OverlayMode.SETTINGS,
+                    OverlayMode.SEARCH,
+                    -> TvStageTransition(state)
+                }
+            }
         }
 
         TvRemoteAction.ToggleFavoriteCurrent -> {
@@ -390,13 +464,96 @@ object TvStageReducer {
         TvRemoteAction.OpenQuickStrip -> TvStageTransition(
             state.copy(
                 overlayMode = OverlayMode.QUICK_STRIP,
+                pendingChannelDigits = "",
                 hudPinned = false,
             ),
         )
 
-        TvRemoteAction.ToggleZapScope -> {
-            val nextOverlay = if (state.overlayMode == OverlayMode.QUICK_STRIP) {
+        TvRemoteAction.OpenSettings -> {
+            val returnMode = if (state.overlayMode == OverlayMode.QUICK_STRIP) {
                 OverlayMode.QUICK_STRIP
+            } else if (state.overlayMode == OverlayMode.SETTINGS) {
+                state.modalReturnOverlayMode
+            } else {
+                OverlayMode.PURE_CAMERA
+            }
+            TvStageTransition(
+                state.copy(
+                    overlayMode = OverlayMode.SETTINGS,
+                    modalReturnOverlayMode = returnMode,
+                    pendingChannelDigits = "",
+                    hudPinned = false,
+                ),
+            )
+        }
+
+        TvRemoteAction.OpenSearch -> {
+            val returnMode = if (state.overlayMode == OverlayMode.QUICK_STRIP) {
+                OverlayMode.QUICK_STRIP
+            } else if (state.overlayMode == OverlayMode.SEARCH) {
+                state.modalReturnOverlayMode
+            } else {
+                OverlayMode.PURE_CAMERA
+            }
+            TvStageTransition(
+                state.copy(
+                    overlayMode = OverlayMode.SEARCH,
+                    modalReturnOverlayMode = returnMode,
+                    pendingChannelDigits = "",
+                    hudPinned = false,
+                ),
+            )
+        }
+
+        is TvRemoteAction.UpdateSearchQuery -> TvStageTransition(
+            state.copy(searchQuery = action.query.take(MAX_SEARCH_QUERY_LEN)),
+        )
+
+        is TvRemoteAction.AppendSearchChar -> TvStageTransition(
+            state.copy(searchQuery = (state.searchQuery + action.text).take(MAX_SEARCH_QUERY_LEN)),
+        )
+
+        TvRemoteAction.BackspaceSearchQuery -> TvStageTransition(
+            state.copy(
+                searchQuery = if (state.searchQuery.isNotEmpty()) {
+                    state.searchQuery.dropLast(1)
+                } else {
+                    ""
+                },
+            ),
+        )
+
+        TvRemoteAction.ClearSearchQuery -> TvStageTransition(
+            state.copy(searchQuery = ""),
+        )
+
+        is TvRemoteAction.AppendChannelDigit -> {
+            if (action.digit !in 0..9 ||
+                (state.pendingChannelDigits.isEmpty() && action.digit == 0)
+            ) {
+                TvStageTransition(state)
+            } else {
+                val updated = if (state.pendingChannelDigits.length >= 3) {
+                    state.pendingChannelDigits.drop(1) + action.digit
+                } else {
+                    state.pendingChannelDigits + action.digit
+                }
+                TvStageTransition(state.copy(pendingChannelDigits = updated))
+            }
+        }
+
+        TvRemoteAction.CommitChannelDigits -> commitChannelDigits(state)
+
+        TvRemoteAction.CancelChannelDigits -> TvStageTransition(
+            state.copy(pendingChannelDigits = ""),
+        )
+
+        TvRemoteAction.ToggleZapScope -> {
+            val nextOverlay = if (
+                state.overlayMode == OverlayMode.QUICK_STRIP ||
+                state.overlayMode == OverlayMode.SETTINGS
+            ) {
+                state.overlayMode
             } else {
                 OverlayMode.HUD_VISIBLE
             }
@@ -685,6 +842,7 @@ object TvStageReducer {
                         activeCameraId = target.id,
                         qualityFilter = updatedQualityFilter,
                         transportFilter = updatedTransportFilter,
+                        pendingChannelDigits = "",
                         overlayMode = OverlayMode.HUD_VISIBLE,
                         hudPinned = false,
                     ),
@@ -699,21 +857,40 @@ object TvStageReducer {
             ),
         )
 
-        TvRemoteAction.NavigateBack -> when (state.overlayMode) {
-            OverlayMode.QUICK_STRIP,
-            OverlayMode.HUD_VISIBLE,
-            -> TvStageTransition(
-                state = state.copy(
-                    overlayMode = OverlayMode.PURE_CAMERA,
-                    hudPinned = false,
-                    noticeMessage = null,
-                ),
-                shouldExitApp = false,
-            )
-            OverlayMode.PURE_CAMERA -> TvStageTransition(
-                state = state,
-                shouldExitApp = true,
-            )
+        TvRemoteAction.NavigateBack -> {
+            if (state.pendingChannelDigits.isNotEmpty()) {
+                TvStageTransition(
+                    state = state.copy(pendingChannelDigits = ""),
+                    shouldExitApp = false,
+                )
+            } else {
+                when (state.overlayMode) {
+                    OverlayMode.SETTINGS,
+                    OverlayMode.SEARCH,
+                    -> TvStageTransition(
+                        state = state.copy(
+                            overlayMode = state.modalReturnOverlayMode,
+                            hudPinned = false,
+                            noticeMessage = null,
+                        ),
+                        shouldExitApp = false,
+                    )
+                    OverlayMode.QUICK_STRIP,
+                    OverlayMode.HUD_VISIBLE,
+                    -> TvStageTransition(
+                        state = state.copy(
+                            overlayMode = OverlayMode.PURE_CAMERA,
+                            hudPinned = false,
+                            noticeMessage = null,
+                        ),
+                        shouldExitApp = false,
+                    )
+                    OverlayMode.PURE_CAMERA -> TvStageTransition(
+                        state = state,
+                        shouldExitApp = true,
+                    )
+                }
+            }
         }
 
         TvRemoteAction.AutoHideTick -> {
@@ -739,6 +916,31 @@ object TvStageReducer {
                     cameras = action.cameras,
                     activeCameraId = preservedId,
                     catalogBootstrapState = CatalogBootstrapState.Ready,
+                ),
+            )
+        }
+    }
+
+    private fun commitChannelDigits(state: TvStageState): TvStageTransition {
+        if (state.pendingChannelDigits.isEmpty()) return TvStageTransition(state)
+        val playlist = state.zapPlaylist
+        val channelNum = state.pendingChannelDigits.toIntOrNull()
+        return if (channelNum != null && channelNum in 1..playlist.size) {
+            val target = playlist[channelNum - 1]
+            TvStageTransition(
+                state.copy(
+                    activeCameraId = target.id,
+                    pendingChannelDigits = "",
+                    overlayMode = OverlayMode.HUD_VISIBLE,
+                    hudPinned = false,
+                    noticeMessage = "Channel %02d · %s".format(channelNum, target.name),
+                ),
+            )
+        } else {
+            TvStageTransition(
+                state.copy(
+                    pendingChannelDigits = "",
+                    noticeMessage = "Channel ${state.pendingChannelDigits} out of range (1–${playlist.size})",
                 ),
             )
         }

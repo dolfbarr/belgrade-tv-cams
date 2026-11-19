@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   python-catalog-tools:
-    name: Catalog Tooling Lint & Unit Tests
+    name: Catalog Tooling Lint, Tests & Coverage (>=85%)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -24,15 +24,15 @@ jobs:
           enable-cache: true
           cache-dependency-glob: "tools/catalog-probe/uv.lock"
 
-      - name: Run ruff & pytest
+      - name: Run ruff & pytest with coverage gate
         working-directory: tools/catalog-probe
         run: |
           uv run ruff format --check .
           uv run ruff check .
-          uv run pytest
+          uv run pytest --cov=catalog_probe --cov-fail-under=85
 
   domain-jvm-tests:
-    name: Domain Contract & State Machine Tests
+    name: Domain Contract Tests & Coverage (>=85%)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -47,11 +47,11 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Execute domain test suite
-        run: ./gradlew :domain:test
+      - name: Execute domain test suite & Kover verification
+        run: ./gradlew :domain:test :domain:koverVerify
 
   android-tv-apk:
-    name: Build Android TV Debug APK
+    name: Android TV Unit/UI Tests, Coverage (>=80%), Lint & Debug/Release APKs
     needs:
       - python-catalog-tools
       - domain-jvm-tests
@@ -69,12 +69,22 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Assemble & lint Android TV APK
-        run: ./gradlew :app:lintDebug :app:assembleDebug
+      - name: Run :app unit & Robolectric Compose UI tests + Kover gate
+        run: ./gradlew :app:testDebugUnitTest :app:koverVerify
 
-      - name: Upload Android TV APK artifact
+      - name: Lint & assemble Debug + R8 Release APKs
+        run: ./gradlew :app:lintDebug :app:assembleDebug :app:assembleRelease
+
+      - name: Upload Android TV Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: belgrade-tv-cams-debug-apk
+          name: world-live-cams-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload Android TV R8 Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: world-live-cams-release-apk
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -30,4 +31,19 @@ tasks.test {
     systemProperty("belgrade.catalog.v3.path", v3Catalog.absolutePath)
     systemProperty("belgrade.catalog.v4.path", v4Catalog.absolutePath)
     systemProperty("belgrade.catalog.v5.path", v5Catalog.absolutePath)
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                classes("*$\$serializer", "*Companion*")
+            }
+        }
+        verify {
+            rule {
+                minBound(85)
+            }
+        }
+    }
 }

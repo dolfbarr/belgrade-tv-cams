@@ -38,6 +38,7 @@ import rs.belgrade.tvcams.domain.stream.SnapshotUrlBuilder
 import rs.belgrade.tvcams.domain.stream.StreamFailoverTracker
 import rs.belgrade.tvcams.domain.stream.StreamPayloadParsers
 import rs.belgrade.tvcams.domain.time.CameraClockFormatter
+import rs.belgrade.tvcams.domain.tv.CameraSearchMatcher
 import rs.belgrade.tvcams.domain.tv.HomeChannelSelector
 import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.StripFilter
@@ -1170,5 +1171,129 @@ class DomainSuiteTest {
         // Featured row automatically surfaces featured cameras from newly contributed countries
         val channel = HomeChannelSelector.selectChannelCameras(roundTripped.cameras, emptySet(), maxItems = 4)
         assertTrue(channel.cameras.any { it.id == "at-vie-stephansplatz" })
+    }
+
+    @Test
+    fun `diacritic-insensitive search, active strip index, settings and search drawers, numeric channel jump, and auto-skip satisfy v7 contracts`() {
+        val belgradeHd = sampleCamera("bg-brankov", "Brankov most", CameraCity.BELGRADE, quality = VideoQuality.FHD_1080P)
+        val nisCam = sampleCamera("ni-centar", "Trg kralja Milana", CameraCity.NIS, quality = VideoQuality.HD_720P).copy(
+            streets = listOf("Obrenovićeva", "Vožda Karađorđa"),
+        )
+        val parisSacre = sampleCamera("fr-par-sacre", "Sacré-Cœur de Montmartre", CameraCity.PARIS, quality = VideoQuality.FHD_1080P).copy(
+            country = CameraCountry.FRANCE,
+            featured = true,
+        )
+        val tokyoSd = sampleCamera("jp-tyo-sd", "Asakusa Side Street", CameraCity.TOKYO, quality = VideoQuality.SD).copy(
+            country = CameraCountry.JAPAN,
+        )
+        val tokyo4k = sampleCamera("jp-tyo-4k", "Shinjuku Kabukicho 4K", CameraCity.TOKYO, quality = VideoQuality.UHD_4K).copy(
+            country = CameraCountry.JAPAN,
+            featured = true,
+        )
+        val cams = listOf(belgradeHd, nisCam, parisSacre, tokyoSd, tokyo4k)
+
+        // 1. Diacritic-folding & multi-token search (supports both 'd' and 'dj' transliterations for 'đ')
+        assertEquals("karadorda", CameraSearchMatcher.normalizeForSearch("Karađorđa"))
+        assertEquals("sacre coeur", CameraSearchMatcher.normalizeForSearch("Sacré-Cœur"))
+
+        var state = TvStageState.initial(cameras = cams, initialCameraId = "jp-tyo-sd")
+
+        // Blank search surfaces featured cameras first
+        assertEquals(listOf("fr-par-sacre", "jp-tyo-4k"), state.searchResults.map { it.id })
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.OpenSearch).state
+        assertEquals(OverlayMode.SEARCH, state.overlayMode)
+        assertEquals(OverlayMode.PURE_CAMERA, state.modalReturnOverlayMode)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.AppendSearchChar("sacre")).state
+        assertEquals(listOf("fr-par-sacre"), state.searchResults.map { it.id })
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ClearSearchQuery).state
+        state = TvStageReducer.reduce(state, TvRemoteAction.UpdateSearchQuery("nis karadorda")).state
+        assertEquals(listOf("ni-centar"), state.searchResults.map { it.id })
+        state = TvStageReducer.reduce(state, TvRemoteAction.UpdateSearchQuery("nis karadjordja")).state
+        assertEquals(listOf("ni-centar"), state.searchResults.map { it.id })
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.BackspaceSearchQuery).state
+        assertEquals("nis karadjordj", state.searchQuery)
+
+        // Back from SEARCH opened from stage returns to PURE_CAMERA
+        state = TvStageReducer.reduce(state, TvRemoteAction.NavigateBack).state
+        assertEquals(OverlayMode.PURE_CAMERA, state.overlayMode)
+
+        // 2. Active strip LazyRow item index accounting for country HD/SD section dividers:
+        // Serbia HD header (0), bg-brankov (1), ni-centar (2),
+        // France HD header (3), fr-par-sacre (4),
+        // Japan HD header (5), jp-tyo-4k (6), Japan SD header (7), jp-tyo-sd (8)
+        assertEquals(8, state.activeStripLazyItemIndex)
+
+        // Open QUICK_STRIP -> Open SETTINGS -> ToggleZapScope stays in SETTINGS -> Back returns to QUICK_STRIP
+        state = TvStageReducer.reduce(state, TvRemoteAction.OpenQuickStrip).state
+        assertEquals(OverlayMode.QUICK_STRIP, state.overlayMode)
+        state = TvStageReducer.reduce(state, TvRemoteAction.OpenSettings).state
+        assertEquals(OverlayMode.SETTINGS, state.overlayMode)
+        assertEquals(OverlayMode.QUICK_STRIP, state.modalReturnOverlayMode)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleZapScope).state
+        assertEquals(OverlayMode.SETTINGS, state.overlayMode)
+        assertEquals(ZapScope.COUNTRY, state.zapScope)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.NavigateBack).state
+        assertEquals(OverlayMode.QUICK_STRIP, state.overlayMode)
+
+        // Reset zap scope to ALL and close strip
+        state = state.copy(zapScope = ZapScope.ALL)
+        state = TvStageReducer.reduce(state, TvRemoteAction.NavigateBack).state
+        assertEquals(OverlayMode.PURE_CAMERA, state.overlayMode)
+
+        // 3. KeyRouter MENU, SEARCH, and 0-9 digit routing
+        val router = TvKeyRouter()
+        assertEquals(
+            TvRemoteAction.OpenSettings,
+            router.route(TvKeyCode.MENU, TvKeyPhase.DOWN, 0, OverlayMode.PURE_CAMERA).action,
+        )
+        assertEquals(
+            TvRemoteAction.OpenSearch,
+            router.route(TvKeyCode.SEARCH, TvKeyPhase.DOWN, 0, OverlayMode.HUD_VISIBLE).action,
+        )
+        assertFalse(router.route(TvKeyCode.DPAD_RIGHT, TvKeyPhase.DOWN, 0, OverlayMode.SETTINGS).consumed)
+        assertFalse(router.route(TvKeyCode.DPAD_RIGHT, TvKeyPhase.DOWN, 0, OverlayMode.SEARCH).consumed)
+        assertEquals(
+            TvRemoteAction.AppendChannelDigit(4),
+            router.route(TvKeyCode.DIGIT_4, TvKeyPhase.DOWN, 0, OverlayMode.PURE_CAMERA).action,
+        )
+
+        // 4. Numeric channel jump (1-based into zapPlaylist: 1=bg-brankov, 2=ni-centar, 3=fr-par-sacre, 4=jp-tyo-4k, 5=jp-tyo-sd)
+        state = TvStageReducer.reduce(state, TvRemoteAction.AppendChannelDigit(0)).state
+        assertEquals("", state.pendingChannelDigits) // leading 0 ignored
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.AppendChannelDigit(3)).state
+        assertEquals("3", state.pendingChannelDigits)
+        assertEquals("fr-par-sacre", state.pendingChannelPreviewCamera?.id)
+
+        // Immediate commit on OK (ToggleInfoOrSelect) while digits are pending
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleInfoOrSelect).state
+        assertEquals("", state.pendingChannelDigits)
+        assertEquals("fr-par-sacre", state.activeCameraId)
+        assertEquals(OverlayMode.HUD_VISIBLE, state.overlayMode)
+
+        // Out-of-bounds channel entry & Back cancellation
+        state = TvStageReducer.reduce(state, TvRemoteAction.AppendChannelDigit(9)).state
+        val cancelBack = TvStageReducer.reduce(state, TvRemoteAction.NavigateBack)
+        assertFalse(cancelBack.shouldExitApp)
+        assertEquals("", cancelBack.state.pendingChannelDigits)
+
+        state = TvStageReducer.reduce(cancelBack.state, TvRemoteAction.AppendChannelDigit(9)).state
+        state = TvStageReducer.reduce(state, TvRemoteAction.AppendChannelDigit(9)).state
+        assertNull(state.pendingChannelPreviewCamera)
+        state = TvStageReducer.reduce(state, TvRemoteAction.CommitChannelDigits).state
+        assertEquals("", state.pendingChannelDigits)
+        assertEquals("fr-par-sacre", state.activeCameraId)
+        assertEquals("Channel 99 out of range (1–5)", state.noticeMessage)
+
+        // 5. AutoSkipOfflineCamera advances silently and surfaces skipping notice
+        val skipped = TvStageReducer.reduce(state, TvRemoteAction.AutoSkipOfflineCamera).state
+        assertEquals("jp-tyo-4k", skipped.activeCameraId)
+        assertEquals("Stream offline — skipping…", skipped.noticeMessage)
     }
 }

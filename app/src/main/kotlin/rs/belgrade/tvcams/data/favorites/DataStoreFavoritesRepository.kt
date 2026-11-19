@@ -24,11 +24,13 @@ private val Context.viewerPreferencesDataStore: DataStore<Preferences> by prefer
 )
 
 class DataStoreFavoritesRepository(
-    private val appContext: Context,
+    private val dataStore: DataStore<Preferences>,
 ) : FavoritesRepository {
 
+    constructor(appContext: Context) : this(appContext.viewerPreferencesDataStore)
+
     override val preferences: Flow<ViewerPreferences> =
-        appContext.viewerPreferencesDataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
             val rawScope = prefs[KEY_ZAP_SCOPE]
             val scope = runCatching {
                 if (rawScope != null) ZapScope.valueOf(rawScope) else ZapScope.ALL
@@ -90,79 +92,79 @@ class DataStoreFavoritesRepository(
         }
 
     override suspend fun setFavorites(favoriteIds: Set<String>) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_FAVORITE_IDS] = favoriteIds.toSet()
         }
     }
 
     override suspend fun setLastCamera(cameraId: String) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_LAST_CAMERA_ID] = cameraId
         }
     }
 
     override suspend fun setZapScope(scope: ZapScope) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_ZAP_SCOPE] = scope.name
         }
     }
 
     override suspend fun setQualityFilter(filter: QualityFilter) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_QUALITY_FILTER] = filter.name
         }
     }
 
     override suspend fun setTransportFilter(filter: TransportFilter) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_TRANSPORT_FILTER] = filter.name
         }
     }
 
     override suspend fun setPerformanceMode(mode: PerformanceMode) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_PERFORMANCE_MODE] = mode.name
         }
     }
 
     override suspend fun setAutoRotateInterval(interval: AutoRotateInterval) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_AUTO_ROTATE_INTERVAL] = interval.name
         }
     }
 
     override suspend fun setInfoPanelPosition(position: InfoPanelPosition) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_INFO_PANEL_POSITION] = position.name
         }
     }
 
     override suspend fun setShowClockOverlay(enabled: Boolean) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_SHOW_CLOCK_OVERLAY] = enabled
         }
     }
 
     override suspend fun setShowWeatherOverlay(enabled: Boolean) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_SHOW_WEATHER_OVERLAY] = enabled
         }
     }
 
     override suspend fun setShowAirQualityOverlay(enabled: Boolean) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_SHOW_AIR_QUALITY_OVERLAY] = enabled
         }
     }
 
     override suspend fun setShowSolarOverlay(enabled: Boolean) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_SHOW_SOLAR_OVERLAY] = enabled
         }
     }
 
     override suspend fun setOledProtectionEnabled(enabled: Boolean) {
-        appContext.viewerPreferencesDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[KEY_OLED_PROTECTION_ENABLED] = enabled
         }
     }

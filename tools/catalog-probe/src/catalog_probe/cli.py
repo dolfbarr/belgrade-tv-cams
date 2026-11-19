@@ -13,6 +13,7 @@ from catalog_probe.prober import (
     probe_cameras_live,
     refresh_rostelecom_live_urls,
     refresh_rutube_live_urls,
+    refresh_youtube_live_urls,
 )
 
 
@@ -102,6 +103,7 @@ def main(argv: list[str] | None = None) -> int:
     if not args.offline:
         cameras = refresh_rutube_live_urls(cameras, timeout_seconds=args.timeout)
         cameras = refresh_rostelecom_live_urls(cameras, timeout_seconds=args.timeout)
+        cameras = refresh_youtube_live_urls(cameras, timeout_seconds=args.timeout)
         results = probe_cameras_live(cameras, timeout_seconds=args.timeout)
         reachable_count = sum(1 for item in results.values() if item.reachable)
         total_count = len(results)

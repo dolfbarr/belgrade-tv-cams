@@ -7,7 +7,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,8 +29,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +43,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +56,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -84,7 +92,6 @@ import rs.belgrade.tvcams.domain.favorites.TransportFilter
 import rs.belgrade.tvcams.domain.favorites.ZapScope
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
-import rs.belgrade.tvcams.domain.model.CameraCity
 import rs.belgrade.tvcams.domain.model.CameraCountry
 import rs.belgrade.tvcams.domain.model.StreamTransportType
 import rs.belgrade.tvcams.domain.model.VideoQuality
@@ -113,6 +120,7 @@ private val TvOverscanVertical = 27.dp
 
 private val StageScrimTop = Color(0x00000000)
 private val HudCardSurface = Color(0xE0080D1A)
+private val DrawerSurface = Color(0xF2080D1A)
 private val PillSurface = Color(0xCC0F172A)
 private val PillBorder = Color(0x3394A3B8)
 private val AccentSky = Color(0xFF38BDF8)
@@ -130,6 +138,11 @@ private val TextMuted = Color(0xFF94A3B8)
 
 private val TabularStyle = TextStyle(fontFeatureSettings = "tnum")
 
+private val SEARCH_KEY_TOKENS: List<String> = buildList {
+    for (ch in 'A'..'Z') add(ch.toString())
+    for (ch in '0'..'9') add(ch.toString())
+}
+
 @Composable
 fun CameraStageScreen(
     state: TvStageState,
@@ -144,6 +157,7 @@ fun CameraStageScreen(
     streamRetryNonce: Int = 0,
     enableBackHandler: Boolean = true,
     isScreensaverMode: Boolean = false,
+    enableLiveStreamPlayback: Boolean = true,
 ) {
     when (val boot = state.catalogBootstrapState) {
         CatalogBootstrapState.Loading -> {
@@ -165,6 +179,9 @@ fun CameraStageScreen(
     val activeCam = state.activeCamera
     val timezoneId = activeCam?.timezone ?: "Europe/Belgrade"
     val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
+    val isModalOrStripOpen = state.overlayMode == OverlayMode.QUICK_STRIP ||
+        state.overlayMode == OverlayMode.SETTINGS ||
+        state.overlayMode == OverlayMode.SEARCH
 
     var showConnectingBanner by remember { mutableStateOf(false) }
     LaunchedEffect(telemetry) {
@@ -193,8 +210,8 @@ fun CameraStageScreen(
     }
 
     LaunchedEffect(state.overlayMode) {
-        if (state.overlayMode != OverlayMode.QUICK_STRIP) {
-            stageFocusRequester.requestFocus()
+        if (!isModalOrStripOpen) {
+            runCatching { stageFocusRequester.requestFocus() }
         }
     }
 
@@ -202,6 +219,7 @@ fun CameraStageScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
+            .testTag("camera_stage_root")
             .onPreviewKeyEvent { keyEvent ->
                 val nativeCode = keyEvent.nativeKeyEvent.keyCode
                 if (!enableBackHandler && nativeCode == KeyEvent.KEYCODE_BACK) {
@@ -210,6 +228,23 @@ fun CameraStageScreen(
                     }
                     return@onPreviewKeyEvent true
                 }
+
+                // Physical / Bluetooth keyboard typing inside Search overlay
+                if (state.overlayMode == OverlayMode.SEARCH && keyEvent.type == KeyEventType.KeyDown) {
+                    if (nativeCode == KeyEvent.KEYCODE_DEL) {
+                        onAction(TvRemoteAction.BackspaceSearchQuery)
+                        return@onPreviewKeyEvent true
+                    }
+                    val unicode = keyEvent.nativeKeyEvent.unicodeChar
+                    if (unicode > 0) {
+                        val ch = unicode.toChar()
+                        if (ch.isLetterOrDigit() || ch == ' ' || ch == '-') {
+                            onAction(TvRemoteAction.AppendSearchChar(ch.toString()))
+                            return@onPreviewKeyEvent true
+                        }
+                    }
+                }
+
                 val phase = when (keyEvent.type) {
                     KeyEventType.KeyDown -> TvKeyPhase.DOWN
                     KeyEventType.KeyUp -> TvKeyPhase.UP
@@ -222,8 +257,9 @@ fun CameraStageScreen(
                     overlayMode = state.overlayMode,
                 )
                 if (decision.action == TvRemoteAction.ToggleInfoOrSelect &&
+                    state.pendingChannelDigits.isEmpty() &&
                     telemetry is PlaybackTelemetry.DegradedRetrying &&
-                    state.overlayMode != OverlayMode.QUICK_STRIP
+                    !isModalOrStripOpen
                 ) {
                     onAction(TvRemoteAction.RetryActiveStream)
                 } else {
@@ -235,16 +271,18 @@ fun CameraStageScreen(
             .focusable(),
     ) {
         // Layer 0: Adaptive 1920x1080 / low-spec stream surface with poster underlay & OLED pixel orbit
-        DualTransportCameraSurface(
-            camera = streamCamera ?: activeCam,
-            httpClient = httpClient,
-            streamResolver = streamResolver,
-            performanceMode = state.performanceMode,
-            oledOrbitOffset = oledOrbit,
-            onTelemetryChanged = onTelemetryChanged,
-            manualRetryNonce = streamRetryNonce,
-            modifier = Modifier.fillMaxSize(),
-        )
+        if (enableLiveStreamPlayback) {
+            DualTransportCameraSurface(
+                camera = streamCamera ?: activeCam,
+                httpClient = httpClient,
+                streamResolver = streamResolver,
+                performanceMode = state.performanceMode,
+                oledOrbitOffset = oledOrbit,
+                onTelemetryChanged = onTelemetryChanged,
+                manualRetryNonce = streamRetryNonce,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
 
         val panelPosition = state.infoPanelPosition
         val statusBoxAlignment = if (panelPosition == InfoPanelPosition.TOP_RIGHT) {
@@ -258,8 +296,11 @@ fun CameraStageScreen(
             Alignment.End
         }
 
-        // Layer 1: Non-blocking top status / spinner / notice badges inside TV safe area
+        // Layer 1: Non-blocking top status / channel jump / spinner / notice badges inside TV safe area
         TopStatusLayer(
+            pendingChannelDigits = state.pendingChannelDigits,
+            pendingChannelPreview = state.pendingChannelPreviewCamera,
+            zapPlaylistSize = state.zapPlaylist.size,
             noticeMessage = state.noticeMessage,
             telemetry = telemetry,
             showConnectingBanner = showConnectingBanner,
@@ -277,9 +318,7 @@ fun CameraStageScreen(
         )
 
         // Layer 1B: Persistent Stream Offline / Reconnecting Card when all stream candidates fail
-        if (telemetry is PlaybackTelemetry.DegradedRetrying &&
-            state.overlayMode != OverlayMode.QUICK_STRIP
-        ) {
+        if (telemetry is PlaybackTelemetry.DegradedRetrying && !isModalOrStripOpen) {
             StreamUnavailableBanner(
                 retryDelayMs = telemetry.retryDelayMs,
                 modifier = Modifier
@@ -326,7 +365,7 @@ fun CameraStageScreen(
             -> Alignment.Start
         }
 
-        if (state.overlayMode != OverlayMode.QUICK_STRIP) {
+        if (!isModalOrStripOpen) {
             val panelPadding = if (panelPosition.isTop) {
                 Modifier.padding(
                     start = TvOverscanHorizontal,
@@ -403,7 +442,7 @@ fun CameraStageScreen(
             }
         }
 
-        // Layer 3: Bottom Quick Strip Camera Carousel & Toggles (DPAD_DOWN / MENU)
+        // Layer 3: Compact 2-Row Quick Strip Camera Carousel (DPAD_DOWN)
         AnimatedVisibility(
             visible = state.overlayMode == OverlayMode.QUICK_STRIP,
             enter = slideInVertically { it } + fadeIn(),
@@ -412,7 +451,33 @@ fun CameraStageScreen(
         ) {
             CameraQuickStrip(
                 state = state,
+                onAction = onAction,
+            )
+        }
+
+        // Layer 4: Dedicated Settings Side-Drawer (MENU key or Settings chip)
+        AnimatedVisibility(
+            visible = state.overlayMode == OverlayMode.SETTINGS,
+            enter = slideInHorizontally { it } + fadeIn(),
+            exit = slideOutHorizontally { it } + fadeOut(),
+            modifier = Modifier.align(Alignment.CenterEnd),
+        ) {
+            SettingsSideDrawer(
+                state = state,
                 isScreensaverMode = isScreensaverMode,
+                onAction = onAction,
+            )
+        }
+
+        // Layer 5: Fast D-Pad & Keyboard Camera Search Overlay (SEARCH key or Search chip)
+        AnimatedVisibility(
+            visible = state.overlayMode == OverlayMode.SEARCH,
+            enter = slideInVertically { it } + fadeIn(),
+            exit = slideOutVertically { it } + fadeOut(),
+            modifier = Modifier.align(Alignment.BottomCenter),
+        ) {
+            CameraSearchOverlay(
+                state = state,
                 onAction = onAction,
             )
         }
@@ -531,7 +596,6 @@ private fun AmbientClockWeatherBar(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.widthIn(max = 560.dp),
                 )
-                // Omit country name when rendering the country flag; display city only
                 val locationTag = when {
                     !cityLabel.isNullOrBlank() -> cityLabel
                     country == null && !countryFallbackLabel.isNullOrBlank() -> countryFallbackLabel
@@ -714,12 +778,26 @@ private fun mapAndroidKeyCode(keyCode: Int): TvKeyCode = when (keyCode) {
     KeyEvent.KEYCODE_MENU,
     KeyEvent.KEYCODE_GUIDE,
     -> TvKeyCode.MENU
+    KeyEvent.KEYCODE_SEARCH -> TvKeyCode.SEARCH
     KeyEvent.KEYCODE_BACK -> TvKeyCode.BACK
+    KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_NUMPAD_0 -> TvKeyCode.DIGIT_0
+    KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_NUMPAD_1 -> TvKeyCode.DIGIT_1
+    KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_NUMPAD_2 -> TvKeyCode.DIGIT_2
+    KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_NUMPAD_3 -> TvKeyCode.DIGIT_3
+    KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_NUMPAD_4 -> TvKeyCode.DIGIT_4
+    KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_NUMPAD_5 -> TvKeyCode.DIGIT_5
+    KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_NUMPAD_6 -> TvKeyCode.DIGIT_6
+    KeyEvent.KEYCODE_7, KeyEvent.KEYCODE_NUMPAD_7 -> TvKeyCode.DIGIT_7
+    KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_NUMPAD_8 -> TvKeyCode.DIGIT_8
+    KeyEvent.KEYCODE_9, KeyEvent.KEYCODE_NUMPAD_9 -> TvKeyCode.DIGIT_9
     else -> TvKeyCode.OTHER
 }
 
 @Composable
 private fun TopStatusLayer(
+    pendingChannelDigits: String,
+    pendingChannelPreview: Camera?,
+    zapPlaylistSize: Int,
     noticeMessage: String?,
     telemetry: PlaybackTelemetry,
     showConnectingBanner: Boolean,
@@ -732,6 +810,18 @@ private fun TopStatusLayer(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        if (pendingChannelDigits.isNotEmpty()) {
+            val formattedCh = pendingChannelDigits.padStart(2, '0')
+            val label = if (pendingChannelPreview != null) {
+                "CH $formattedCh · ${pendingChannelPreview.name}"
+            } else {
+                "CH $pendingChannelDigits · Out of range (1–$zapPlaylistSize)"
+            }
+            StatusPill(
+                text = label,
+                accentColor = if (pendingChannelPreview != null) AccentSky else AccentAmber,
+            )
+        }
         if (noticeMessage != null) {
             StatusPill(
                 text = noticeMessage,
@@ -802,9 +892,13 @@ private fun StatusPill(
         }
         Text(
             text = text,
+            style = TabularStyle,
             color = TextPrimary,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.widthIn(max = 560.dp),
         )
     }
 }
@@ -815,7 +909,8 @@ private fun CatalogLoadingStage() {
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF060A14))
-            .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical),
+            .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical)
+            .testTag("catalog_loading_stage"),
     ) {
         Column(
             modifier = Modifier.align(Alignment.Center),
@@ -837,7 +932,6 @@ private fun CatalogLoadingStage() {
             }
         }
 
-        // Bottom ambient panel skeleton shaped like loaded content
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -874,14 +968,15 @@ private fun CatalogErrorStage(
 ) {
     val retryFocusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
-        retryFocusRequester.requestFocus()
+        runCatching { retryFocusRequester.requestFocus() }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF060A14))
-            .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical),
+            .padding(horizontal = TvOverscanHorizontal, vertical = TvOverscanVertical)
+            .testTag("catalog_error_stage"),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -909,7 +1004,9 @@ private fun CatalogErrorStage(
             Spacer(modifier = Modifier.height(4.dp))
             Button(
                 onClick = onRetry,
-                modifier = Modifier.focusRequester(retryFocusRequester),
+                modifier = Modifier
+                    .focusRequester(retryFocusRequester)
+                    .testTag("catalog_error_retry_button"),
             ) {
                 Text(text = stringResource(R.string.catalog_error_retry))
             }
@@ -929,7 +1026,8 @@ private fun StreamUnavailableBanner(
             .clip(RoundedCornerShape(14.dp))
             .background(Color(0xEB080D1A))
             .border(1.dp, Color(0x66FBBF24), RoundedCornerShape(14.dp))
-            .padding(horizontal = 22.dp, vertical = 16.dp),
+            .padding(horizontal = 22.dp, vertical = 16.dp)
+            .testTag("stream_unavailable_banner"),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
@@ -976,7 +1074,8 @@ private fun StreetInfoHud(
             .clip(RoundedCornerShape(14.dp))
             .background(HudCardSurface)
             .border(1.dp, PillBorder, RoundedCornerShape(14.dp))
-            .padding(horizontal = 20.dp, vertical = 14.dp),
+            .padding(horizontal = 20.dp, vertical = 14.dp)
+            .testTag("street_info_hud"),
         verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         Row(
@@ -1163,21 +1262,30 @@ private fun TransportBadge(telemetry: PlaybackTelemetry) {
     }
 }
 
+@Composable
+private fun rememberQuickStripChipColors() = FilterChipDefaults.colors(
+    containerColor = Color(0xE60F172A),
+    contentColor = TextPrimary,
+    focusedContainerColor = AccentSky,
+    focusedContentColor = Color(0xFF0F172A),
+    selectedContainerColor = Color(0xFF1E3A5F),
+    selectedContentColor = AccentSky,
+    focusedSelectedContainerColor = AccentSky,
+    focusedSelectedContentColor = Color(0xFF0F172A),
+)
+
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 private fun CameraQuickStrip(
     state: TvStageState,
-    isScreensaverMode: Boolean,
     onAction: (TvRemoteAction) -> Unit,
 ) {
-    val defaultCountryChipFocusRequester = remember { FocusRequester() }
-    val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
+    val searchChipFocusRequester = remember { FocusRequester() }
+    val activeCardFocusRequester = remember { FocusRequester() }
+    val firstCardFocusRequester = remember { FocusRequester() }
+    val cameraListState = rememberLazyListState()
+    val chipColors = rememberQuickStripChipColors()
 
-    LaunchedEffect(Unit) {
-        defaultCountryChipFocusRequester.requestFocus()
-    }
-
-    val allCameras = state.cameras
     val qualityPool = state.qualityFilteredCameras
     val countryCounts = remember(qualityPool) {
         qualityPool.groupingBy { it.resolvedCountry }.eachCount()
@@ -1189,16 +1297,26 @@ private fun CameraQuickStrip(
         qualityPool.count { state.favoriteIds.contains(it.id) }
     }
 
-    val chipColors = FilterChipDefaults.colors(
-        containerColor = Color(0xE60F172A),
-        contentColor = TextPrimary,
-        focusedContainerColor = AccentSky,
-        focusedContentColor = Color(0xFF0F172A),
-        selectedContainerColor = Color(0xFF1E3A5F),
-        selectedContentColor = AccentSky,
-        focusedSelectedContainerColor = AccentSky,
-        focusedSelectedContentColor = Color(0xFF0F172A),
-    )
+    val visibleCameras = state.stripCameras
+    val countryGroups = state.stripCountryGroups
+    val activeId = state.activeCamera?.id
+    val activeLazyIdx = state.activeStripLazyItemIndex
+    val firstVisibleId = visibleCameras.firstOrNull()?.id
+
+    LaunchedEffect(Unit) {
+        if (activeLazyIdx >= 0) {
+            cameraListState.scrollToItem((activeLazyIdx - 1).coerceAtLeast(0))
+            withFrameNanos { }
+            runCatching { activeCardFocusRequester.requestFocus() }
+        } else if (visibleCameras.isNotEmpty()) {
+            cameraListState.scrollToItem(0)
+            withFrameNanos { }
+            runCatching { firstCardFocusRequester.requestFocus() }
+        } else {
+            withFrameNanos { }
+            runCatching { searchChipFocusRequester.requestFocus() }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -1213,164 +1331,11 @@ private fun CameraQuickStrip(
             .padding(
                 top = 24.dp,
                 bottom = TvOverscanVertical,
-            ),
+            )
+            .testTag("camera_quick_strip"),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Row 1: Quality Tier, Auto-Rotate, Panel Position, Zap Scope & Display Overlays
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            item(key = "toggle_quality_filter") {
-                val qualityText = when (state.qualityFilter) {
-                    QualityFilter.ALL -> "Quality: All (${allCameras.size})"
-                    QualityFilter.HD_ONLY -> "Quality: HD only (${state.hdTotalCount})"
-                    QualityFilter.SD_ONLY -> "Quality: SD only (${state.sdTotalCount})"
-                }
-                FilterChip(
-                    selected = state.qualityFilter != QualityFilter.ALL,
-                    onClick = { onAction(TvRemoteAction.CycleQualityFilter) },
-                    colors = chipColors,
-                ) {
-                    Text(text = qualityText)
-                }
-            }
-            item(key = "toggle_transport_filter") {
-                val streamText = when (state.transportFilter) {
-                    TransportFilter.ALL -> "Stream: All"
-                    TransportFilter.LIVE_VIDEO_ONLY -> "Stream: Live video (${state.liveVideoTotalCount})"
-                    TransportFilter.SNAPSHOT_ONLY -> "Stream: Snapshots (${state.snapshotTotalCount})"
-                }
-                FilterChip(
-                    selected = state.transportFilter != TransportFilter.ALL,
-                    onClick = { onAction(TvRemoteAction.CycleTransportFilter) },
-                    colors = chipColors,
-                ) {
-                    Text(text = streamText)
-                }
-            }
-            item(key = "toggle_performance_mode") {
-                val perfText = "Perf: ${state.performanceMode.displayLabel()}"
-                FilterChip(
-                    selected = state.performanceMode != PerformanceMode.AUTO,
-                    onClick = { onAction(TvRemoteAction.CyclePerformanceMode) },
-                    colors = chipColors,
-                ) {
-                    Text(text = perfText)
-                }
-            }
-            item(key = "toggle_auto_rotate") {
-                val rotateText = if (isScreensaverMode && !state.autoRotateInterval.enabled) {
-                    "Rotate: ${effectiveRotate.displayLabel()} (Screensaver)"
-                } else {
-                    "Rotate: ${state.autoRotateInterval.displayLabel()}"
-                }
-                FilterChip(
-                    selected = effectiveRotate.enabled,
-                    onClick = { onAction(TvRemoteAction.CycleAutoRotate) },
-                    colors = chipColors,
-                ) {
-                    Text(text = rotateText)
-                }
-            }
-            item(key = "toggle_panel_position") {
-                val panelText = "Panel: ${state.infoPanelPosition.displayLabel()}"
-                FilterChip(
-                    selected = state.infoPanelPosition != InfoPanelPosition.BOTTOM_CENTER,
-                    onClick = { onAction(TvRemoteAction.CycleInfoPanelPosition) },
-                    colors = chipColors,
-                ) {
-                    Text(text = panelText)
-                }
-            }
-            item(key = "toggle_zap_scope") {
-                val scopeText = "Zap: ${state.zapScope.displayLabel()}"
-                FilterChip(
-                    selected = state.zapScope != ZapScope.ALL,
-                    onClick = { onAction(TvRemoteAction.ToggleZapScope) },
-                    colors = chipColors,
-                ) {
-                    Text(text = scopeText)
-                }
-            }
-            item(key = "toggle_clock") {
-                FilterChip(
-                    selected = state.showClockOverlay,
-                    onClick = { onAction(TvRemoteAction.ToggleClockOverlay) },
-                    colors = chipColors,
-                ) {
-                    Text(
-                        text = if (state.showClockOverlay) {
-                            stringResource(R.string.toggle_clock_on)
-                        } else {
-                            stringResource(R.string.toggle_clock_off)
-                        },
-                    )
-                }
-            }
-            item(key = "toggle_weather") {
-                FilterChip(
-                    selected = state.showWeatherOverlay,
-                    onClick = { onAction(TvRemoteAction.ToggleWeatherOverlay) },
-                    colors = chipColors,
-                ) {
-                    Text(
-                        text = if (state.showWeatherOverlay) {
-                            stringResource(R.string.toggle_weather_on)
-                        } else {
-                            stringResource(R.string.toggle_weather_off)
-                        },
-                    )
-                }
-            }
-            item(key = "toggle_aqi") {
-                FilterChip(
-                    selected = state.showAirQualityOverlay,
-                    onClick = { onAction(TvRemoteAction.ToggleAirQualityOverlay) },
-                    colors = chipColors,
-                ) {
-                    Text(
-                        text = if (state.showAirQualityOverlay) {
-                            stringResource(R.string.toggle_aqi_on)
-                        } else {
-                            stringResource(R.string.toggle_aqi_off)
-                        },
-                    )
-                }
-            }
-            item(key = "toggle_solar") {
-                FilterChip(
-                    selected = state.showSolarOverlay,
-                    onClick = { onAction(TvRemoteAction.ToggleSolarOverlay) },
-                    colors = chipColors,
-                ) {
-                    Text(
-                        text = if (state.showSolarOverlay) {
-                            stringResource(R.string.toggle_solar_on)
-                        } else {
-                            stringResource(R.string.toggle_solar_off)
-                        },
-                    )
-                }
-            }
-            item(key = "toggle_oled") {
-                FilterChip(
-                    selected = state.oledProtectionEnabled,
-                    onClick = { onAction(TvRemoteAction.ToggleOledProtection) },
-                    colors = chipColors,
-                ) {
-                    Text(
-                        text = if (state.oledProtectionEnabled) {
-                            stringResource(R.string.toggle_oled_on)
-                        } else {
-                            stringResource(R.string.toggle_oled_off)
-                        },
-                    )
-                }
-            }
-        }
-
-        // Row 2: Country Grouping Tabs & Street Categories
+        // Row 1: Search & Settings Action Chips + All / Popular / Favorites / Countries / Categories
         val currentStripFilter = state.stripFilter
         val selectedCountry = state.selectedStripCountry
         val countryAndCategoryFilters: List<Triple<StripFilter, String, Boolean>> = buildList {
@@ -1439,18 +1404,55 @@ private fun CameraQuickStrip(
             contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            item(key = "action_open_search") {
+                FilterChip(
+                    selected = false,
+                    onClick = { onAction(TvRemoteAction.OpenSearch) },
+                    colors = chipColors,
+                    modifier = Modifier
+                        .focusRequester(searchChipFocusRequester)
+                        .testTag("strip_open_search_chip"),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    ) {
+                        SearchLensIcon(size = 14.dp)
+                        Text(text = stringResource(R.string.action_search))
+                    }
+                }
+            }
+            item(key = "action_open_settings") {
+                val activeFiltersBadge = buildList {
+                    if (state.qualityFilter != QualityFilter.ALL) add(state.qualityFilter.displayLabel())
+                    if (state.transportFilter != TransportFilter.ALL) add(state.transportFilter.displayLabel())
+                }.joinToString(" · ")
+                val settingsLabel = if (activeFiltersBadge.isEmpty()) {
+                    stringResource(R.string.action_settings)
+                } else {
+                    "${stringResource(R.string.action_settings)} ($activeFiltersBadge)"
+                }
+                FilterChip(
+                    selected = activeFiltersBadge.isNotEmpty(),
+                    onClick = { onAction(TvRemoteAction.OpenSettings) },
+                    colors = chipColors,
+                    modifier = Modifier.testTag("strip_open_settings_chip"),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    ) {
+                        SettingsSlidersIcon(size = 14.dp)
+                        Text(text = settingsLabel)
+                    }
+                }
+            }
             items(countryAndCategoryFilters.size) { idx ->
                 val (filterItem, title, isSelected) = countryAndCategoryFilters[idx]
-                val chipModifier = if (idx == 0) {
-                    Modifier.focusRequester(defaultCountryChipFocusRequester)
-                } else {
-                    Modifier
-                }
                 FilterChip(
                     selected = isSelected,
                     onClick = { onAction(TvRemoteAction.SelectStripFilter(filterItem)) },
                     colors = chipColors,
-                    modifier = chipModifier,
                 ) {
                     if (filterItem is StripFilter.Country) {
                         Row(
@@ -1472,9 +1474,9 @@ private fun CameraQuickStrip(
             }
         }
 
-        // Row 3: Contextual City Filter Row (Cities of selected Country, or all World Cities)
-        val cityFilters: List<Pair<StripFilter, String>> = buildList {
-            if (selectedCountry != null) {
+        // Contextual Row 2: Shown ONLY when a Country filter (or City within a Country) is active
+        if (selectedCountry != null) {
+            val cityFilters: List<Pair<StripFilter, String>> = buildList {
                 val totalCountry = countryCounts[selectedCountry] ?: 0
                 add(
                     StripFilter.Country(selectedCountry) to
@@ -1484,49 +1486,42 @@ private fun CameraQuickStrip(
                     val count = cityCounts[city] ?: 0
                     add(StripFilter.City(city) to "${state.cityDisplayLabel(city)} ($count)")
                 }
-            } else {
-                for (city in state.availableCities) {
-                    val count = cityCounts[city] ?: 0
-                    add(StripFilter.City(city) to "${state.cityDisplayLabel(city)} ($count)")
-                }
             }
-        }
 
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(cityFilters.size) { idx ->
-                val (filterItem, title) = cityFilters[idx]
-                FilterChip(
-                    selected = currentStripFilter == filterItem,
-                    onClick = { onAction(TvRemoteAction.SelectStripFilter(filterItem)) },
-                    colors = chipColors,
-                ) {
-                    if (filterItem is StripFilter.Country) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(7.dp),
-                        ) {
-                            CountryFlagIcon(
-                                country = filterItem.country,
-                                isoOverride = state.countryIsoCode(filterItem.country),
-                                width = 18.dp,
-                                height = 12.dp,
-                            )
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.testTag("strip_contextual_city_row"),
+            ) {
+                items(cityFilters.size) { idx ->
+                    val (filterItem, title) = cityFilters[idx]
+                    FilterChip(
+                        selected = currentStripFilter == filterItem,
+                        onClick = { onAction(TvRemoteAction.SelectStripFilter(filterItem)) },
+                        colors = chipColors,
+                    ) {
+                        if (filterItem is StripFilter.Country) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(7.dp),
+                            ) {
+                                CountryFlagIcon(
+                                    country = filterItem.country,
+                                    isoOverride = state.countryIsoCode(filterItem.country),
+                                    width = 18.dp,
+                                    height = 12.dp,
+                                )
+                                Text(text = title)
+                            }
+                        } else {
                             Text(text = title)
                         }
-                    } else {
-                        Text(text = title)
                     }
                 }
             }
         }
 
-        // Row 4: Country-Grouped Camera Preview Cards (with HD vs SD split per Country)
-        val visibleCameras = state.stripCameras
-        val countryGroups = state.stripCountryGroups
-        val activeId = state.activeCamera?.id
+        // Camera Carousel Row: Country-Grouped Camera Preview Cards (HD vs SD split per Country)
         val favIds = state.favoriteIds
         if (visibleCameras.isEmpty()) {
             EmptyStripStateCard(
@@ -1535,9 +1530,11 @@ private fun CameraQuickStrip(
             )
         } else {
             LazyRow(
+                state = cameraListState,
                 contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.testTag("strip_camera_carousel"),
             ) {
                 for (group in countryGroups) {
                     if (group.hdCameras.isNotEmpty()) {
@@ -1554,11 +1551,18 @@ private fun CameraQuickStrip(
                             items = group.hdCameras,
                             key = { it.id },
                         ) { item ->
+                            val cardModifier = when {
+                                item.id == activeId -> Modifier.focusRequester(activeCardFocusRequester)
+                                activeLazyIdx < 0 && item.id == firstVisibleId ->
+                                    Modifier.focusRequester(firstCardFocusRequester)
+                                else -> Modifier
+                            }
                             CameraPreviewCard(
                                 camera = item,
                                 isPlaying = item.id == activeId,
                                 isFavorite = favIds.contains(item.id),
                                 onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
+                                modifier = cardModifier,
                             )
                         }
                     }
@@ -1576,14 +1580,437 @@ private fun CameraQuickStrip(
                             items = group.sdCameras,
                             key = { it.id },
                         ) { item ->
+                            val cardModifier = when {
+                                item.id == activeId -> Modifier.focusRequester(activeCardFocusRequester)
+                                activeLazyIdx < 0 && item.id == firstVisibleId ->
+                                    Modifier.focusRequester(firstCardFocusRequester)
+                                else -> Modifier
+                            }
                             CameraPreviewCard(
                                 camera = item,
                                 isPlaying = item.id == activeId,
                                 isFavorite = favIds.contains(item.id),
                                 onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
+                                modifier = cardModifier,
                             )
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun SettingsSideDrawer(
+    state: TvStageState,
+    isScreensaverMode: Boolean,
+    onAction: (TvRemoteAction) -> Unit,
+) {
+    val firstSettingFocusRequester = remember { FocusRequester() }
+    val chipColors = rememberQuickStripChipColors()
+    val effectiveRotate = state.autoRotateInterval.effectiveFor(isScreensaverMode)
+    val allCameras = state.cameras
+
+    LaunchedEffect(Unit) {
+        withFrameNanos { }
+        runCatching { firstSettingFocusRequester.requestFocus() }
+    }
+
+    Column(
+        modifier = Modifier
+            .width(440.dp)
+            .fillMaxHeight()
+            .background(DrawerSurface)
+            .border(width = 1.dp, color = PillBorder, shape = RoundedCornerShape(topStart = 18.dp, bottomStart = 18.dp))
+            .padding(
+                start = 24.dp,
+                end = TvOverscanHorizontal,
+                top = TvOverscanVertical,
+                bottom = TvOverscanVertical,
+            )
+            .testTag("settings_side_drawer"),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            SettingsSlidersIcon(size = 18.dp, color = AccentSky)
+            Text(
+                text = stringResource(R.string.settings_heading),
+                color = TextPrimary,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item(key = "header_playback") {
+                DrawerSectionHeader(text = stringResource(R.string.settings_section_playback))
+            }
+            item(key = "setting_quality") {
+                val valueLabel = when (state.qualityFilter) {
+                    QualityFilter.ALL -> "All (${allCameras.size})"
+                    QualityFilter.HD_ONLY -> "HD only (${state.hdTotalCount})"
+                    QualityFilter.SD_ONLY -> "SD only (${state.sdTotalCount})"
+                }
+                DrawerSettingRow(
+                    label = "Quality",
+                    value = valueLabel,
+                    selected = state.qualityFilter != QualityFilter.ALL,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.CycleQualityFilter) },
+                    modifier = Modifier
+                        .focusRequester(firstSettingFocusRequester)
+                        .testTag("setting_quality_chip"),
+                )
+            }
+            item(key = "setting_stream") {
+                val valueLabel = when (state.transportFilter) {
+                    TransportFilter.ALL -> "All"
+                    TransportFilter.LIVE_VIDEO_ONLY -> "Live video (${state.liveVideoTotalCount})"
+                    TransportFilter.SNAPSHOT_ONLY -> "Snapshots (${state.snapshotTotalCount})"
+                }
+                DrawerSettingRow(
+                    label = "Stream type",
+                    value = valueLabel,
+                    selected = state.transportFilter != TransportFilter.ALL,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.CycleTransportFilter) },
+                    modifier = Modifier.testTag("setting_stream_chip"),
+                )
+            }
+            item(key = "setting_zap_scope") {
+                DrawerSettingRow(
+                    label = "Zap scope",
+                    value = state.zapScope.displayLabel(),
+                    selected = state.zapScope != ZapScope.ALL,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleZapScope) },
+                    modifier = Modifier.testTag("setting_zap_scope_chip"),
+                )
+            }
+            item(key = "setting_auto_rotate") {
+                val rotateValue = if (isScreensaverMode && !state.autoRotateInterval.enabled) {
+                    "${effectiveRotate.displayLabel()} (Screensaver)"
+                } else {
+                    state.autoRotateInterval.displayLabel()
+                }
+                DrawerSettingRow(
+                    label = "Auto-rotate",
+                    value = rotateValue,
+                    selected = effectiveRotate.enabled,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.CycleAutoRotate) },
+                    modifier = Modifier.testTag("setting_auto_rotate_chip"),
+                )
+            }
+            item(key = "setting_performance") {
+                DrawerSettingRow(
+                    label = "Performance",
+                    value = state.performanceMode.displayLabel(),
+                    selected = state.performanceMode != PerformanceMode.AUTO,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.CyclePerformanceMode) },
+                    modifier = Modifier.testTag("setting_performance_chip"),
+                )
+            }
+
+            item(key = "header_display") {
+                Spacer(modifier = Modifier.height(6.dp))
+                DrawerSectionHeader(text = stringResource(R.string.settings_section_display))
+            }
+            item(key = "setting_panel_pos") {
+                DrawerSettingRow(
+                    label = "Panel position",
+                    value = state.infoPanelPosition.displayLabel(),
+                    selected = state.infoPanelPosition != InfoPanelPosition.BOTTOM_CENTER,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.CycleInfoPanelPosition) },
+                    modifier = Modifier.testTag("setting_panel_position_chip"),
+                )
+            }
+            item(key = "setting_clock") {
+                DrawerSettingRow(
+                    label = "Dual clock",
+                    value = if (state.showClockOverlay) "On" else "Off",
+                    selected = state.showClockOverlay,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleClockOverlay) },
+                )
+            }
+            item(key = "setting_weather") {
+                DrawerSettingRow(
+                    label = "Weather",
+                    value = if (state.showWeatherOverlay) "On" else "Off",
+                    selected = state.showWeatherOverlay,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleWeatherOverlay) },
+                )
+            }
+            item(key = "setting_aqi") {
+                DrawerSettingRow(
+                    label = "Air quality",
+                    value = if (state.showAirQualityOverlay) "On" else "Off",
+                    selected = state.showAirQualityOverlay,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleAirQualityOverlay) },
+                )
+            }
+            item(key = "setting_solar") {
+                DrawerSettingRow(
+                    label = "Sun & golden hour",
+                    value = if (state.showSolarOverlay) "On" else "Off",
+                    selected = state.showSolarOverlay,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleSolarOverlay) },
+                )
+            }
+            item(key = "setting_oled") {
+                DrawerSettingRow(
+                    label = "OLED burn-in guard",
+                    value = if (state.oledProtectionEnabled) "On" else "Off",
+                    selected = state.oledProtectionEnabled,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleOledProtection) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DrawerSectionHeader(text: String) {
+    Text(
+        text = text,
+        color = AccentSky,
+        fontSize = 12.sp,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(vertical = 2.dp),
+    )
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun DrawerSettingRow(
+    label: String,
+    value: String,
+    selected: Boolean,
+    chipColors: androidx.tv.material3.SelectableChipColors,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        colors = chipColors,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = label,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+            )
+            Text(
+                text = value,
+                style = TabularStyle,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun CameraSearchOverlay(
+    state: TvStageState,
+    onAction: (TvRemoteAction) -> Unit,
+) {
+    val initialKeyFocusRequester = remember { FocusRequester() }
+    val chipColors = rememberQuickStripChipColors()
+    val results = state.searchResults
+    val activeId = state.activeCamera?.id
+    val favIds = state.favoriteIds
+
+    LaunchedEffect(Unit) {
+        withFrameNanos { }
+        runCatching { initialKeyFocusRequester.requestFocus() }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(DrawerSurface)
+            .border(width = 1.dp, color = PillBorder, shape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp))
+            .padding(
+                top = 20.dp,
+                bottom = TvOverscanVertical,
+            )
+            .testTag("camera_search_overlay"),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        // Query header bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = TvOverscanHorizontal),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xFF0F172A))
+                    .border(1.dp, Color(0x6638BDF8), RoundedCornerShape(10.dp))
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                SearchLensIcon(size = 16.dp, color = AccentSky)
+                Text(
+                    text = if (state.searchQuery.isEmpty()) {
+                        stringResource(R.string.search_placeholder)
+                    } else {
+                        state.searchQuery
+                    },
+                    color = if (state.searchQuery.isEmpty()) TextMuted else TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = if (state.searchQuery.isEmpty()) FontWeight.Normal else FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.testTag("search_query_text"),
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = if (state.searchQuery.isBlank()) {
+                    "Popular (${results.size})"
+                } else {
+                    "${results.size} matches"
+                },
+                style = TabularStyle,
+                color = AccentSky,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+
+        // Compact D-pad key strip (A–Z, 0–9, Space, Backspace, Clear)
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.testTag("search_key_bar"),
+        ) {
+            itemsIndexed(
+                items = SEARCH_KEY_TOKENS,
+                key = { _, token -> "key_$token" },
+            ) { idx, token ->
+                FilterChip(
+                    selected = false,
+                    onClick = { onAction(TvRemoteAction.AppendSearchChar(token.lowercase())) },
+                    colors = chipColors,
+                    modifier = if (idx == 0) {
+                        Modifier
+                            .focusRequester(initialKeyFocusRequester)
+                            .testTag("search_key_$token")
+                    } else {
+                        Modifier.testTag("search_key_$token")
+                    },
+                ) {
+                    Text(
+                        text = token,
+                        style = TabularStyle,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+            item(key = "key_space") {
+                FilterChip(
+                    selected = false,
+                    onClick = { onAction(TvRemoteAction.AppendSearchChar(" ")) },
+                    colors = chipColors,
+                    modifier = Modifier.testTag("search_key_space"),
+                ) {
+                    Text(text = "Space")
+                }
+            }
+            item(key = "key_backspace") {
+                FilterChip(
+                    selected = false,
+                    onClick = { onAction(TvRemoteAction.BackspaceSearchQuery) },
+                    colors = chipColors,
+                    modifier = Modifier.testTag("search_key_backspace"),
+                ) {
+                    Text(text = "⌫")
+                }
+            }
+            item(key = "key_clear") {
+                FilterChip(
+                    selected = false,
+                    onClick = { onAction(TvRemoteAction.ClearSearchQuery) },
+                    colors = chipColors,
+                    modifier = Modifier.testTag("search_key_clear"),
+                ) {
+                    Text(text = stringResource(R.string.search_clear_action))
+                }
+            }
+        }
+
+        // Live-updating result cards
+        if (results.isEmpty()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = TvOverscanHorizontal, vertical = 8.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xCC0F172A))
+                    .border(1.dp, PillBorder, RoundedCornerShape(12.dp))
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = stringResource(R.string.search_empty_heading),
+                    color = TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Button(
+                    onClick = { onAction(TvRemoteAction.ClearSearchQuery) },
+                    modifier = Modifier.testTag("search_empty_clear_button"),
+                ) {
+                    Text(text = stringResource(R.string.search_clear_action))
+                }
+            }
+        } else {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.testTag("search_results_carousel"),
+            ) {
+                items(
+                    items = results,
+                    key = { "search_${it.id}" },
+                ) { item ->
+                    CameraPreviewCard(
+                        camera = item,
+                        isPlaying = item.id == activeId,
+                        isFavorite = favIds.contains(item.id),
+                        onSelect = { onAction(TvRemoteAction.SelectCamera(item.id)) },
+                    )
                 }
             }
         }
@@ -1739,7 +2166,8 @@ private fun EmptyStripStateCard(
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xCC0F172A))
             .border(1.dp, PillBorder, RoundedCornerShape(12.dp))
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .testTag("empty_strip_state_card"),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -1779,6 +2207,7 @@ private fun CameraPreviewCard(
     isPlaying: Boolean,
     isFavorite: Boolean,
     onSelect: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val posterUrl = camera.posterUrl
@@ -1800,7 +2229,9 @@ private fun CameraPreviewCard(
 
     Card(
         onClick = onSelect,
-        modifier = Modifier.width(228.dp),
+        modifier = modifier
+            .width(228.dp)
+            .testTag("camera_card_${camera.id}"),
         colors = CardDefaults.colors(
             containerColor = Color(0xFF1E293B),
         ),
@@ -1875,7 +2306,6 @@ private fun CameraPreviewCard(
                     }
                 }
 
-                // Bottom-left LIVE video vs SNAP snapshot transport badge
                 val isLiveMotion = camera.isLiveVideo
                 Row(
                     modifier = Modifier
