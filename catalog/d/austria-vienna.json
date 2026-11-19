@@ -1,0 +1,70 @@
+{
+  "country": "AUSTRIA",
+  "country_name": "Austria",
+  "country_iso": "AT",
+  "city": "VIENNA",
+  "city_name": "Vienna & Alps",
+  "timezone": "Europe/Vienna",
+  "cameras": [
+    {
+      "id": "at-vie-wetter-panorama",
+      "name": "Austrian Alps & Cities Wetter-Panorama",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Stephansplatz",
+        "Rathausplatz",
+        "Innere Stadt"
+      ],
+      "municipality": "Stadt Wien / Österreich",
+      "category": "SQUARES",
+      "direction": "Feratel Wetter-Panorama live broadcast across Vienna and Austrian alpine summits",
+      "poster_url": "https://i.ytimg.com/vi/NIuO6hrFTrg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 48.2085,
+        "lon": 16.3732
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=NIuO6hrFTrg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@feratel_yourwindowtotheworld/streams?match=Wetter-Panorama"
+        }
+      ]
+    },
+    {
+      "id": "at-vie-rathausplatz-municipal",
+      "name": "Vienna Rathausturm & Burgtheater",
+      "quality": "HD_720P",
+      "streets": [
+        "Rathausplatz",
+        "Universitätsring",
+        "Friedrich-Schmidt-Platz"
+      ],
+      "municipality": "Innere Stadt, Wien",
+      "category": "SQUARES",
+      "direction": "East from Vienna City Hall Tower across Rathausplatz, Burgtheater, and Innere Stadt",
+      "poster_url": "https://www.wien.gv.at/webcam-rturm/rturm1.jpeg",
+      "coordinates": {
+        "lat": 48.2108,
+        "lon": 16.3564
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.wien.gv.at/webcam-rturm/rturm1.jpeg",
+          "interval_ms": 30000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1510611070/original.jpg",
+          "interval_ms": 60000
+        }
+      ]
+    }
+  ]
+}

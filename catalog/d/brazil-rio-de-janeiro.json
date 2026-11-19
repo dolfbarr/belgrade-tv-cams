@@ -1,0 +1,39 @@
+{
+  "country": "BRAZIL",
+  "country_name": "Brazil",
+  "country_iso": "BR",
+  "city": "RIO_DE_JANEIRO",
+  "city_name": "Rio de Janeiro",
+  "timezone": "America/Sao_Paulo",
+  "cameras": [
+    {
+      "id": "br-rio-copacabana-beach",
+      "name": "Copacabana Beach & Avenida Atlântica",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Avenida Atlântica",
+        "Rua Duvivier",
+        "Rua Rodolfo Dantas"
+      ],
+      "municipality": "Copacabana, Rio de Janeiro",
+      "category": "BOULEVARDS",
+      "direction": "South along Avenida Atlântica promenade and Copacabana Beach shoreline",
+      "poster_url": "https://i.ytimg.com/vi/WEl_I5vmuSs/hqdefault.jpg",
+      "coordinates": {
+        "lat": -22.9675,
+        "lon": -43.182
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=WEl_I5vmuSs"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@homesinrio3840/streams?match=Copacabana%7CRio"
+        }
+      ]
+    }
+  ]
+}

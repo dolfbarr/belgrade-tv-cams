@@ -1,0 +1,96 @@
+{
+  "country": "TAIWAN",
+  "country_name": "Taiwan",
+  "country_iso": "TW",
+  "city": "ALISHAN",
+  "city_name": "Alishan & Sun Moon Lake",
+  "timezone": "Asia/Taipei",
+  "cameras": [
+    {
+      "id": "tw-ali-eryanping-clouds",
+      "name": "Alishan Eryanping Trail Sea of Clouds",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Provincial Highway 18",
+        "Xiding Tea Trail",
+        "Fanlu Township"
+      ],
+      "municipality": "Chiayi County",
+      "category": "SQUARES",
+      "direction": "West over tea terraces and sea of clouds toward the Chianan Plain",
+      "poster_url": "https://i.ytimg.com/vi/j2L_559nCjc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 23.4255,
+        "lon": 120.653
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=j2L_559nCjc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Alishannsa/streams?match=Eryanping%7C%E4%BA%8C%E5%BB%B6%E5%B9%B3"
+        }
+      ]
+    },
+    {
+      "id": "tw-ali-fenqihu-old-street",
+      "name": "Alishan Fenqihu Old Street",
+      "quality": "UHD_4K",
+      "streets": [
+        "Fenqihu Old Street",
+        "County Road 169",
+        "Zhuqi Township"
+      ],
+      "municipality": "Chiayi County",
+      "category": "BOULEVARDS",
+      "direction": "South across Fenqihu Forest Railway Station and mountain village",
+      "poster_url": "https://i.ytimg.com/vi/B6eki-0-w0g/hqdefault.jpg",
+      "coordinates": {
+        "lat": 23.5053,
+        "lon": 120.6951
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=B6eki-0-w0g"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Alishannsa/streams?match=Fenqihu%7C%E5%A5%AE%E8%B5%B7%E6%B9%96"
+        }
+      ]
+    },
+    {
+      "id": "tw-ali-sun-moon-lake-ita-thao",
+      "name": "Sun Moon Lake Ita Thao Pier",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Wenhua Street",
+        "Yiyong Street",
+        "Yuchi Township"
+      ],
+      "municipality": "Nantou County",
+      "category": "SQUARES",
+      "direction": "Northwest across Ita Thao Pier and the Sun Moon Lake alpine basin",
+      "poster_url": "https://i.ytimg.com/vi/5plRdP_APCk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 23.8496,
+        "lon": 120.9287
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=5plRdP_APCk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UCqSwmN_PNRjWmvedMMN8SmQ/streams?match=%E4%BC%8A%E9%81%94%E9%82%B5%7CIta%20Tha"
+        }
+      ]
+    }
+  ]
+}

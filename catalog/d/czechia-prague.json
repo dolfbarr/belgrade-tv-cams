@@ -1,0 +1,88 @@
+{
+  "country": "CZECHIA",
+  "country_name": "Czechia",
+  "country_iso": "CZ",
+  "city": "PRAGUE",
+  "city_name": "Prague",
+  "timezone": "Europe/Prague",
+  "cameras": [
+    {
+      "id": "cz-prg-old-town-camstreamer",
+      "name": "Prague Historic Center & Vltava Skyline",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Smetanovo nábřeží",
+        "Karlův most",
+        "Staré Město"
+      ],
+      "municipality": "Praha 1 (Staré Město)",
+      "category": "BRIDGES",
+      "direction": "Across central Prague rooftops and the Vltava corridor powered by CamStreamer",
+      "poster_url": "https://i.ytimg.com/vi/kvYMIaXclIE/hqdefault.jpg",
+      "coordinates": {
+        "lat": 50.0847,
+        "lon": 14.4141
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=kvYMIaXclIE"
+        }
+      ]
+    },
+    {
+      "id": "cz-prg-city-center-its",
+      "name": "Prague City Center Live Panorama",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Magistrála",
+        "Nové Město",
+        "Vinohrady"
+      ],
+      "municipality": "Praha 2",
+      "category": "BOULEVARDS",
+      "direction": "Elevated view over central Prague avenues and historic spires",
+      "poster_url": "https://i.ytimg.com/vi/3C8W4Rlgiog/hqdefault.jpg",
+      "coordinates": {
+        "lat": 50.0755,
+        "lon": 14.4306
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=3C8W4Rlgiog"
+        }
+      ]
+    },
+    {
+      "id": "cz-prg-vaclav-havel-airport",
+      "name": "Václav Havel Airport Prague — Runway 06/24",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Aviatická",
+        "K Letišti",
+        "Na Staré silnici"
+      ],
+      "municipality": "Praha 6 (Ruzyně)",
+      "category": "HIGHWAYS",
+      "direction": "Northeast from the Kněževes spotting embankment across Runway 06/24 arrivals and departures",
+      "poster_url": "https://i.ytimg.com/vi/Deo_lcwn8lk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 50.1156,
+        "lon": 14.2651
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Deo_lcwn8lk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SlowTVLive/streams?match=Airport%7CPlanespotting"
+        }
+      ]
+    }
+  ]
+}

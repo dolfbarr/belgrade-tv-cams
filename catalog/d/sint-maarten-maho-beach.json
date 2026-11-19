@@ -1,0 +1,39 @@
+{
+  "country": "SINT_MAARTEN",
+  "country_name": "Sint Maarten",
+  "country_iso": "SX",
+  "city": "MAHO_BEACH",
+  "city_name": "Maho Beach",
+  "timezone": "America/Lower_Princes",
+  "cameras": [
+    {
+      "id": "sx-sxm-maho-beach-runway-10",
+      "name": "Princess Juliana Airport (SXM) Jet Blast — Maho Beach",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Rhine Rd",
+        "Beacon Hill Rd",
+        "Airport Rd"
+      ],
+      "municipality": "Simpson Bay",
+      "category": "BOULEVARDS",
+      "direction": "East across Maho Beach and Beacon Hill Road into Runway 10 threshold",
+      "poster_url": "https://i.ytimg.com/vi/N27ReV6sfYQ/hqdefault.jpg",
+      "coordinates": {
+        "lat": 18.0385,
+        "lon": -63.1185
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=N27ReV6sfYQ"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SHOWMECaribbean/streams?match=Maho%20Beach%7CSXM"
+        }
+      ]
+    }
+  ]
+}

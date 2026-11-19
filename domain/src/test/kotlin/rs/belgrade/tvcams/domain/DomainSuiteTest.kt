@@ -1061,18 +1061,22 @@ class DomainSuiteTest {
     }
 
     @Test
-    fun `whole-graph round trip of v5 world catalog preserves 13 countries, 22 cities, and live video in every city`() {
+    fun `whole-graph round trip of v5 world catalog preserves all countries, cities, and live video in every city`() {
         val catalogV5Path = System.getProperty("belgrade.catalog.v5.path")
         assertNotNull(catalogV5Path, "System property belgrade.catalog.v5.path must be set")
         val rawDiskJson = File(catalogV5Path).readText(Charsets.UTF_8)
         val decoded = CatalogJsonCodec.decode(rawDiskJson)
 
         assertEquals(5, decoded.schemaVersion)
-        assertEquals(225, decoded.cameras.size)
-        assertEquals(CameraCountry.entries.toSet(), decoded.cameras.map { it.resolvedCountry }.toSet())
-        assertEquals(CameraCity.entries.toSet(), decoded.cameras.map { it.city }.toSet())
+        assertEquals(301, decoded.cameras.size)
+        val countries = decoded.cameras.map { it.resolvedCountry }.toSet()
+        val cities = decoded.cameras.map { it.city }.toSet()
+        assertEquals(32, countries.size)
+        assertEquals(56, cities.size)
+        assertTrue(countries.containsAll(CameraCountry.entries))
+        assertTrue(cities.containsAll(CameraCity.entries))
 
-        CameraCity.entries.forEach { city ->
+        cities.forEach { city ->
             val cityCams = decoded.cameras.filter { it.city == city }
             assertTrue(
                 cityCams.any { it.isLiveVideo },
@@ -1295,5 +1299,41 @@ class DomainSuiteTest {
         val skipped = TvStageReducer.reduce(state, TvRemoteAction.AutoSkipOfflineCamera).state
         assertEquals("jp-tyo-4k", skipped.activeCameraId)
         assertEquals("Stream offline — skipping…", skipped.noticeMessage)
+    }
+
+    @Test
+    fun `stream payload parsers extract multi-camera youtube streams tab match and normalize channel urls`() {
+        assertEquals(
+            "Xiangshan|象山",
+            StreamPayloadParsers.extractYouTubeMatchQuery(
+                "https://www.youtube.com/@taipeitravelofficial/streams?match=Xiangshan%7C%E8%B1%A1%E5%B1%B1",
+            ),
+        )
+        assertNull(StreamPayloadParsers.extractYouTubeMatchQuery("https://www.youtube.com/@foo/streams"))
+        assertNull(StreamPayloadParsers.extractYouTubeMatchQuery("https://www.youtube.com/@foo/streams?match="))
+
+        assertEquals(
+            "https://www.youtube.com/@taipeitravelofficial/streams",
+            StreamPayloadParsers.normalizeYouTubeChannelEndpointUrl(
+                "https://m.youtube.com/@taipeitravelofficial/streams/?match=Xiangshan",
+            ),
+        )
+
+        val streamsHtml = """
+            "lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT","animationActivationTargetId":"VodReplay99"}}]}}]},"metadata":{"lockupMetadataViewModel":{"title":{"content":"Xiangshan Archive"}}}},
+            "lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE","animationActivationTargetId":"LiveXiang11"}}]}}]},"metadata":{"lockupMetadataViewModel":{"title":{"content":"\u3010Taipei 4K\u3011\u8c61\u5c71 Taipei 101"}}}},
+            {"videoRenderer":{"videoId":"LiveRialto2","title":{"runs":[{"text":"Venice Live: Rialto Bridge 4K"}]},"thumbnailOverlays":[{"thumbnailOverlayTimeStatusRenderer":{"style":"LIVE"}}]}}
+        """.trimIndent()
+
+        assertEquals(
+            "LiveXiang11",
+            StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "Xiangshan|象山"),
+        )
+        assertEquals(
+            "LiveRialto2",
+            StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "Rialto Bridge"),
+        )
+        assertNull(StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "Nonexistent"))
+        assertNull(StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "  |  "))
     }
 }

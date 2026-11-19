@@ -19,6 +19,14 @@ _YOUTUBE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
 _YOUTUBE_CHANNEL_LIVE_PATH_RE = re.compile(
     r"^/(?:channel/UC[A-Za-z0-9_-]{22}|@[A-Za-z0-9_.-]+)/live/?$"
 )
+_YOUTUBE_CHANNEL_STREAMS_PATH_RE = re.compile(
+    r"^/(?:channel/UC[A-Za-z0-9_-]{22}|@[A-Za-z0-9_.-]+)/streams/?$"
+)
+_YOUTUBE_LOCKUP_VID_RE = re.compile(
+    r'"(?:watchEndpoint":\{"videoId|addedVideoId|contentId|animationActivationTargetId)'
+    r'":"(?P<vid>[A-Za-z0-9_-]{11})"'
+)
+_UNICODE_ESCAPE_RE = re.compile(r"\\u([0-9a-fA-F]{4})")
 _YOUTUBE_CANONICAL_WATCH_RE = re.compile(
     r'rel="canonical"\s+href="https://www\.youtube\.com/watch\?v=(?P<vid>[A-Za-z0-9_-]{11})"'
 )
@@ -43,8 +51,8 @@ _YOUTUBE_INNERTUBE_HEADERS: dict[str, str] = {
 }
 _YOUTUBE_WEB_CONSENT_HEADERS: dict[str, str] = {
     "User-Agent": (
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) "
-        "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1"
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
     ),
     "Cookie": (
         "SOCS=CAISNQgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVy"
@@ -138,6 +146,100 @@ def extract_youtube_channel_live_url(url: str) -> str | None:
         return None
     normalized_path = parts.path.rstrip("/")
     return f"https://www.youtube.com{normalized_path}"
+
+
+def extract_youtube_streams_match_spec(url: str) -> tuple[str, str] | None:
+    trimmed = url.strip()
+    parts = urlsplit(trimmed)
+    host = parts.netloc.lower()
+    if not host.endswith("youtube.com"):
+        return None
+    if not _YOUTUBE_CHANNEL_STREAMS_PATH_RE.match(parts.path):
+        return None
+    qs = parse_qs(parts.query)
+    match_vals = qs.get("match", [])
+    if not match_vals or not match_vals[0].strip():
+        return None
+    normalized_path = parts.path.rstrip("/")
+    return f"https://www.youtube.com{normalized_path}", match_vals[0].strip()
+
+
+def extract_live_videos_from_streams_html(html_text: str) -> list[tuple[str, str]]:
+    discovered: list[tuple[str, str]] = []
+    seen: set[str] = set()
+
+    # 1. Modern YouTube Desktop Web schema (lockupViewModel)
+    for raw_chunk in html_text.split('"lockupViewModel":{')[1:]:
+        window = raw_chunk[:12_000]
+        if '"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE"' not in window:
+            continue
+        vid_match = _YOUTUBE_LOCKUP_VID_RE.search(window)
+        if vid_match is None:
+            continue
+        vid = vid_match.group("vid")
+        if not _YOUTUBE_ID_RE.match(vid) or vid in seen:
+            continue
+        title_marker = '"lockupMetadataViewModel":{"title":{"content":"'
+        t_idx = window.find(title_marker)
+        if t_idx >= 0:
+            start = t_idx + len(title_marker)
+            end = window.find('"}', start)
+            title_slice = window[start:end] if end > start else window[start : start + 500]
+        else:
+            title_slice = window[:700]
+        decoded_title = _UNICODE_ESCAPE_RE.sub(
+            lambda m: chr(int(m.group(1), 16)),
+            title_slice,
+        )
+        seen.add(vid)
+        discovered.append((vid, decoded_title))
+
+    # 2. Legacy / fallback YouTube Web schema (videoRenderer)
+    blocks = html_text.split('"videoRenderer":{"videoId":"')
+    for chunk in blocks[1:]:
+        window = chunk[:5_000]
+        vid = window[:11]
+        if not _YOUTUBE_ID_RE.match(vid) or vid in seen:
+            continue
+        if '"style":"LIVE"' not in window and '"BADGE_STYLE_TYPE_LIVE_NOW"' not in window:
+            continue
+        title_idx = window.find('"title":')
+        title_slice = window[title_idx : title_idx + 700] if title_idx >= 0 else window[:700]
+        decoded_title = _UNICODE_ESCAPE_RE.sub(
+            lambda m: chr(int(m.group(1), 16)),
+            title_slice,
+        )
+        seen.add(vid)
+        discovered.append((vid, decoded_title))
+    return discovered
+
+
+def _resolve_youtube_streams_match_id(
+    client: httpx.Client,
+    streams_url: str,
+    match_keyword: str,
+    streams_cache: dict[str, list[tuple[str, str]]] | None = None,
+) -> str | None:
+    if streams_cache is not None and streams_url in streams_cache:
+        live_items = streams_cache[streams_url]
+    else:
+        resp = client.get(streams_url, headers=_YOUTUBE_WEB_CONSENT_HEADERS)
+        if not (200 <= resp.status_code < 300):
+            if streams_cache is not None:
+                streams_cache[streams_url] = []
+            return None
+        live_items = extract_live_videos_from_streams_html(resp.text)
+        if streams_cache is not None:
+            streams_cache[streams_url] = live_items
+
+    needles = [part.strip().lower() for part in match_keyword.split("|") if part.strip()]
+    if not needles:
+        return None
+    for vid, title_text in live_items:
+        lowered_title = title_text.lower()
+        if any(needle in lowered_title for needle in needles):
+            return vid
+    return None
 
 
 def _resolve_youtube_canonical_live_id(
@@ -343,6 +445,7 @@ def refresh_youtube_live_urls(
     transport: httpx.BaseTransport | None = None,
 ) -> list[CameraEntry]:
     channel_live_cache: dict[str, str | None] = {}
+    streams_tab_cache: dict[str, list[tuple[str, str]]] = {}
     vid_health_cache: dict[str, bool] = {}
 
     with httpx.Client(
@@ -351,70 +454,125 @@ def refresh_youtube_live_urls(
         follow_redirects=True,
         transport=transport,
     ) as client:
+
+        def _is_vid_healthy(vid: str, watch_url: str) -> bool:
+            if vid not in vid_health_cache:
+                try:
+                    res = _probe_youtube_video_id(client, vid, watch_url)
+                    vid_health_cache[vid] = res.reachable
+                except (httpx.HTTPError, ValueError, KeyError):
+                    vid_health_cache[vid] = False
+            return vid_health_cache[vid]
+
+        def _resolve_channel_descriptor(url: str) -> str | None:
+            channel_live_url = extract_youtube_channel_live_url(url)
+            if channel_live_url is not None:
+                if channel_live_url not in channel_live_cache:
+                    try:
+                        channel_live_cache[channel_live_url] = _resolve_youtube_canonical_live_id(
+                            client, channel_live_url
+                        )
+                    except (httpx.HTTPError, ValueError, KeyError):
+                        channel_live_cache[channel_live_url] = None
+                return channel_live_cache[channel_live_url]
+
+            match_spec = extract_youtube_streams_match_spec(url)
+            if match_spec is not None:
+                streams_url, keyword = match_spec
+                try:
+                    return _resolve_youtube_streams_match_id(
+                        client,
+                        streams_url,
+                        keyword,
+                        streams_tab_cache,
+                    )
+                except (httpx.HTTPError, ValueError, KeyError):
+                    return None
+            return None
+
         updated_cameras: list[CameraEntry] = []
         for camera in cameras:
-            if len(camera.streams) < 2:
+            if not camera.streams:
                 updated_cameras.append(camera)
                 continue
             primary = camera.streams[0]
             if primary.type != StreamTransportType.YOUTUBE_LIVE:
                 updated_cameras.append(camera)
                 continue
+
             primary_vid = extract_youtube_video_id(primary.url)
             if primary_vid is None:
+                # Primary descriptor is a dynamic /live or /streams?match=... channel URL
+                promoted_vid: str | None = None
+                for s in camera.streams:
+                    if s.type != StreamTransportType.YOUTUBE_LIVE:
+                        continue
+                    cand_vid = _resolve_channel_descriptor(s.url) or extract_youtube_video_id(s.url)
+                    if cand_vid and _is_vid_healthy(
+                        cand_vid,
+                        f"https://www.youtube.com/watch?v={cand_vid}",
+                    ):
+                        promoted_vid = cand_vid
+                        break
+
+                if promoted_vid is None:
+                    updated_cameras.append(camera)
+                    continue
+
+                watch_desc = StreamDescriptor(
+                    type=StreamTransportType.YOUTUBE_LIVE,
+                    url=f"https://www.youtube.com/watch?v={promoted_vid}",
+                )
+                dedup_tail = tuple(s for s in camera.streams if s.url != watch_desc.url)
+                new_poster = camera.poster_url
+                if new_poster.startswith(("https://i.ytimg.com/", "https://www.youtube.com/")):
+                    new_poster = f"https://i.ytimg.com/vi/{promoted_vid}/hqdefault.jpg"
+                updated_cameras.append(
+                    replace(
+                        camera,
+                        poster_url=new_poster,
+                        streams=(watch_desc, *dedup_tail),
+                    )
+                )
+                continue
+
+            if len(camera.streams) < 2:
                 updated_cameras.append(camera)
                 continue
 
-            channel_live_url = next(
-                (
-                    url
-                    for s in camera.streams[1:]
-                    if s.type == StreamTransportType.YOUTUBE_LIVE
-                    and (url := extract_youtube_channel_live_url(s.url)) is not None
-                ),
-                None,
+            has_channel_fallback = any(
+                s.type == StreamTransportType.YOUTUBE_LIVE
+                and (
+                    extract_youtube_channel_live_url(s.url) is not None
+                    or extract_youtube_streams_match_spec(s.url) is not None
+                )
+                for s in camera.streams[1:]
             )
-            if channel_live_url is None:
+            if not has_channel_fallback:
                 updated_cameras.append(camera)
                 continue
 
-            if primary_vid not in vid_health_cache:
-                try:
-                    res = _probe_youtube_video_id(client, primary_vid, primary.url)
-                    vid_health_cache[primary_vid] = res.reachable
-                except (httpx.HTTPError, ValueError, KeyError):
-                    vid_health_cache[primary_vid] = False
-
-            if vid_health_cache[primary_vid]:
+            if _is_vid_healthy(primary_vid, primary.url):
                 updated_cameras.append(camera)
                 continue
 
-            if channel_live_url not in channel_live_cache:
-                try:
-                    channel_live_cache[channel_live_url] = _resolve_youtube_canonical_live_id(
-                        client,
-                        channel_live_url,
+            fresh_vid: str | None = None
+            for s in camera.streams[1:]:
+                if s.type != StreamTransportType.YOUTUBE_LIVE:
+                    continue
+                cand_vid = _resolve_channel_descriptor(s.url)
+                if (
+                    cand_vid is not None
+                    and cand_vid != primary_vid
+                    and _is_vid_healthy(
+                        cand_vid,
+                        f"https://www.youtube.com/watch?v={cand_vid}",
                     )
-                except (httpx.HTTPError, ValueError, KeyError):
-                    channel_live_cache[channel_live_url] = None
+                ):
+                    fresh_vid = cand_vid
+                    break
 
-            fresh_vid = channel_live_cache[channel_live_url]
-            if fresh_vid is None or fresh_vid == primary_vid:
-                updated_cameras.append(camera)
-                continue
-
-            if fresh_vid not in vid_health_cache:
-                try:
-                    fresh_res = _probe_youtube_video_id(
-                        client,
-                        fresh_vid,
-                        f"https://www.youtube.com/watch?v={fresh_vid}",
-                    )
-                    vid_health_cache[fresh_vid] = fresh_res.reachable
-                except (httpx.HTTPError, ValueError, KeyError):
-                    vid_health_cache[fresh_vid] = False
-
-            if not vid_health_cache[fresh_vid]:
+            if fresh_vid is None:
                 updated_cameras.append(camera)
                 continue
 
@@ -440,18 +598,31 @@ def _probe_single_stream(
                 with youtube_sem:
                     return _probe_youtube_video_id(client, video_id, stream.url)
             channel_live_url = extract_youtube_channel_live_url(stream.url)
-            if channel_live_url is None:
-                return ProbeResult(stream.url, False, None, "Invalid YouTube video ID")
-            with youtube_sem:
-                resolved_id = _resolve_youtube_canonical_live_id(client, channel_live_url)
-                if resolved_id is None:
-                    return ProbeResult(
-                        stream.url,
-                        False,
-                        200,
-                        "No active live broadcast on channel",
-                    )
-                return _probe_youtube_video_id(client, resolved_id, stream.url)
+            if channel_live_url is not None:
+                with youtube_sem:
+                    resolved_id = _resolve_youtube_canonical_live_id(client, channel_live_url)
+                    if resolved_id is None:
+                        return ProbeResult(
+                            stream.url,
+                            False,
+                            200,
+                            "No active live broadcast on channel",
+                        )
+                    return _probe_youtube_video_id(client, resolved_id, stream.url)
+            match_spec = extract_youtube_streams_match_spec(stream.url)
+            if match_spec is not None:
+                streams_url, keyword = match_spec
+                with youtube_sem:
+                    resolved_id = _resolve_youtube_streams_match_id(client, streams_url, keyword)
+                    if resolved_id is None:
+                        return ProbeResult(
+                            stream.url,
+                            False,
+                            200,
+                            f"No active live broadcast matching '{keyword}'",
+                        )
+                    return _probe_youtube_video_id(client, resolved_id, stream.url)
+            return ProbeResult(stream.url, False, None, "Invalid YouTube video ID")
 
         if stream.type == StreamTransportType.RUTUBE_LIVE:
             match = _RUTUBE_PAGE_RE.search(stream.url)

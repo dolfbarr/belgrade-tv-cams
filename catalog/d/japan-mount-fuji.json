@@ -1,0 +1,126 @@
+{
+  "country": "JAPAN",
+  "city": "MOUNT_FUJI",
+  "city_name": "Mount Fuji",
+  "timezone": "Asia/Tokyo",
+  "cameras": [
+    {
+      "id": "jp-fuj-oshino-hakkai-4k",
+      "name": "Mount Fuji World Heritage View — Oshino Hakkai",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Oshino Hakkai",
+        "Shibokusa-dori",
+        "Prefectural Route 717"
+      ],
+      "municipality": "Oshino, Yamanashi",
+      "category": "SQUARES",
+      "direction": "Southwest toward Mount Fuji summit across Oshino Hakkai thatched roofs",
+      "poster_url": "https://i.ytimg.com/vi/PxzwnWh1dKk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.4601,
+        "lon": 138.8329
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=PxzwnWh1dKk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@FujigokoTV/streams?match=%E5%BF%8D%E9%87%8E%E5%85%AB%E6%B5%B7%7COshino"
+        }
+      ]
+    },
+    {
+      "id": "jp-fuj-lake-kawaguchiko",
+      "name": "Mount Fuji from Lake Kawaguchiko",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Kohoku View Line",
+        "Prefectural Route 21",
+        "Oishi Park"
+      ],
+      "municipality": "Fujikawaguchiko, Yamanashi",
+      "category": "BOULEVARDS",
+      "direction": "South across Lake Kawaguchiko toward Mount Fuji",
+      "poster_url": "https://i.ytimg.com/vi/1cnReFAU04k/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.5229,
+        "lon": 138.7459
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=1cnReFAU04k"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@KawaguchikoTV/streams?match=%E6%B2%B3%E5%8F%A3%E6%B9%96%E3%81%8B%E3%82%89%E3%81%AE%7CKawaguchiko"
+        }
+      ]
+    },
+    {
+      "id": "jp-fuj-lake-yamanakako",
+      "name": "Mount Fuji from Lake Yamanakako",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Marimo-dori",
+        "Prefectural Route 729",
+        "Nagaike Shinsui Park"
+      ],
+      "municipality": "Yamanakako, Yamanashi",
+      "category": "BOULEVARDS",
+      "direction": "West-Southwest across Lake Yamanakako toward Mount Fuji",
+      "poster_url": "https://i.ytimg.com/vi/F2NbYrc-gBU/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.427,
+        "lon": 138.8713
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=F2NbYrc-gBU"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@KawaguchikoTV/streams?match=%E5%B1%B1%E4%B8%AD%E6%B9%96%7CYamanakako"
+        }
+      ]
+    },
+    {
+      "id": "jp-fuj-shizuoka-slopes",
+      "name": "Mount Fuji Southern Slopes — Fuji City Shizuoka",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Kashimacho",
+        "Prefectural Route 396",
+        "Tokaido Corridor"
+      ],
+      "municipality": "Fuji, Shizuoka",
+      "category": "BOULEVARDS",
+      "direction": "North toward Mount Fuji southern slopes and Hoei crater",
+      "poster_url": "https://i.ytimg.com/vi/hZ0wpgVLmJw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.1592,
+        "lon": 138.6505
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=hZ0wpgVLmJw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@isobeshiki/streams?match=%E5%AF%8C%E5%A3%AB%E5%B1%B1%7CMount%20Fuji"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@isobeshiki/live"
+        }
+      ]
+    }
+  ]
+}

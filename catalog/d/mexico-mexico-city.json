@@ -1,0 +1,39 @@
+{
+  "country": "MEXICO",
+  "country_name": "Mexico",
+  "country_iso": "MX",
+  "city": "MEXICO_CITY",
+  "city_name": "Mexico City",
+  "timezone": "America/Mexico_City",
+  "cameras": [
+    {
+      "id": "mx-mex-zocalo-constitucion",
+      "name": "Zócalo — Plaza de la Constitución",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Plaza de la Constitución",
+        "Av. 16 de Septiembre",
+        "Av. Francisco I. Madero"
+      ],
+      "municipality": "Cuauhtémoc, Ciudad de México",
+      "category": "SQUARES",
+      "direction": "Northeast from Gran Hotel Ciudad de México across the Zócalo toward the Metropolitan Cathedral and National Palace",
+      "poster_url": "https://i.ytimg.com/vi/PlFvNP1YNGY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 19.4325,
+        "lon": -99.1333
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=PlFvNP1YNGY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@webcamsdemexico/streams?match=Z%C3%B3calo%7CZocalo%7CConstituci%C3%B3n%7CCDMX"
+        }
+      ]
+    }
+  ]
+}

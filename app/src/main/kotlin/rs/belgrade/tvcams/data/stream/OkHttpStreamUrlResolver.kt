@@ -124,11 +124,12 @@ class OkHttpStreamUrlResolver(
     }.getOrNull()
 
     private fun resolveCanonicalYouTubeLiveId(channelLiveUrl: String): String? = runCatching {
-        val watchUrl = StreamPayloadParsers.normalizeYouTubeLiveWatchUrl(channelLiveUrl)
+        val matchKeyword = StreamPayloadParsers.extractYouTubeMatchQuery(channelLiveUrl)
+        val endpointUrl = StreamPayloadParsers.normalizeYouTubeChannelEndpointUrl(channelLiveUrl)
         val req = Request.Builder()
-            .url(watchUrl)
+            .url(endpointUrl)
             .get()
-            .header("User-Agent", StreamPayloadParsers.YOUTUBE_IOS_SAFARI_UA)
+            .header("User-Agent", StreamPayloadParsers.YOUTUBE_DESKTOP_WEB_UA)
             .header("Cookie", StreamPayloadParsers.YOUTUBE_SOCS_COOKIE)
             .header("Accept-Language", "en-US,en;q=0.9")
             .build()
@@ -136,7 +137,11 @@ class OkHttpStreamUrlResolver(
         generalHttpClient.newCall(req).execute().use { resp ->
             if (!resp.isSuccessful) return@use null
             val html = resp.body?.string() ?: return@use null
-            StreamPayloadParsers.extractYouTubeCanonicalVideoId(html)
+            if (matchKeyword != null) {
+                StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(html, matchKeyword)
+            } else {
+                StreamPayloadParsers.extractYouTubeCanonicalVideoId(html)
+            }
         }
     }.getOrNull()
 

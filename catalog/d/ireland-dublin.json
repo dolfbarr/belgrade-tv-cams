@@ -1,0 +1,35 @@
+{
+  "country": "IRELAND",
+  "country_name": "Ireland",
+  "country_iso": "IE",
+  "city": "DUBLIN",
+  "city_name": "Dublin",
+  "timezone": "Europe/Dublin",
+  "cameras": [
+    {
+      "id": "ie-dub-temple-bar",
+      "name": "Temple Bar Crossroads",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Temple Bar",
+        "Temple Lane South",
+        "Fleet Street"
+      ],
+      "municipality": "Dublin 2",
+      "category": "SQUARES",
+      "direction": "Overhead view of cobblestone pedestrian life outside The Temple Bar in central Dublin",
+      "poster_url": "https://i.ytimg.com/vi/3nyPER2kzqk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 53.3455,
+        "lon": -6.2642
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=3nyPER2kzqk"
+        }
+      ]
+    }
+  ]
+}

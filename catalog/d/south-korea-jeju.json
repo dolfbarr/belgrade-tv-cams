@@ -1,0 +1,37 @@
+{
+  "country": "SOUTH_KOREA",
+  "city": "JEJU",
+  "city_name": "Jeju Island",
+  "timezone": "Asia/Seoul",
+  "cameras": [
+    {
+      "id": "kr-cju-seongsan-ilchulbong",
+      "name": "Seongsan Ilchulbong (Sunrise Peak) & Coast",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Ilchul-ro",
+        "Seongsan Ilchulbong",
+        "Goseong-ri"
+      ],
+      "municipality": "Seogwipo-si, Jeju",
+      "category": "SQUARES",
+      "direction": "East across the volcanic tuff cone of Seongsan Ilchulbong and Jeju eastern coastline",
+      "poster_url": "https://i.ytimg.com/vi/udRDI1uDdvQ/hqdefault.jpg",
+      "coordinates": {
+        "lat": 33.4581,
+        "lon": 126.9425
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=udRDI1uDdvQ"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@GiGAeyesLiveTV/streams?match=%EC%84%B1%EC%82%B0%EC%9D%BC%EC%B6%9C%EB%B4%89%7CSeongsan"
+        }
+      ]
+    }
+  ]
+}

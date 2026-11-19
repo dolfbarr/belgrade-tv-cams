@@ -1,0 +1,39 @@
+{
+  "country": "SWITZERLAND",
+  "country_name": "Switzerland",
+  "country_iso": "CH",
+  "city": "ZERMATT",
+  "city_name": "Swiss Alps",
+  "timezone": "Europe/Zurich",
+  "cameras": [
+    {
+      "id": "ch-zmt-schweiz-panorama",
+      "name": "Swiss Alps & Matterhorn Panorama",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Gornergrat",
+        "Bahnhofstrasse",
+        "Hofmattstrasse"
+      ],
+      "municipality": "Gemeinde Zermatt",
+      "category": "SQUARES",
+      "direction": "Southwest across high-alpine Swiss peaks including the Matterhorn and Valais glaciers",
+      "poster_url": "https://i.ytimg.com/vi/enYFXf8u7Lc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.9833,
+        "lon": 7.7822
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=enYFXf8u7Lc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@feratel_yourwindowtotheworld/streams?match=Schweiz%20Panorama%7CSwiss%20Alps"
+        }
+      ]
+    }
+  ]
+}

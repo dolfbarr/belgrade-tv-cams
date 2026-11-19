@@ -1,0 +1,70 @@
+{
+  "country": "GERMANY",
+  "city": "HAMBURG",
+  "city_name": "Hamburg",
+  "timezone": "Europe/Berlin",
+  "cameras": [
+    {
+      "id": "de-ham-port-elbphilharmonie",
+      "name": "Port of Hamburg & Elbphilharmonie",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Platz der Deutschen Einheit",
+        "Am Kaiserkai",
+        "Bei den St. Pauli-Landungsbrücken"
+      ],
+      "municipality": "Hamburg-Mitte",
+      "category": "BRIDGES",
+      "direction": "West across the Norderelbe harbor channel, Landungsbrücken, and ship traffic",
+      "poster_url": "https://i.ytimg.com/vi/GF1DYvxDq44/hqdefault.jpg",
+      "coordinates": {
+        "lat": 53.5414,
+        "lon": 9.9842
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=GF1DYvxDq44"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Livespotting/streams?match=Hamburger%20Hafen%7CHamburg"
+        }
+      ]
+    },
+    {
+      "id": "de-ham-landungsbruecken-24",
+      "name": "St. Pauli Landungsbrücken & Cap San Diego",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Überseebrücke",
+        "Vorsetzen",
+        "Bei den St. Pauli-Landungsbrücken"
+      ],
+      "municipality": "Hamburg-Mitte",
+      "category": "BRIDGES",
+      "direction": "West-Northwest from Cap San Diego over Überseebrücke and St. Pauli Landungsbrücken",
+      "poster_url": "https://i.ytimg.com/vi/idYU-7HrTu8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 53.5432,
+        "lon": 9.9762
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=idYU-7HrTu8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@hamburghafenlive24/live"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@hamburghafenlive24/streams?match=Hamburg%20Hafen"
+        }
+      ]
+    }
+  ]
+}

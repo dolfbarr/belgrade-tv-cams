@@ -1,0 +1,74 @@
+{
+  "country": "JAPAN",
+  "city": "KYOTO",
+  "city_name": "Kyoto",
+  "timezone": "Asia/Tokyo",
+  "cameras": [
+    {
+      "id": "jp-kyo-higashiyama-kiyomizudera",
+      "name": "Higashiyama & Kiyomizu-dera Overlook",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Kiyomizu-zaka",
+        "Matsubara-dori",
+        "Otowa-san"
+      ],
+      "municipality": "Higashiyama-ku, Kyoto",
+      "category": "SQUARES",
+      "direction": "East toward Kiyomizu-dera pagoda and the Higashiyama mountain range",
+      "poster_url": "https://i.ytimg.com/vi/-nSBtuB98FM/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.9948,
+        "lon": 135.7849
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=-nSBtuB98FM"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@kyotolivecamera/streams?match=%E6%B8%85%E6%B0%B4%E5%AF%BA%7CKiyomizu"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@kyotolivecamera/live"
+        }
+      ]
+    },
+    {
+      "id": "jp-kyo-jr-station-shinkansen",
+      "name": "JR Kyoto Station Tokaido Shinkansen & Tracks",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "JR Kyoto Station",
+        "Hachijo-dori",
+        "Karasuma-dori"
+      ],
+      "municipality": "Shimogyo-ku, Kyoto",
+      "category": "HIGHWAYS",
+      "direction": "East-West along Tokaido Shinkansen, JR Kyoto Line, and Sagano Line tracks",
+      "poster_url": "https://i.ytimg.com/vi/TLkLbIDOb-I/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.9852,
+        "lon": 135.7584
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=TLkLbIDOb-I"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@JRKyotoStationLiveCam/streams?match=JR%E4%BA%AC%E9%83%BD%E9%A7%85%7CKyoto%20Station"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@JRKyotoStationLiveCam/live"
+        }
+      ]
+    }
+  ]
+}

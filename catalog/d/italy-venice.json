@@ -1,0 +1,153 @@
+{
+  "country": "ITALY",
+  "country_name": "Italy",
+  "country_iso": "IT",
+  "city": "VENICE",
+  "city_name": "Venice",
+  "timezone": "Europe/Rome",
+  "cameras": [
+    {
+      "id": "it-vce-rialto-bridge",
+      "name": "Rialto Bridge & Grand Canal",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Ponte di Rialto",
+        "Riva del Carbon",
+        "Canal Grande"
+      ],
+      "municipality": "San Marco, Venezia",
+      "category": "BRIDGES",
+      "direction": "Northeast from Palazzo Bembo along Riva del Carbon toward the Rialto Bridge and Grand Canal",
+      "poster_url": "https://i.ytimg.com/vi/nviU2HYj-Jc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4371,
+        "lon": 12.3351
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=nviU2HYj-Jc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Rialto"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-grand-canal-ca-angeli",
+      "name": "Grand Canal — Ca' Angeli",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Canal Grande",
+        "Calle del Traghetto della Madoneta",
+        "Riva del Vin"
+      ],
+      "municipality": "San Polo, Venezia",
+      "category": "BOULEVARDS",
+      "direction": "East from Ca' Angeli across the central bend of the Grand Canal toward San Marco palazzi",
+      "poster_url": "https://i.ytimg.com/vi/zKGzYuT5tg0/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4379,
+        "lon": 12.3312
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=zKGzYuT5tg0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Angeli"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-ponte-degli-scalzi",
+      "name": "Ponte degli Scalzi & Grand Canal",
+      "quality": "UHD_4K",
+      "streets": [
+        "Ponte degli Scalzi",
+        "Canal Grande",
+        "Rio Terà Lista di Spagna"
+      ],
+      "municipality": "Cannaregio, Venezia",
+      "category": "BRIDGES",
+      "direction": "South over the Ponte degli Scalzi stone arch bridge and western Grand Canal",
+      "poster_url": "https://i.ytimg.com/vi/9r4CJfpflmA/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4419,
+        "lon": 12.3226
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=9r4CJfpflmA"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Scalzi"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-ponte-delle-guglie",
+      "name": "Ponte delle Guglie & Cannaregio Canal",
+      "quality": "UHD_4K",
+      "streets": [
+        "Ponte delle Guglie",
+        "Canale di Cannaregio",
+        "Fondamenta di Cannaregio"
+      ],
+      "municipality": "Cannaregio, Venezia",
+      "category": "BRIDGES",
+      "direction": "Southeast along the Cannaregio Canal toward the obelisk-topped Ponte delle Guglie",
+      "poster_url": "https://i.ytimg.com/vi/GQbUdGhHw_o/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4442,
+        "lon": 12.325
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=GQbUdGhHw_o"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Guglie"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-bacino-san-marco",
+      "name": "St. Mark's Basin — Bacino di San Marco",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Bacino di San Marco",
+        "Riva dei Sette Martiri",
+        "Via Giuseppe Garibaldi"
+      ],
+      "municipality": "Castello, Venezia",
+      "category": "BOULEVARDS",
+      "direction": "Southwest from Hotel Ca' Formenta across Bacino di San Marco toward San Giorgio Maggiore",
+      "poster_url": "https://i.ytimg.com/vi/ASqGNET31VY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4325,
+        "lon": 12.3515
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=ASqGNET31VY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=San%20Marco%7CBacino"
+        }
+      ]
+    }
+  ]
+}

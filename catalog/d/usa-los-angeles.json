@@ -1,0 +1,90 @@
+{
+  "country": "USA",
+  "city": "LOS_ANGELES",
+  "city_name": "Los Angeles",
+  "timezone": "America/Los_Angeles",
+  "cameras": [
+    {
+      "id": "us-lax-venice-beach-boardwalk",
+      "name": "Venice Beach Boardwalk — Venice V Hotel",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Ocean Front Walk",
+        "Westminster Ave",
+        "Speedway"
+      ],
+      "municipality": "Venice, Los Angeles",
+      "category": "BOULEVARDS",
+      "direction": "West and northwest across Ocean Front Walk and Venice Beach shoreline",
+      "poster_url": "https://i.ytimg.com/vi/EO_1LWqsCNE/hqdefault.jpg",
+      "coordinates": {
+        "lat": 33.9882,
+        "lon": -118.4754
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=EO_1LWqsCNE"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Teleport.camera/streams?match=Venice%20Beach"
+        }
+      ]
+    },
+    {
+      "id": "us-lax-runways-25l-25r",
+      "name": "LAX Airport Runways 25L/25R — H Hotel Rooftop",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "W Century Blvd",
+        "Aviation Blvd",
+        "World Way"
+      ],
+      "municipality": "Los Angeles",
+      "category": "HIGHWAYS",
+      "direction": "Southwest from H Hotel rooftop toward LAX South Complex Runways 25L and 25R",
+      "poster_url": "https://i.ytimg.com/vi/KzsNnyN8D_Q/hqdefault.jpg",
+      "coordinates": {
+        "lat": 33.9459,
+        "lon": -118.3927
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=KzsNnyN8D_Q"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@AirlineVideosLivePlus/streams?match=LAX%7CLos%20Angeles"
+        }
+      ]
+    },
+    {
+      "id": "us-lax-us101-ventura-fwy",
+      "name": "US-101 Ventura Freeway at Ventura Blvd",
+      "quality": "HD_720P",
+      "streets": [
+        "US-101 (Ventura Fwy)",
+        "Ventura Blvd",
+        "Sepulveda Blvd"
+      ],
+      "municipality": "Sherman Oaks, Los Angeles",
+      "category": "HIGHWAYS",
+      "direction": "Along the US-101 Ventura Freeway corridor near Ventura Blvd and I-405 interchange",
+      "poster_url": "https://i.ytimg.com/vi/EO_1LWqsCNE/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.1583,
+        "lon": -118.4686
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://wzmedia.dot.ca.gov/D7/CCTV-101.stream/playlist.m3u8"
+        }
+      ]
+    }
+  ]
+}

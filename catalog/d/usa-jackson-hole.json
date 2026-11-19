@@ -1,0 +1,41 @@
+{
+  "country": "USA",
+  "city": "JACKSON_HOLE",
+  "city_name": "Jackson Hole",
+  "timezone": "America/Denver",
+  "cameras": [
+    {
+      "id": "us-jac-town-square-elk-arches",
+      "name": "Jackson Town Square Elk Antler Arches",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "W Broadway",
+        "N Cache St",
+        "E Deloney Ave"
+      ],
+      "municipality": "Jackson, Wyoming",
+      "category": "SQUARES",
+      "direction": "Northeast from Broadway and Cache St across the southwest Elk Antler Arch of Town Square",
+      "poster_url": "https://i.ytimg.com/vi/1EiC9bvVGnk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.4731,
+        "lon": -110.7629
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=1EiC9bvVGnk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=FmoclK_hKz8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SeeJH/streams?match=Town%20Square"
+        }
+      ]
+    }
+  ]
+}

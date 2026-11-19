@@ -1,0 +1,37 @@
+{
+  "country": "USA",
+  "city": "SAN_FRANCISCO",
+  "city_name": "San Francisco",
+  "timezone": "America/Los_Angeles",
+  "cameras": [
+    {
+      "id": "us-sfo-bay-bridge-embarcadero",
+      "name": "San Francisco–Oakland Bay Bridge & Embarcadero",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Front St",
+        "The Embarcadero",
+        "Green St"
+      ],
+      "municipality": "San Francisco",
+      "category": "BRIDGES",
+      "direction": "Southeast across the Embarcadero waterfront toward the Bay Bridge West Span",
+      "poster_url": "https://i.ytimg.com/vi/G8RIAgPxaMc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 37.8001,
+        "lon": -122.3999
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=G8RIAgPxaMc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@abc7news/streams?match=Bay%20Bridge%7CSan%20Francisco%7CRoof%20Cam"
+        }
+      ]
+    }
+  ]
+}
