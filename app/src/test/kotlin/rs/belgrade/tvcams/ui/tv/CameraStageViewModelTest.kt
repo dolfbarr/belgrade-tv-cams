@@ -26,6 +26,10 @@ import rs.belgrade.tvcams.domain.catalog.CatalogCacheStore
 import rs.belgrade.tvcams.domain.catalog.CatalogSeedSource
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogClient
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogResult
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
+import rs.belgrade.tvcams.domain.currency.CurrencyQuote
+import rs.belgrade.tvcams.domain.currency.CurrencyQuoteFormatter
+import rs.belgrade.tvcams.domain.currency.CurrencyRepository
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
@@ -49,11 +53,13 @@ import rs.belgrade.tvcams.domain.tv.TvRemoteAction
 import rs.belgrade.tvcams.domain.weather.CurrentWeather
 import rs.belgrade.tvcams.domain.weather.WeatherCondition
 import rs.belgrade.tvcams.domain.weather.WeatherRepository
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 import rs.belgrade.tvcams.player.PlaybackTelemetry
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -146,6 +152,22 @@ class CameraStageViewModelTest {
 
         override suspend fun setShowSolarOverlay(enabled: Boolean) {
             state.value = state.value.copy(showSolarOverlay = enabled)
+        }
+
+        override suspend fun setShowCurrencyOverlay(enabled: Boolean) {
+            state.value = state.value.copy(showCurrencyOverlay = enabled)
+        }
+
+        override suspend fun setBaseCurrencyPreference(preference: BaseCurrencyPreference) {
+            state.value = state.value.copy(baseCurrencyPreference = preference)
+        }
+
+        override suspend fun setStreamAudioEnabled(enabled: Boolean) {
+            state.value = state.value.copy(streamAudioEnabled = enabled)
+        }
+
+        override suspend fun setWeatherUnitSystem(unitSystem: WeatherUnitSystem) {
+            state.value = state.value.copy(weatherUnitSystem = unitSystem)
         }
 
         override suspend fun setOledProtectionEnabled(enabled: Boolean) {
@@ -380,6 +402,96 @@ class CameraStageViewModelTest {
             vm.updateTelemetry(PlaybackTelemetry.PlayingLive(StreamTransportType.YOUTUBE_LIVE))
             runCurrent()
             assertEquals(0, vm.consecutiveAutoSkips.value)
+        } finally {
+            vmStore.clear()
+        }
+    }
+
+    @Test
+    fun currencyObservationSameCurrencySuppressionAndAudioUnitPrefsPersist() = runTest(testDispatcher) {
+        val cams = listOf(
+            testCam("rs-bg", "Slavija", CameraCountry.SERBIA, CameraCity.BELGRADE),
+            testCam("jp-tyo", "Shibuya", CameraCountry.JAPAN, CameraCity.TOKYO),
+        )
+        val coordinator = CatalogBootstrapCoordinator(
+            seedSource = object : CatalogSeedSource {
+                override suspend fun readSeed(): CatalogManifest =
+                    CatalogManifest(5, 50L, "2026-11-20T00:00:00Z", cams)
+            },
+            cacheStore = object : CatalogCacheStore {
+                override suspend fun readCached(): CatalogManifest? = null
+                override suspend fun readETag(): String? = null
+                override suspend fun writeCached(manifest: CatalogManifest, etag: String?) = Unit
+            },
+            remoteClient = object : RemoteCatalogClient {
+                override suspend fun fetchCatalog(ifNoneMatch: String?): RemoteCatalogResult =
+                    RemoteCatalogResult.NotModified
+            },
+        )
+        val favRepo = FakeFavoritesRepository(
+            ViewerPreferences(
+                baseCurrencyPreference = BaseCurrencyPreference.EUR,
+                showWeatherOverlay = false,
+                showAirQualityOverlay = false,
+                showSolarOverlay = false,
+            ),
+        )
+        val fxRepo = object : CurrencyRepository {
+            override suspend fun getQuoteForCountry(
+                baseCurrency: String,
+                countryIsoAlpha2: String?,
+            ): CurrencyQuote? {
+                return when (countryIsoAlpha2) {
+                    "RS" -> CurrencyQuoteFormatter.format(baseCurrency, "RSD", 117.1, 1_000L)
+                    "JP" -> CurrencyQuoteFormatter.format(baseCurrency, "JPY", 175.0, 1_000L)
+                    else -> null
+                }
+            }
+        }
+        val noopWeather = object : WeatherRepository {
+            override suspend fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather? = null
+        }
+        val noopAqi = object : AirQualityRepository {
+            override suspend fun getCurrentAirQuality(lat: Double, lon: Double): CurrentAirQuality? = null
+        }
+
+        val vmStore = ViewModelStore()
+        try {
+            val vm = ViewModelProvider(
+                vmStore,
+                CameraStageViewModel.Factory(
+                    catalogCoordinator = coordinator,
+                    favoritesRepository = favRepo,
+                    weatherRepository = noopWeather,
+                    airQualityRepository = noopAqi,
+                    currencyRepository = fxRepo,
+                ),
+            )[CameraStageViewModel::class.java]
+
+            runCurrent()
+            assertEquals("1 EUR = 117.1 RSD", vm.currentCurrencyQuote.value?.compactLabel)
+
+            // Zapping to Japan updates FX quote to JPY
+            vm.dispatch(TvRemoteAction.SelectCamera("jp-tyo"))
+            runCurrent()
+            assertEquals("1 EUR = 175.0 JPY", vm.currentCurrencyQuote.value?.compactLabel)
+
+            // Cycling Home Currency to RSD while viewing Serbia suppresses same-currency pill
+            vm.dispatch(TvRemoteAction.SelectCamera("rs-bg"))
+            vm.dispatch(TvRemoteAction.CycleBaseCurrencyPreference) // EUR -> USD
+            vm.dispatch(TvRemoteAction.CycleBaseCurrencyPreference) // USD -> RSD
+            runCurrent()
+            assertEquals(BaseCurrencyPreference.RSD, favRepo.state.value.baseCurrencyPreference)
+            assertNull(vm.currentCurrencyQuote.value)
+
+            // Toggling audio, weather units, and currency overlay persists to DataStore repository
+            vm.dispatch(TvRemoteAction.ToggleStreamAudio)
+            vm.dispatch(TvRemoteAction.CycleWeatherUnitSystem)
+            vm.dispatch(TvRemoteAction.ToggleCurrencyOverlay)
+            runCurrent()
+            assertTrue(favRepo.state.value.streamAudioEnabled)
+            assertEquals(WeatherUnitSystem.METRIC, favRepo.state.value.weatherUnitSystem)
+            assertFalse(favRepo.state.value.showCurrencyOverlay)
         } finally {
             vmStore.clear()
         }

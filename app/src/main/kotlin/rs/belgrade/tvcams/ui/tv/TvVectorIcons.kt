@@ -967,3 +967,112 @@ fun SettingsSlidersIcon(
         drawCircle(color = resolvedColor, radius = knobR, center = Offset(w * 0.68f, h * 0.72f))
     }
 }
+
+@Composable
+fun CurrencyExchangeIcon(
+    size: Dp = 16.dp,
+    color: Color = Color(0xFF38BDF8),
+    modifier: Modifier = Modifier,
+) {
+    Canvas(modifier = modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = w * 0.11f
+        drawCircle(
+            color = color,
+            radius = w * 0.40f,
+            center = Offset(w * 0.5f, h * 0.5f),
+            style = Stroke(width = stroke),
+        )
+        // Top-right exchange arrow
+        drawLine(
+            color = color,
+            start = Offset(w * 0.32f, h * 0.40f),
+            end = Offset(w * 0.68f, h * 0.40f),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+        drawLine(
+            color = color,
+            start = Offset(w * 0.56f, h * 0.29f),
+            end = Offset(w * 0.68f, h * 0.40f),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+        // Bottom-left exchange arrow
+        drawLine(
+            color = color,
+            start = Offset(w * 0.68f, h * 0.60f),
+            end = Offset(w * 0.32f, h * 0.60f),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+        drawLine(
+            color = color,
+            start = Offset(w * 0.44f, h * 0.71f),
+            end = Offset(w * 0.32f, h * 0.60f),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+    }
+}
+
+@Composable
+fun SpeakerSoundIcon(
+    muted: Boolean,
+    size: Dp = 14.dp,
+    color: Color = Color.Unspecified,
+    modifier: Modifier = Modifier,
+) {
+    val resolvedColor = if (color == Color.Unspecified) Color(0xFFF8FAFC) else color
+    Canvas(modifier = modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = w * 0.11f
+        val cone = Path().apply {
+            moveTo(w * 0.12f, h * 0.38f)
+            lineTo(w * 0.30f, h * 0.38f)
+            lineTo(w * 0.52f, h * 0.18f)
+            lineTo(w * 0.52f, h * 0.82f)
+            lineTo(w * 0.30f, h * 0.62f)
+            lineTo(w * 0.12f, h * 0.62f)
+            close()
+        }
+        drawPath(path = cone, color = resolvedColor)
+        if (muted) {
+            drawLine(
+                color = resolvedColor,
+                start = Offset(w * 0.64f, h * 0.34f),
+                end = Offset(w * 0.90f, h * 0.66f),
+                strokeWidth = stroke,
+                cap = StrokeCap.Round,
+            )
+            drawLine(
+                color = resolvedColor,
+                start = Offset(w * 0.90f, h * 0.34f),
+                end = Offset(w * 0.64f, h * 0.66f),
+                strokeWidth = stroke,
+                cap = StrokeCap.Round,
+            )
+        } else {
+            drawArc(
+                color = resolvedColor,
+                startAngle = -42f,
+                sweepAngle = 84f,
+                useCenter = false,
+                topLeft = Offset(w * 0.46f, h * 0.28f),
+                size = Size(w * 0.28f, h * 0.44f),
+                style = Stroke(width = stroke, cap = StrokeCap.Round),
+            )
+            drawArc(
+                color = resolvedColor.copy(alpha = 0.78f),
+                startAngle = -46f,
+                sweepAngle = 92f,
+                useCenter = false,
+                topLeft = Offset(w * 0.54f, h * 0.16f),
+                size = Size(w * 0.36f, h * 0.68f),
+                style = Stroke(width = stroke * 0.9f, cap = StrokeCap.Round),
+            )
+        }
+    }
+}

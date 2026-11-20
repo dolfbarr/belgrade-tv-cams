@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                 favoritesRepository = appContainer.favoritesRepository,
                 weatherRepository = appContainer.weatherRepository,
                 airQualityRepository = appContainer.airQualityRepository,
+                currencyRepository = appContainer.currencyRepository,
                 homeChannelSynchronizer = appContainer.homeChannelSynchronizer,
                 initialDeepLinkCameraId = deepLinkId,
             ),
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
                 val streamRetryNonce by vm.streamRetryNonce.collectAsStateWithLifecycle()
                 val currentWeather by vm.currentWeather.collectAsStateWithLifecycle()
                 val currentAirQuality by vm.currentAirQuality.collectAsStateWithLifecycle()
+                val currentCurrencyQuote by vm.currentCurrencyQuote.collectAsStateWithLifecycle()
 
                 LaunchedEffect(vm) {
                     vm.exitEvents.collect {
@@ -68,6 +70,7 @@ class MainActivity : ComponentActivity() {
                     telemetry = telemetry,
                     currentWeather = currentWeather,
                     currentAirQuality = currentAirQuality,
+                    currentCurrencyQuote = currentCurrencyQuote,
                     httpClient = appContainer.mediaHttpClient,
                     streamResolver = appContainer.streamUrlResolver,
                     onAction = vm::dispatch,

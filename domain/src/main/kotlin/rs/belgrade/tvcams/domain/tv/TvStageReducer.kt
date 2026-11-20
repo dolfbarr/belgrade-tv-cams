@@ -1,5 +1,6 @@
 package rs.belgrade.tvcams.domain.tv
 
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
 import rs.belgrade.tvcams.domain.favorites.PerformanceMode
@@ -10,6 +11,7 @@ import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
 import rs.belgrade.tvcams.domain.model.CameraCity
 import rs.belgrade.tvcams.domain.model.CameraCountry
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 
 private val CAMERA_DISPLAY_COMPARATOR: Comparator<Camera> =
     compareBy<Camera> { it.resolvedCountry.sortOrder }
@@ -78,6 +80,11 @@ sealed interface TvRemoteAction {
     data object ToggleWeatherOverlay : TvRemoteAction
     data object ToggleAirQualityOverlay : TvRemoteAction
     data object ToggleSolarOverlay : TvRemoteAction
+    data object ToggleCurrencyOverlay : TvRemoteAction
+    data object CycleBaseCurrencyPreference : TvRemoteAction
+    data object ToggleStreamAudio : TvRemoteAction
+    data class StreamAudioTrackChanged(val hasAudioTrack: Boolean?) : TvRemoteAction
+    data object CycleWeatherUnitSystem : TvRemoteAction
     data object ToggleOledProtection : TvRemoteAction
     data object ShowAllQualities : TvRemoteAction
     data object ShowAllTransports : TvRemoteAction
@@ -112,6 +119,11 @@ data class TvStageState(
     val showWeatherOverlay: Boolean,
     val showAirQualityOverlay: Boolean,
     val showSolarOverlay: Boolean,
+    val showCurrencyOverlay: Boolean = true,
+    val baseCurrencyPreference: BaseCurrencyPreference = BaseCurrencyPreference.AUTO,
+    val streamAudioEnabled: Boolean = false,
+    val activeStreamHasAudioTrack: Boolean? = null,
+    val weatherUnitSystem: WeatherUnitSystem = WeatherUnitSystem.AUTO,
     val oledProtectionEnabled: Boolean,
     val noticeMessage: String?,
     val catalogBootstrapState: CatalogBootstrapState = CatalogBootstrapState.Ready,
@@ -124,7 +136,11 @@ data class TvStageState(
         get() = activeCamera?.id?.let { favoriteIds.contains(it) } ?: false
 
     val hasAnyAmbientOverlay: Boolean
-        get() = showClockOverlay || showWeatherOverlay || showAirQualityOverlay || showSolarOverlay
+        get() = showClockOverlay ||
+            showWeatherOverlay ||
+            showAirQualityOverlay ||
+            showSolarOverlay ||
+            showCurrencyOverlay
 
     val hdTotalCount: Int
         get() = cameras.count { it.resolvedQuality.isHd }
@@ -331,6 +347,10 @@ data class TvStageState(
             showWeatherOverlay: Boolean = true,
             showAirQualityOverlay: Boolean = true,
             showSolarOverlay: Boolean = true,
+            showCurrencyOverlay: Boolean = true,
+            baseCurrencyPreference: BaseCurrencyPreference = BaseCurrencyPreference.AUTO,
+            streamAudioEnabled: Boolean = false,
+            weatherUnitSystem: WeatherUnitSystem = WeatherUnitSystem.AUTO,
             oledProtectionEnabled: Boolean = true,
             initialOverlayMode: OverlayMode = OverlayMode.HUD_VISIBLE,
             catalogBootstrapState: CatalogBootstrapState = CatalogBootstrapState.Ready,
@@ -351,6 +371,7 @@ data class TvStageState(
             val resolvedId = initialCameraId
                 ?.takeIf { id -> matchingPool.any { it.id == id } }
                 ?: matchingPool.firstOrNull()?.id
+            val resolvedCam = cameras.firstOrNull { it.id == resolvedId } ?: cameras.firstOrNull()
             return TvStageState(
                 cameras = cameras,
                 activeCameraId = resolvedId,
@@ -368,6 +389,11 @@ data class TvStageState(
                 showWeatherOverlay = showWeatherOverlay,
                 showAirQualityOverlay = showAirQualityOverlay,
                 showSolarOverlay = showSolarOverlay,
+                showCurrencyOverlay = showCurrencyOverlay,
+                baseCurrencyPreference = baseCurrencyPreference,
+                streamAudioEnabled = streamAudioEnabled,
+                activeStreamHasAudioTrack = if (resolvedCam?.isLiveVideo == false) false else null,
+                weatherUnitSystem = weatherUnitSystem,
                 oledProtectionEnabled = oledProtectionEnabled,
                 noticeMessage = null,
                 catalogBootstrapState = catalogBootstrapState,
@@ -812,6 +838,56 @@ object TvStageReducer {
             )
         }
 
+        TvRemoteAction.ToggleCurrencyOverlay -> {
+            val nextCurrency = !state.showCurrencyOverlay
+            TvStageTransition(
+                state.copy(
+                    showCurrencyOverlay = nextCurrency,
+                    noticeMessage = if (nextCurrency) "Currency overlay: On" else "Currency overlay: Off",
+                ),
+            )
+        }
+
+        TvRemoteAction.CycleBaseCurrencyPreference -> {
+            val nextPref = state.baseCurrencyPreference.next()
+            TvStageTransition(
+                state.copy(
+                    baseCurrencyPreference = nextPref,
+                    noticeMessage = "Home currency: ${nextPref.displayLabel()}",
+                ),
+            )
+        }
+
+        TvRemoteAction.ToggleStreamAudio -> {
+            val nextAudio = !state.streamAudioEnabled
+            val notice = when {
+                !nextAudio -> "Sound: Muted"
+                state.activeCamera?.isLiveVideo == false || state.activeStreamHasAudioTrack == false ->
+                    "Sound: On · No audio on this camera"
+                else -> "Sound: On"
+            }
+            TvStageTransition(
+                state.copy(
+                    streamAudioEnabled = nextAudio,
+                    noticeMessage = notice,
+                ),
+            )
+        }
+
+        is TvRemoteAction.StreamAudioTrackChanged -> TvStageTransition(
+            state.copy(activeStreamHasAudioTrack = action.hasAudioTrack),
+        )
+
+        TvRemoteAction.CycleWeatherUnitSystem -> {
+            val nextUnits = state.weatherUnitSystem.next()
+            TvStageTransition(
+                state.copy(
+                    weatherUnitSystem = nextUnits,
+                    noticeMessage = "Weather units: ${nextUnits.displayLabel()}",
+                ),
+            )
+        }
+
         TvRemoteAction.ToggleOledProtection -> {
             val nextOled = !state.oledProtectionEnabled
             TvStageTransition(
@@ -837,9 +913,17 @@ object TvStageReducer {
                 } else {
                     TransportFilter.ALL
                 }
+                val changedCam = target.id != state.activeCameraId
                 TvStageTransition(
                     state.copy(
                         activeCameraId = target.id,
+                        activeStreamHasAudioTrack = if (!target.isLiveVideo) {
+                            false
+                        } else if (changedCam) {
+                            null
+                        } else {
+                            state.activeStreamHasAudioTrack
+                        },
                         qualityFilter = updatedQualityFilter,
                         transportFilter = updatedTransportFilter,
                         pendingChannelDigits = "",
@@ -927,9 +1011,17 @@ object TvStageReducer {
         val channelNum = state.pendingChannelDigits.toIntOrNull()
         return if (channelNum != null && channelNum in 1..playlist.size) {
             val target = playlist[channelNum - 1]
+            val changedCam = target.id != state.activeCameraId
             TvStageTransition(
                 state.copy(
                     activeCameraId = target.id,
+                    activeStreamHasAudioTrack = if (!target.isLiveVideo) {
+                        false
+                    } else if (changedCam) {
+                        null
+                    } else {
+                        state.activeStreamHasAudioTrack
+                    },
                     pendingChannelDigits = "",
                     overlayMode = OverlayMode.HUD_VISIBLE,
                     hudPinned = false,
@@ -965,8 +1057,17 @@ object TvStageReducer {
             if (it >= 0) it else 0
         }
         val nextIndex = Math.floorMod(currentIndex + step, playlist.size)
+        val nextCam = playlist[nextIndex]
+        val changedCam = nextCam.id != state.activeCameraId
         return state.copy(
-            activeCameraId = playlist[nextIndex].id,
+            activeCameraId = nextCam.id,
+            activeStreamHasAudioTrack = if (!nextCam.isLiveVideo) {
+                false
+            } else if (changedCam) {
+                null
+            } else {
+                state.activeStreamHasAudioTrack
+            },
             overlayMode = if (preserveOverlay) state.overlayMode else OverlayMode.HUD_VISIBLE,
             hudPinned = if (preserveOverlay) state.hudPinned else false,
         )

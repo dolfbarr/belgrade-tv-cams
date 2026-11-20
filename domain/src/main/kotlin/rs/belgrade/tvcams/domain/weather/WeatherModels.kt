@@ -48,6 +48,36 @@ object WmoWeatherMapper {
     }
 }
 
+@Serializable
+enum class WeatherUnitSystem {
+    AUTO,
+    METRIC,
+    IMPERIAL,
+    ;
+
+    fun next(): WeatherUnitSystem = when (this) {
+        AUTO -> METRIC
+        METRIC -> IMPERIAL
+        IMPERIAL -> AUTO
+    }
+
+    fun resolveEffective(locale: Locale = Locale.getDefault()): WeatherUnitSystem = when (this) {
+        AUTO -> if (locale.country.uppercase(Locale.ROOT) in IMPERIAL_REGIONS) IMPERIAL else METRIC
+        METRIC -> METRIC
+        IMPERIAL -> IMPERIAL
+    }
+
+    fun displayLabel(locale: Locale = Locale.getDefault()): String = when (this) {
+        AUTO -> if (resolveEffective(locale) == IMPERIAL) "Auto (°F, mph)" else "Auto (°C, km/h)"
+        METRIC -> "Metric (°C, km/h)"
+        IMPERIAL -> "Imperial (°F, mph)"
+    }
+
+    companion object {
+        private val IMPERIAL_REGIONS: Set<String> = setOf("US", "LR", "MM")
+    }
+}
+
 data class CurrentWeather(
     val temperatureCelsius: Double,
     val apparentTemperatureCelsius: Double,
@@ -57,20 +87,60 @@ data class CurrentWeather(
     val fetchedAtEpochMs: Long,
     val solarWindows: List<SolarWindow> = emptyList(),
 ) {
-    fun formattedSummary(): String = String.format(
-        Locale.US,
-        "%.1f°C · %s · %.0f km/h",
-        temperatureCelsius,
-        condition.displayLabel(isDay),
-        windSpeedKmh,
-    )
+    val temperatureFahrenheit: Double
+        get() = temperatureCelsius * 9.0 / 5.0 + 32.0
 
-    fun compactMetricsLabel(): String = String.format(
-        Locale.US,
-        "%.1f°C · %.0f km/h",
-        temperatureCelsius,
-        windSpeedKmh,
-    )
+    val apparentTemperatureFahrenheit: Double
+        get() = apparentTemperatureCelsius * 9.0 / 5.0 + 32.0
+
+    val windSpeedMph: Double
+        get() = windSpeedKmh * KMH_TO_MPH
+
+    fun formattedSummary(
+        unitSystem: WeatherUnitSystem = WeatherUnitSystem.METRIC,
+        locale: Locale = Locale.getDefault(),
+    ): String = when (unitSystem.resolveEffective(locale)) {
+        WeatherUnitSystem.IMPERIAL -> String.format(
+            Locale.US,
+            "%.0f°F · %s · %.0f mph",
+            temperatureFahrenheit,
+            condition.displayLabel(isDay),
+            windSpeedMph,
+        )
+        WeatherUnitSystem.METRIC,
+        WeatherUnitSystem.AUTO,
+        -> String.format(
+            Locale.US,
+            "%.1f°C · %s · %.0f km/h",
+            temperatureCelsius,
+            condition.displayLabel(isDay),
+            windSpeedKmh,
+        )
+    }
+
+    fun compactMetricsLabel(
+        unitSystem: WeatherUnitSystem = WeatherUnitSystem.METRIC,
+        locale: Locale = Locale.getDefault(),
+    ): String = when (unitSystem.resolveEffective(locale)) {
+        WeatherUnitSystem.IMPERIAL -> String.format(
+            Locale.US,
+            "%.0f°F · %.0f mph",
+            temperatureFahrenheit,
+            windSpeedMph,
+        )
+        WeatherUnitSystem.METRIC,
+        WeatherUnitSystem.AUTO,
+        -> String.format(
+            Locale.US,
+            "%.1f°C · %.0f km/h",
+            temperatureCelsius,
+            windSpeedKmh,
+        )
+    }
+
+    companion object {
+        private const val KMH_TO_MPH: Double = 0.621371
+    }
 }
 
 interface WeatherRepository {

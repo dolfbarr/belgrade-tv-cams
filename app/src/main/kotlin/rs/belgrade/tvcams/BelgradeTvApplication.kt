@@ -17,12 +17,16 @@ import rs.belgrade.tvcams.data.airquality.OpenMeteoAirQualityClient
 import rs.belgrade.tvcams.data.catalog.AssetCatalogSeedSource
 import rs.belgrade.tvcams.data.catalog.FileCatalogCacheStore
 import rs.belgrade.tvcams.data.catalog.OkHttpRemoteCatalogClient
+import rs.belgrade.tvcams.data.currency.FileCurrencyCacheStore
+import rs.belgrade.tvcams.data.currency.MultiMirrorCurrencyClient
 import rs.belgrade.tvcams.data.favorites.DataStoreFavoritesRepository
 import rs.belgrade.tvcams.data.stream.OkHttpStreamUrlResolver
 import rs.belgrade.tvcams.data.weather.OpenMeteoWeatherClient
 import rs.belgrade.tvcams.domain.airquality.AirQualityRepository
 import rs.belgrade.tvcams.domain.airquality.GridCachedAirQualityRepository
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
+import rs.belgrade.tvcams.domain.currency.CachedCurrencyRepository
+import rs.belgrade.tvcams.domain.currency.CurrencyRepository
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.weather.GridCachedWeatherRepository
 import rs.belgrade.tvcams.domain.weather.WeatherRepository
@@ -59,6 +63,11 @@ class AppContainer(application: Application) {
 
     val airQualityRepository: AirQualityRepository = GridCachedAirQualityRepository(
         upstream = OpenMeteoAirQualityClient(httpClient = httpClient),
+    )
+
+    val currencyRepository: CurrencyRepository = CachedCurrencyRepository(
+        upstream = MultiMirrorCurrencyClient(httpClient = httpClient),
+        cacheStore = FileCurrencyCacheStore(File(application.filesDir, "fx_cache")),
     )
 
     val homeChannelSynchronizer: TvHomeChannelSynchronizer = TvHomeChannelSynchronizer(

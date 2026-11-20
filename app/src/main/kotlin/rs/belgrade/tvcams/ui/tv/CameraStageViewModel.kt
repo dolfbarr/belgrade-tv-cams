@@ -25,6 +25,10 @@ import rs.belgrade.tvcams.domain.airquality.AirQualityRepository
 import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
 import rs.belgrade.tvcams.domain.catalog.CatalogBootstrapCoordinator
 import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
+import rs.belgrade.tvcams.domain.currency.CountryCurrencyResolver
+import rs.belgrade.tvcams.domain.currency.CurrencyQuote
+import rs.belgrade.tvcams.domain.currency.CurrencyRepository
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.model.Camera
@@ -45,6 +49,7 @@ class CameraStageViewModel(
     private val favoritesRepository: FavoritesRepository,
     private val weatherRepository: WeatherRepository,
     private val airQualityRepository: AirQualityRepository,
+    private val currencyRepository: CurrencyRepository? = null,
     private val homeChannelSynchronizer: TvHomeChannelSynchronizer? = null,
     private val initialDeepLinkCameraId: String? = null,
     private val isScreensaverMode: Boolean = false,
@@ -73,6 +78,9 @@ class CameraStageViewModel(
     private val _currentAirQuality = MutableStateFlow<CurrentAirQuality?>(null)
     val currentAirQuality: StateFlow<CurrentAirQuality?> = _currentAirQuality.asStateFlow()
 
+    private val _currentCurrencyQuote = MutableStateFlow<CurrencyQuote?>(null)
+    val currentCurrencyQuote: StateFlow<CurrencyQuote?> = _currentCurrencyQuote.asStateFlow()
+
     private val _exitEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val exitEvents = _exitEvents.asSharedFlow()
 
@@ -93,6 +101,7 @@ class CameraStageViewModel(
     private var autoHideEnabled: Boolean = true
     private var lastWeatherCity: SerbiaCity? = null
     private var lastAqiCity: SerbiaCity? = null
+    private var lastCurrencyIso: String? = null
     private var pendingDeepLinkCameraId: String? = initialDeepLinkCameraId
 
     private val _consecutiveAutoSkips = MutableStateFlow(0)
@@ -102,6 +111,7 @@ class CameraStageViewModel(
         bootstrap()
         observeActiveCameraWeather()
         observeActiveCameraAirQuality()
+        observeActiveCameraCurrency()
         observeAutoRotation()
         observeOfflineAutoSkip()
     }
@@ -147,6 +157,10 @@ class CameraStageViewModel(
                     showWeatherOverlay = prefs.showWeatherOverlay,
                     showAirQualityOverlay = prefs.showAirQualityOverlay,
                     showSolarOverlay = prefs.showSolarOverlay,
+                    showCurrencyOverlay = prefs.showCurrencyOverlay,
+                    baseCurrencyPreference = prefs.baseCurrencyPreference,
+                    streamAudioEnabled = prefs.streamAudioEnabled,
+                    weatherUnitSystem = prefs.weatherUnitSystem,
                     oledProtectionEnabled = prefs.oledProtectionEnabled,
                     initialOverlayMode = if (isScreensaverMode) OverlayMode.PURE_CAMERA else OverlayMode.HUD_VISIBLE,
                     catalogBootstrapState = CatalogBootstrapState.Ready,
@@ -246,6 +260,53 @@ class CameraStageViewModel(
                     delay(AIR_QUALITY_POLL_MS)
                 }
             }
+        }
+    }
+
+    private data class CurrencyObservationKey(
+        val countryIso: String?,
+        val showCurrency: Boolean,
+        val basePreference: BaseCurrencyPreference,
+    )
+
+    private fun observeActiveCameraCurrency() {
+        val repo = currencyRepository ?: return
+        viewModelScope.launch {
+            _stageState
+                .map { state ->
+                    CurrencyObservationKey(
+                        countryIso = state.activeCamera?.resolvedCountryIso,
+                        showCurrency = state.showCurrencyOverlay,
+                        basePreference = state.baseCurrencyPreference,
+                    )
+                }
+                .distinctUntilChanged()
+                .collectLatest { key ->
+                    val iso = key.countryIso
+                    if (!key.showCurrency || iso.isNullOrBlank()) {
+                        _currentCurrencyQuote.value = null
+                        lastCurrencyIso = null
+                        return@collectLatest
+                    }
+
+                    val baseCode = key.basePreference.resolveCurrencyCode()
+                    val localCandidates = CountryCurrencyResolver.resolveCurrencyCandidates(iso)
+                    if (localCandidates.isEmpty() || localCandidates.contains(baseCode)) {
+                        _currentCurrencyQuote.value = null
+                        lastCurrencyIso = iso
+                        return@collectLatest
+                    }
+
+                    if (lastCurrencyIso != null && lastCurrencyIso != iso) {
+                        _currentCurrencyQuote.value = null
+                    }
+                    while (isActive) {
+                        val quote = repo.getQuoteForCountry(baseCode, iso)
+                        lastCurrencyIso = iso
+                        _currentCurrencyQuote.value = quote
+                        delay(CURRENCY_POLL_MS)
+                    }
+                }
         }
     }
 
@@ -466,6 +527,34 @@ class CameraStageViewModel(
             }
         }
 
+        if (next.showCurrencyOverlay != previous.showCurrencyOverlay) {
+            val showCurrency = next.showCurrencyOverlay
+            viewModelScope.launch {
+                favoritesRepository.setShowCurrencyOverlay(showCurrency)
+            }
+        }
+
+        if (next.baseCurrencyPreference != previous.baseCurrencyPreference) {
+            val basePref = next.baseCurrencyPreference
+            viewModelScope.launch {
+                favoritesRepository.setBaseCurrencyPreference(basePref)
+            }
+        }
+
+        if (next.streamAudioEnabled != previous.streamAudioEnabled) {
+            val audioEnabled = next.streamAudioEnabled
+            viewModelScope.launch {
+                favoritesRepository.setStreamAudioEnabled(audioEnabled)
+            }
+        }
+
+        if (next.weatherUnitSystem != previous.weatherUnitSystem) {
+            val units = next.weatherUnitSystem
+            viewModelScope.launch {
+                favoritesRepository.setWeatherUnitSystem(units)
+            }
+        }
+
         if (next.oledProtectionEnabled != previous.oledProtectionEnabled) {
             val oledEnabled = next.oledProtectionEnabled
             viewModelScope.launch {
@@ -513,6 +602,7 @@ class CameraStageViewModel(
         private val favoritesRepository: FavoritesRepository,
         private val weatherRepository: WeatherRepository,
         private val airQualityRepository: AirQualityRepository,
+        private val currencyRepository: CurrencyRepository? = null,
         private val homeChannelSynchronizer: TvHomeChannelSynchronizer? = null,
         private val initialDeepLinkCameraId: String? = null,
         private val isScreensaverMode: Boolean = false,
@@ -525,6 +615,7 @@ class CameraStageViewModel(
                 favoritesRepository = favoritesRepository,
                 weatherRepository = weatherRepository,
                 airQualityRepository = airQualityRepository,
+                currencyRepository = currencyRepository,
                 homeChannelSynchronizer = homeChannelSynchronizer,
                 initialDeepLinkCameraId = initialDeepLinkCameraId,
                 isScreensaverMode = isScreensaverMode,
@@ -540,5 +631,6 @@ class CameraStageViewModel(
         const val OFFLINE_AUTO_SKIP_GRACE_MS = 1_500L
         const val WEATHER_POLL_MS = 15L * 60L * 1_000L
         const val AIR_QUALITY_POLL_MS = 30L * 60L * 1_000L
+        const val CURRENCY_POLL_MS = 60L * 60L * 1_000L
     }
 }

@@ -12,6 +12,8 @@ enum class TvKeyCode {
     BOOKMARK,
     MENU,
     SEARCH,
+    MEDIA_PLAY_PAUSE,
+    MUTE,
     BACK,
     DIGIT_0,
     DIGIT_1,
@@ -69,6 +71,9 @@ class TvKeyRouter {
                 TvKeyCode.BOOKMARK -> return KeyRouteDecision(true, TvRemoteAction.ToggleFavoriteCurrent)
                 TvKeyCode.MENU -> return KeyRouteDecision(true, TvRemoteAction.OpenSettings)
                 TvKeyCode.SEARCH -> return KeyRouteDecision(true, TvRemoteAction.OpenSearch)
+                TvKeyCode.MEDIA_PLAY_PAUSE,
+                TvKeyCode.MUTE,
+                -> return KeyRouteDecision(true, TvRemoteAction.ToggleStreamAudio)
                 else -> Unit
             }
         }

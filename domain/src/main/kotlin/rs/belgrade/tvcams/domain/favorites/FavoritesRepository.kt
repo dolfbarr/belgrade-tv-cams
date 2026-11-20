@@ -1,7 +1,9 @@
 package rs.belgrade.tvcams.domain.favorites
 
 import kotlinx.coroutines.flow.Flow
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
 import rs.belgrade.tvcams.domain.model.VideoQuality
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 
 enum class ZapScope {
     ALL,
@@ -186,6 +188,10 @@ data class ViewerPreferences(
     val showWeatherOverlay: Boolean = true,
     val showAirQualityOverlay: Boolean = true,
     val showSolarOverlay: Boolean = true,
+    val showCurrencyOverlay: Boolean = true,
+    val baseCurrencyPreference: BaseCurrencyPreference = BaseCurrencyPreference.AUTO,
+    val streamAudioEnabled: Boolean = false,
+    val weatherUnitSystem: WeatherUnitSystem = WeatherUnitSystem.AUTO,
     val oledProtectionEnabled: Boolean = true,
 )
 
@@ -203,5 +209,9 @@ interface FavoritesRepository {
     suspend fun setShowWeatherOverlay(enabled: Boolean)
     suspend fun setShowAirQualityOverlay(enabled: Boolean)
     suspend fun setShowSolarOverlay(enabled: Boolean)
+    suspend fun setShowCurrencyOverlay(enabled: Boolean) = Unit
+    suspend fun setBaseCurrencyPreference(preference: BaseCurrencyPreference) = Unit
+    suspend fun setStreamAudioEnabled(enabled: Boolean) = Unit
+    suspend fun setWeatherUnitSystem(unitSystem: WeatherUnitSystem) = Unit
     suspend fun setOledProtectionEnabled(enabled: Boolean)
 }

@@ -13,6 +13,13 @@ import rs.belgrade.tvcams.domain.catalog.CatalogSeedSource
 import rs.belgrade.tvcams.domain.catalog.CatalogSyncOutcome
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogClient
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogResult
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
+import rs.belgrade.tvcams.domain.currency.CachedCurrencyRepository
+import rs.belgrade.tvcams.domain.currency.CountryCurrencyResolver
+import rs.belgrade.tvcams.domain.currency.CurrencyCacheStore
+import rs.belgrade.tvcams.domain.currency.CurrencyQuoteFormatter
+import rs.belgrade.tvcams.domain.currency.CurrencyUpstreamClient
+import rs.belgrade.tvcams.domain.currency.ExchangeRateTable
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
 import rs.belgrade.tvcams.domain.favorites.PerformanceMode
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
@@ -52,6 +59,7 @@ import rs.belgrade.tvcams.domain.weather.CurrentWeather
 import rs.belgrade.tvcams.domain.weather.GridCachedWeatherRepository
 import rs.belgrade.tvcams.domain.weather.WeatherCondition
 import rs.belgrade.tvcams.domain.weather.WeatherRepository
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 import rs.belgrade.tvcams.domain.weather.WmoWeatherMapper
 import java.io.File
 import java.time.Instant
@@ -280,8 +288,13 @@ class DomainSuiteTest {
 
         state = TvStageReducer.reduce(state, TvRemoteAction.ToggleSolarOverlay).state
         assertFalse(state.showSolarOverlay)
-        assertFalse(state.hasAnyAmbientOverlay)
         assertEquals("Sun & golden hour: Off", state.noticeMessage)
+        assertTrue(state.hasAnyAmbientOverlay)
+
+        state = TvStageReducer.reduce(state, TvRemoteAction.ToggleCurrencyOverlay).state
+        assertFalse(state.showCurrencyOverlay)
+        assertFalse(state.hasAnyAmbientOverlay)
+        assertEquals("Currency overlay: Off", state.noticeMessage)
 
         state = TvStageReducer.reduce(state, TvRemoteAction.ToggleOledProtection).state
         assertFalse(state.oledProtectionEnabled)
@@ -1344,5 +1357,175 @@ class DomainSuiteTest {
         )
         assertNull(StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "Nonexistent"))
         assertNull(StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "  |  "))
+    }
+
+    @Test
+    fun `currency resolver formatter cached repository weather units and stream audio reducer uphold v9 invariants`() = runTest {
+        // 1. BaseCurrencyPreference cycling & locale resolution
+        assertEquals("USD", BaseCurrencyPreference.AUTO.resolveCurrencyCode(java.util.Locale.US))
+        assertEquals("JPY", BaseCurrencyPreference.AUTO.resolveCurrencyCode(java.util.Locale.JAPAN))
+        assertEquals("EUR", BaseCurrencyPreference.AUTO.resolveCurrencyCode(java.util.Locale.ROOT))
+        assertEquals("Auto (USD)", BaseCurrencyPreference.AUTO.displayLabel(java.util.Locale.US))
+        var pref = BaseCurrencyPreference.AUTO
+        val visitedPrefs = mutableListOf<BaseCurrencyPreference>()
+        repeat(BaseCurrencyPreference.entries.size) {
+            visitedPrefs.add(pref)
+            pref = pref.next()
+        }
+        assertEquals(BaseCurrencyPreference.entries.toList(), visitedPrefs)
+        assertEquals(BaseCurrencyPreference.AUTO, pref)
+
+        // 2. CountryCurrencyResolver across all 32 catalog countries + open-world fallback
+        val expectedCurrencies = mapOf(
+            "RS" to "RSD", "RU" to "RUB", "ES" to "EUR", "FR" to "EUR", "NL" to "EUR",
+            "DE" to "EUR", "IT" to "EUR", "PT" to "EUR", "AT" to "EUR", "IE" to "EUR",
+            "HR" to "EUR", "RO" to "RON", "GB" to "GBP", "GE" to "GEL", "AM" to "AMD",
+            "US" to "USD", "KR" to "KRW", "JP" to "JPY", "CH" to "CHF", "CZ" to "CZK",
+            "IS" to "ISK", "NO" to "NOK", "TW" to "TWD", "HK" to "HKD", "SG" to "SGD",
+            "TH" to "THB", "AU" to "AUD", "IL" to "ILS", "CA" to "CAD", "BR" to "BRL",
+            "MX" to "MXN", "ZA" to "ZAR",
+        )
+        for ((iso, expectedCode) in expectedCurrencies) {
+            assertEquals(expectedCode, CountryCurrencyResolver.resolvePrimaryCurrency(iso), "ISO $iso")
+        }
+        assertEquals(listOf("XCG", "ANG"), CountryCurrencyResolver.resolveCurrencyCandidates("SX"))
+        assertTrue(CountryCurrencyResolver.resolveCurrencyCandidates(null).isEmpty())
+        assertTrue(CountryCurrencyResolver.resolveCurrencyCandidates("1").isEmpty())
+
+        // 3. Stronger-unit-first CurrencyQuoteFormatter & same-currency suppression
+        assertNull(CurrencyQuoteFormatter.format("EUR", "EUR", 1.0))
+        assertNull(CurrencyQuoteFormatter.format("RSD", "rsd", 1.0))
+        assertNull(CurrencyQuoteFormatter.format("EUR", "RSD", 0.0))
+        assertNull(CurrencyQuoteFormatter.format("EUR", "RSD", Double.NaN))
+
+        val eurToUsd = CurrencyQuoteFormatter.format("EUR", "USD", 1.0967)
+        assertNotNull(eurToUsd)
+        assertEquals("1 EUR = 1.10 USD", eurToUsd.compactLabel)
+        assertEquals("FX · 1 EUR = 1.10 USD", eurToUsd.detailLabel)
+
+        val eurToRsd = CurrencyQuoteFormatter.format("EUR", "RSD", 117.634)
+        assertNotNull(eurToRsd)
+        assertEquals("1 EUR = 117.6 RSD", eurToRsd.compactLabel)
+
+        // RSD home viewing Eurozone flips stronger-unit-first so 0.0085 never appears
+        val rsdToEur = CurrencyQuoteFormatter.format("RSD", "EUR", 1.0 / 117.634)
+        assertNotNull(rsdToEur)
+        assertEquals("1 EUR = 117.6 RSD", rsdToEur.compactLabel)
+
+        val eurToKrw = CurrencyQuoteFormatter.format("EUR", "KRW", 1457.89)
+        assertNotNull(eurToKrw)
+        assertEquals("1 EUR = 1,458 KRW", eurToKrw.compactLabel)
+
+        // 4. CachedCurrencyRepository 12h TTL, Sint Maarten ANG fallback, and 7d offline stale grace
+        var nowMs = 1_000_000L
+        var upstreamFetches = 0
+        var upstreamOnline = true
+        var storedDiskTable: ExchangeRateTable? = null
+
+        val repo = CachedCurrencyRepository(
+            upstream = object : CurrencyUpstreamClient {
+                override suspend fun fetchLatestRates(baseCurrency: String): ExchangeRateTable? {
+                    upstreamFetches += 1
+                    if (!upstreamOnline) return null
+                    return ExchangeRateTable(
+                        baseCurrency = baseCurrency,
+                        rates = mapOf("RSD" to 117.1, "TWD" to 36.2, "ANG" to 1.97),
+                        fetchedAtEpochMs = nowMs,
+                    )
+                }
+            },
+            cacheStore = object : CurrencyCacheStore {
+                override suspend fun readCached(baseCurrency: String): ExchangeRateTable? = storedDiskTable
+                override suspend fun writeCached(table: ExchangeRateTable) {
+                    storedDiskTable = table
+                }
+            },
+            clockMillis = { nowMs },
+        )
+
+        // Same currency short-circuits before touching upstream
+        assertNull(repo.getQuoteForCountry("EUR", "IT"))
+        assertEquals(0, upstreamFetches)
+
+        val serbiaQuote = repo.getQuoteForCountry("EUR", "RS")
+        assertNotNull(serbiaQuote)
+        assertEquals("1 EUR = 117.1 RSD", serbiaQuote.compactLabel)
+        assertEquals(1, upstreamFetches)
+
+        // Sint Maarten resolves ANG fallback from same cached EUR table without extra network call
+        val sxQuote = repo.getQuoteForCountry("EUR", "SX")
+        assertNotNull(sxQuote)
+        assertEquals("1 EUR = 1.97 ANG", sxQuote.compactLabel)
+        assertEquals(1, upstreamFetches)
+
+        // After 13h (>12h TTL) while offline, serves from 7d stale grace
+        upstreamOnline = false
+        nowMs += 13L * 60L * 60L * 1_000L
+        val staleQuote = repo.getQuoteForCountry("EUR", "TW")
+        assertNotNull(staleQuote)
+        assertEquals("1 EUR = 36.2 TWD", staleQuote.compactLabel)
+        assertEquals(2, upstreamFetches)
+
+        // Beyond 7d stale grace while offline, returns null cleanly
+        nowMs += 8L * 24L * 60L * 60L * 1_000L
+        assertNull(repo.getQuoteForCountry("EUR", "RS"))
+
+        // 5. WeatherUnitSystem conversion without re-fetch
+        val sampleWeather = CurrentWeather(
+            temperatureCelsius = 20.0,
+            apparentTemperatureCelsius = 19.0,
+            windSpeedKmh = 16.0934,
+            condition = WeatherCondition.CLEAR,
+            isDay = true,
+            fetchedAtEpochMs = 1_000L,
+        )
+        assertEquals("20.0°C · 16 km/h", sampleWeather.compactMetricsLabel(WeatherUnitSystem.METRIC))
+        assertEquals("68°F · 10 mph", sampleWeather.compactMetricsLabel(WeatherUnitSystem.IMPERIAL))
+        assertEquals("68°F · Clear · 10 mph", sampleWeather.formattedSummary(WeatherUnitSystem.AUTO, java.util.Locale.US))
+        assertEquals("20.0°C · Clear · 16 km/h", sampleWeather.formattedSummary(WeatherUnitSystem.AUTO, java.util.Locale.GERMANY))
+
+        // 6. Audio & Currency & Unit reducer + key router transitions
+        val router = TvKeyRouter()
+        assertEquals(
+            TvRemoteAction.ToggleStreamAudio,
+            router.route(TvKeyCode.MEDIA_PLAY_PAUSE, TvKeyPhase.DOWN, 0, OverlayMode.PURE_CAMERA).action,
+        )
+        assertEquals(
+            TvRemoteAction.ToggleStreamAudio,
+            router.route(TvKeyCode.MUTE, TvKeyPhase.DOWN, 0, OverlayMode.SETTINGS).action,
+        )
+
+        val liveCam = sampleCamera(id = "jp-1", name = "Shibuya", city = CameraCity.TOKYO)
+        val snapCam = sampleCamera(id = "bg-snap", name = "Slavija Snap", city = CameraCity.BELGRADE).copy(
+            streams = listOf(StreamDescriptor(StreamTransportType.SNAPSHOT_POLL, "https://example.com/s.jpg")),
+        )
+        var st = TvStageState.initial(cameras = listOf(liveCam, snapCam), initialCameraId = "jp-1")
+        assertFalse(st.streamAudioEnabled)
+        assertNull(st.activeStreamHasAudioTrack)
+
+        st = TvStageReducer.reduce(st, TvRemoteAction.StreamAudioTrackChanged(true)).state
+        assertEquals(true, st.activeStreamHasAudioTrack)
+
+        st = TvStageReducer.reduce(st, TvRemoteAction.ToggleStreamAudio).state
+        assertTrue(st.streamAudioEnabled)
+        assertEquals("Sound: On", st.noticeMessage)
+
+        // Zapping to snapshot camera marks activeStreamHasAudioTrack = false
+        st = TvStageReducer.reduce(st, TvRemoteAction.SelectCamera("bg-snap")).state
+        assertEquals(false, st.activeStreamHasAudioTrack)
+
+        st = TvStageReducer.reduce(st, TvRemoteAction.ToggleStreamAudio).state
+        assertFalse(st.streamAudioEnabled)
+        assertEquals("Sound: Muted", st.noticeMessage)
+
+        st = TvStageReducer.reduce(st, TvRemoteAction.ToggleStreamAudio).state
+        assertEquals("Sound: On · No audio on this camera", st.noticeMessage)
+
+        st = TvStageReducer.reduce(st, TvRemoteAction.CycleWeatherUnitSystem).state
+        assertEquals(WeatherUnitSystem.METRIC, st.weatherUnitSystem)
+        st = TvStageReducer.reduce(st, TvRemoteAction.ToggleCurrencyOverlay).state
+        assertFalse(st.showCurrencyOverlay)
+        st = TvStageReducer.reduce(st, TvRemoteAction.CycleBaseCurrencyPreference).state
+        assertEquals(BaseCurrencyPreference.EUR, st.baseCurrencyPreference)
     }
 }

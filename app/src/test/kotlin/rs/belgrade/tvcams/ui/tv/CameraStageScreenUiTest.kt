@@ -9,7 +9,9 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsFocused
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -31,6 +33,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import rs.belgrade.tvcams.data.catalog.AssetCatalogSeedSource
 import rs.belgrade.tvcams.data.stream.OkHttpStreamUrlResolver
+import rs.belgrade.tvcams.domain.currency.CurrencyQuoteFormatter
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.model.Camera
 import rs.belgrade.tvcams.domain.model.CameraCategory
@@ -45,6 +48,9 @@ import rs.belgrade.tvcams.domain.tv.OverlayMode
 import rs.belgrade.tvcams.domain.tv.TvRemoteAction
 import rs.belgrade.tvcams.domain.tv.TvStageReducer
 import rs.belgrade.tvcams.domain.tv.TvStageState
+import rs.belgrade.tvcams.domain.weather.CurrentWeather
+import rs.belgrade.tvcams.domain.weather.WeatherCondition
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 import rs.belgrade.tvcams.player.PlaybackTelemetry
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -164,12 +170,14 @@ class CameraStageScreenUiTest {
             .assertIsFocused()
 
         // 2. Selecting Japan country chip via TV focus + DPAD_CENTER reveals contextual Tokyo city row
+        composeRule.onNodeWithTag("strip_filter_row").performScrollToNode(hasText("Japan (1)"))
         composeRule.onNodeWithText("Japan (1)").performTvSelect()
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("strip_contextual_city_row").assertIsDisplayed()
         composeRule.onNodeWithText("Tokyo (1)").assertIsDisplayed()
 
         // 3. Opening Settings drawer focuses Quality setting and cycles QualityFilter
+        composeRule.onNodeWithTag("strip_filter_row").performScrollToNode(hasTestTag("strip_open_settings_chip"))
         composeRule.onNodeWithTag("strip_open_settings_chip").performTvSelect()
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("settings_side_drawer").assertIsDisplayed()
@@ -186,6 +194,7 @@ class CameraStageScreenUiTest {
         composeRule.onNodeWithTag("camera_quick_strip").assertIsDisplayed()
 
         // 4. Opening Search overlay focuses 'A' key, types 't' + 'i' + 'm', and selects Times Square
+        composeRule.onNodeWithTag("strip_filter_row").performScrollToNode(hasTestTag("strip_open_search_chip"))
         composeRule.onNodeWithTag("strip_open_search_chip").performTvSelect()
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("camera_search_overlay").assertIsDisplayed()
@@ -284,6 +293,98 @@ class CameraStageScreenUiTest {
         }
         composeRule.waitForIdle()
         composeRule.onNodeWithText("ZZ").assertIsDisplayed()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun currencyPillImperialWeatherAndStreamAudioChipRenderAndEnforceScreensaverMute() {
+        var uiState by mutableStateOf(
+            TvStageState.initial(
+                cameras = buildSampleCameras(),
+                initialCameraId = "jp-tyo-shibuya",
+                weatherUnitSystem = WeatherUnitSystem.METRIC,
+                initialOverlayMode = OverlayMode.HUD_VISIBLE,
+            ),
+        )
+        var isScreensaver by mutableStateOf(false)
+        val weather = CurrentWeather(
+            temperatureCelsius = 20.0,
+            apparentTemperatureCelsius = 19.0,
+            windSpeedKmh = 16.0934,
+            condition = WeatherCondition.CLEAR,
+            isDay = true,
+            fetchedAtEpochMs = 1_000L,
+        )
+        val jpyQuote = CurrencyQuoteFormatter.format("EUR", "JPY", 175.0, 1_000L)
+
+        composeRule.setContent {
+            MaterialTheme(colorScheme = darkColorScheme()) {
+                CameraStageScreen(
+                    state = uiState,
+                    streamCamera = uiState.activeCamera,
+                    telemetry = PlaybackTelemetry.PlayingLive(StreamTransportType.YOUTUBE_LIVE),
+                    currentWeather = weather,
+                    currentAirQuality = null,
+                    currentCurrencyQuote = jpyQuote,
+                    httpClient = dummyClient,
+                    streamResolver = dummyResolver,
+                    onAction = { action ->
+                        uiState = TvStageReducer.reduce(uiState, action).state
+                    },
+                    onTelemetryChanged = {},
+                    enableBackHandler = false,
+                    isScreensaverMode = isScreensaver,
+                    enableLiveStreamPlayback = false,
+                )
+            }
+        }
+        composeRule.waitForIdle()
+
+        // 1. Ambient FX pill + Info HUD FX badge + Metric weather render
+        composeRule.onNodeWithTag("ambient_currency_pill").assertIsDisplayed()
+        composeRule.onNodeWithText("1 EUR = 175.0 JPY").assertIsDisplayed()
+        composeRule.onNodeWithTag("hud_currency_badge").assertIsDisplayed()
+        composeRule.onNodeWithText("FX · 1 EUR = 175.0 JPY").assertIsDisplayed()
+        composeRule.onNodeWithText("20.0°C · 16 km/h").assertIsDisplayed()
+
+        // 2. Remote MEDIA_PLAY_PAUSE toggles stream audio on
+        composeRule.onNodeWithTag("camera_stage_root").performKeyInput {
+            pressKey(Key.MediaPlayPause)
+        }
+        composeRule.waitForIdle()
+        assertTrue(uiState.streamAudioEnabled)
+
+        // 3. Quick Strip audio chip displays "Sound: On", switches to "No audio" when stream lacks audio track, and forces "Muted" in screensaver mode
+        uiState = TvStageReducer.reduce(uiState, TvRemoteAction.OpenQuickStrip).state
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag("strip_toggle_audio_chip")
+            .assertIsDisplayed()
+            .assertTextEquals("Sound: On")
+
+        uiState = TvStageReducer.reduce(uiState, TvRemoteAction.StreamAudioTrackChanged(false)).state
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag("strip_toggle_audio_chip")
+            .assertTextEquals("No audio")
+
+        isScreensaver = true
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag("strip_toggle_audio_chip")
+            .assertTextEquals("Muted")
+        isScreensaver = false
+
+        // 4. Settings drawer cycles Metric -> Imperial and updates Ambient Bar to °F / mph
+        uiState = TvStageReducer.reduce(uiState, TvRemoteAction.OpenSettings).state
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag("settings_drawer_list")
+            .performScrollToNode(hasTestTag("setting_weather_units_chip"))
+        composeRule.onNodeWithTag("setting_weather_units_chip").performTvSelect()
+        composeRule.waitForIdle()
+        assertEquals(WeatherUnitSystem.IMPERIAL, uiState.weatherUnitSystem)
+
+        uiState = TvStageReducer.reduce(uiState, TvRemoteAction.NavigateBack).state // SETTINGS -> QUICK_STRIP
+        uiState = TvStageReducer.reduce(uiState, TvRemoteAction.NavigateBack).state // QUICK_STRIP -> PURE_CAMERA
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText("68°F · 10 mph").assertIsDisplayed()
     }
 
     @OptIn(ExperimentalTestApi::class)

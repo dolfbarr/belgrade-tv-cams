@@ -38,9 +38,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -98,6 +101,8 @@ fun DualTransportCameraSurface(
     performanceMode: PerformanceMode,
     oledOrbitOffset: PixelOrbitOffset,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
+    isAudioEnabled: Boolean = false,
+    onAudioTrackAvailabilityChanged: (Boolean) -> Unit = {},
     manualRetryNonce: Int = 0,
     modifier: Modifier = Modifier,
 ) {
@@ -240,10 +245,12 @@ fun DualTransportCameraSurface(
                     useLowSpecSurface = useLowSpecSurface,
                     maxVideoWidthPx = maxVideoWidthPx,
                     maxVideoHeightPx = maxVideoHeightPx,
+                    isAudioEnabled = isAudioEnabled,
                     isVisible = hasRenderedLiveFrame,
                     onFirstFrame = {
                         hasRenderedLiveFrame = true
                     },
+                    onAudioTrackAvailabilityChanged = onAudioTrackAvailabilityChanged,
                     onHealthy = {
                         tracker.onPlaybackHealthy()
                         onTelemetryChanged(PlaybackTelemetry.PlayingLive(activeStream.type))
@@ -254,6 +261,9 @@ fun DualTransportCameraSurface(
                     onError = handleTransportFailure,
                 )
             } else {
+                LaunchedEffect(camId, activeStream.url, attemptNonce) {
+                    onAudioTrackAvailabilityChanged(false)
+                }
                 DoubleBufferedSnapshotRenderer(
                     stream = activeStream,
                     attemptKey = attemptNonce,
@@ -314,8 +324,10 @@ private fun HlsStreamRenderer(
     useLowSpecSurface: Boolean,
     maxVideoWidthPx: Int,
     maxVideoHeightPx: Int,
+    isAudioEnabled: Boolean,
     isVisible: Boolean,
     onFirstFrame: () -> Unit,
+    onAudioTrackAvailabilityChanged: (Boolean) -> Unit,
     onHealthy: () -> Unit,
     onConnecting: () -> Unit,
     onError: () -> Unit,
@@ -361,9 +373,24 @@ private fun HlsStreamRenderer(
             .setLoadControl(loadControl)
             .build()
             .apply {
+                setAudioAttributes(AudioAttributes.DEFAULT, /* handleAudioFocus = */ false)
                 volume = 0f
                 playWhenReady = true
             }
+    }
+
+    LaunchedEffect(exoPlayer, isAudioEnabled) {
+        if (isAudioEnabled) {
+            val mediaAttrs = AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+                .build()
+            exoPlayer.setAudioAttributes(mediaAttrs, /* handleAudioFocus = */ true)
+            exoPlayer.volume = 1f
+        } else {
+            exoPlayer.volume = 0f
+            exoPlayer.setAudioAttributes(AudioAttributes.DEFAULT, /* handleAudioFocus = */ false)
+        }
     }
 
     LaunchedEffect(exoPlayer, maxVideoWidthPx, maxVideoHeightPx) {
@@ -389,6 +416,12 @@ private fun HlsStreamRenderer(
             override fun onRenderedFirstFrame() {
                 onFirstFrame()
                 onHealthy()
+            }
+
+            override fun onTracksChanged(tracks: Tracks) {
+                if (tracks.groups.isNotEmpty()) {
+                    onAudioTrackAvailabilityChanged(tracks.containsType(C.TRACK_TYPE_AUDIO))
+                }
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {

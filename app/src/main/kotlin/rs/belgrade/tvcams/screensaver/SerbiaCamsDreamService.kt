@@ -95,6 +95,7 @@ class SerbiaCamsDreamService : DreamService() {
                 favoritesRepository = appContainer.favoritesRepository,
                 weatherRepository = appContainer.weatherRepository,
                 airQualityRepository = appContainer.airQualityRepository,
+                currencyRepository = appContainer.currencyRepository,
                 isScreensaverMode = true,
             ),
         )[CameraStageViewModel::class.java]
@@ -121,6 +122,9 @@ class SerbiaCamsDreamService : DreamService() {
                     val currentAirQuality by stageViewModel.currentAirQuality.collectAsStateWithLifecycle(
                         lifecycleOwner = owner,
                     )
+                    val currentCurrencyQuote by stageViewModel.currentCurrencyQuote.collectAsStateWithLifecycle(
+                        lifecycleOwner = owner,
+                    )
                     val streamRetryNonce by stageViewModel.streamRetryNonce.collectAsStateWithLifecycle(
                         lifecycleOwner = owner,
                     )
@@ -137,6 +141,7 @@ class SerbiaCamsDreamService : DreamService() {
                         telemetry = telemetry,
                         currentWeather = currentWeather,
                         currentAirQuality = currentAirQuality,
+                        currentCurrencyQuote = currentCurrencyQuote,
                         httpClient = appContainer.mediaHttpClient,
                         streamResolver = appContainer.streamUrlResolver,
                         onAction = stageViewModel::dispatch,

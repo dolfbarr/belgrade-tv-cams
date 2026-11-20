@@ -13,11 +13,14 @@ import org.junit.Test
 import rs.belgrade.tvcams.data.airquality.OpenMeteoAirQualityClient
 import rs.belgrade.tvcams.data.catalog.FileCatalogCacheStore
 import rs.belgrade.tvcams.data.catalog.OkHttpRemoteCatalogClient
+import rs.belgrade.tvcams.data.currency.FileCurrencyCacheStore
+import rs.belgrade.tvcams.data.currency.MultiMirrorCurrencyClient
 import rs.belgrade.tvcams.data.favorites.DataStoreFavoritesRepository
 import rs.belgrade.tvcams.data.stream.OkHttpStreamUrlResolver
 import rs.belgrade.tvcams.data.weather.OpenMeteoWeatherClient
 import rs.belgrade.tvcams.domain.airquality.AirQualityBand
 import rs.belgrade.tvcams.domain.catalog.RemoteCatalogResult
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
 import rs.belgrade.tvcams.domain.favorites.PerformanceMode
@@ -36,6 +39,7 @@ import rs.belgrade.tvcams.domain.model.StreamTransportType
 import rs.belgrade.tvcams.domain.model.VideoQuality
 import rs.belgrade.tvcams.domain.stream.StreamPayloadParsers
 import rs.belgrade.tvcams.domain.weather.WeatherCondition
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -404,6 +408,10 @@ class HttpClientsAndResolverTest {
         repo.setShowWeatherOverlay(false)
         repo.setShowAirQualityOverlay(false)
         repo.setShowSolarOverlay(false)
+        repo.setShowCurrencyOverlay(false)
+        repo.setBaseCurrencyPreference(BaseCurrencyPreference.RSD)
+        repo.setStreamAudioEnabled(true)
+        repo.setWeatherUnitSystem(WeatherUnitSystem.IMPERIAL)
         repo.setOledProtectionEnabled(false)
 
         val updated = repo.preferences.first()
@@ -419,7 +427,98 @@ class HttpClientsAndResolverTest {
         assertFalse(updated.showWeatherOverlay)
         assertFalse(updated.showAirQualityOverlay)
         assertFalse(updated.showSolarOverlay)
+        assertFalse(updated.showCurrencyOverlay)
+        assertEquals(BaseCurrencyPreference.RSD, updated.baseCurrencyPreference)
+        assertTrue(updated.streamAudioEnabled)
+        assertEquals(WeatherUnitSystem.IMPERIAL, updated.weatherUnitSystem)
         assertFalse(updated.oledProtectionEnabled)
+    }
+
+    @Test
+    fun multiMirrorCurrencyClientFailsOverAcrossThreeMirrorsAndFileCacheHandlesCorruption() = runTest {
+        var jsDelivrStatus = 200
+        var cfPagesMode = "ok"
+        var openErStatus = 200
+
+        server.route("/fx-jsdelivr/eur.min.json") {
+            if (jsDelivrStatus != 200) {
+                jsonResponse(jsDelivrStatus, "")
+            } else {
+                jsonResponse(
+                    200,
+                    """{"date":"2026-11-20","eur":{"rsd":117.63,"twd":36.15,"1inch":16.5,"bad":-2.0}}""",
+                )
+            }
+        }
+        server.route("/fx-cf/eur.min.json") {
+            when (cfPagesMode) {
+                "corrupt" -> jsonResponse(200, "{not-json")
+                "503" -> jsonResponse(503, "")
+                else -> jsonResponse(
+                    200,
+                    """{"date":"2026-11-20","eur":{"jpy":175.0,"krw":1458.0}}""",
+                )
+            }
+        }
+        server.route("/fx-opener/EUR") {
+            if (openErStatus != 200) {
+                jsonResponse(openErStatus, "")
+            } else {
+                jsonResponse(
+                    200,
+                    """{"result":"success","base_code":"EUR","rates":{"AMD":396.55,"GEL":2.85,"ANG":1.965}}""",
+                )
+            }
+        }
+
+        val client = MultiMirrorCurrencyClient(
+            httpClient = httpClient,
+            clockMillis = { 5_000L },
+            jsDelivrBaseUrl = "$baseUrl/fx-jsdelivr",
+            cloudflareBaseUrl = "$baseUrl/fx-cf",
+            openErApiBaseUrl = "$baseUrl/fx-opener",
+        )
+
+        // 1. Primary jsDelivr succeeds and filters non-3-letter / negative tokens
+        val fromPrimary = client.fetchLatestRates("eur")
+        assertNotNull(fromPrimary)
+        assertEquals("EUR", fromPrimary.baseCurrency)
+        assertEquals(117.63, fromPrimary.rates["RSD"])
+        assertEquals(36.15, fromPrimary.rates["TWD"])
+        assertFalse(fromPrimary.rates.containsKey("1INCH"))
+        assertFalse(fromPrimary.rates.containsKey("BAD"))
+
+        // 2. Primary 503 -> fails over to Cloudflare Pages mirror
+        jsDelivrStatus = 503
+        val fromCf = client.fetchLatestRates("EUR")
+        assertNotNull(fromCf)
+        assertEquals(175.0, fromCf.rates["JPY"])
+
+        // 3. Primary 503 + CF corrupt -> fails over to open.er-api.com mirror
+        cfPagesMode = "corrupt"
+        val fromOpenEr = client.fetchLatestRates("EUR")
+        assertNotNull(fromOpenEr)
+        assertEquals(396.55, fromOpenEr.rates["AMD"])
+        assertEquals(2.85, fromOpenEr.rates["GEL"])
+        assertEquals(1.965, fromOpenEr.rates["ANG"])
+
+        // 4. All mirrors down + invalid base code -> returns null
+        openErStatus = 502
+        assertNull(client.fetchLatestRates("EUR"))
+        assertNull(client.fetchLatestRates("12"))
+
+        // 5. FileCurrencyCacheStore atomic round-trip & corruption resilience
+        val fxDir = File(tempDir, "fx_cache")
+        val store = FileCurrencyCacheStore(fxDir)
+        assertNull(store.readCached("EUR"))
+        assertNull(store.readCached("BAD_CODE"))
+
+        store.writeCached(fromPrimary)
+        val loaded = store.readCached("eur")
+        assertEquals(fromPrimary, loaded)
+
+        File(fxDir, "EUR.json").writeText("{corrupted-json", Charsets.UTF_8)
+        assertNull(store.readCached("EUR"))
     }
 }
 

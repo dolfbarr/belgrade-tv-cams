@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
 import rs.belgrade.tvcams.domain.favorites.AutoRotateInterval
 import rs.belgrade.tvcams.domain.favorites.FavoritesRepository
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
@@ -18,6 +19,7 @@ import rs.belgrade.tvcams.domain.favorites.QualityFilter
 import rs.belgrade.tvcams.domain.favorites.TransportFilter
 import rs.belgrade.tvcams.domain.favorites.ViewerPreferences
 import rs.belgrade.tvcams.domain.favorites.ZapScope
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 
 private val Context.viewerPreferencesDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "viewer_preferences",
@@ -73,6 +75,24 @@ class DataStoreFavoritesRepository(
                 }
             }.getOrDefault(InfoPanelPosition.BOTTOM_CENTER)
 
+            val rawBaseCurrency = prefs[KEY_BASE_CURRENCY_PREFERENCE]
+            val baseCurrencyPreference = runCatching {
+                if (rawBaseCurrency != null) {
+                    BaseCurrencyPreference.valueOf(rawBaseCurrency)
+                } else {
+                    BaseCurrencyPreference.AUTO
+                }
+            }.getOrDefault(BaseCurrencyPreference.AUTO)
+
+            val rawWeatherUnits = prefs[KEY_WEATHER_UNIT_SYSTEM]
+            val weatherUnitSystem = runCatching {
+                if (rawWeatherUnits != null) {
+                    WeatherUnitSystem.valueOf(rawWeatherUnits)
+                } else {
+                    WeatherUnitSystem.AUTO
+                }
+            }.getOrDefault(WeatherUnitSystem.AUTO)
+
             ViewerPreferences(
                 favoriteIds = prefs[KEY_FAVORITE_IDS].orEmpty(),
                 lastCameraId = prefs[KEY_LAST_CAMERA_ID],
@@ -87,6 +107,10 @@ class DataStoreFavoritesRepository(
                 showWeatherOverlay = prefs[KEY_SHOW_WEATHER_OVERLAY] ?: true,
                 showAirQualityOverlay = prefs[KEY_SHOW_AIR_QUALITY_OVERLAY] ?: true,
                 showSolarOverlay = prefs[KEY_SHOW_SOLAR_OVERLAY] ?: true,
+                showCurrencyOverlay = prefs[KEY_SHOW_CURRENCY_OVERLAY] ?: true,
+                baseCurrencyPreference = baseCurrencyPreference,
+                streamAudioEnabled = prefs[KEY_STREAM_AUDIO_ENABLED] ?: false,
+                weatherUnitSystem = weatherUnitSystem,
                 oledProtectionEnabled = prefs[KEY_OLED_PROTECTION_ENABLED] ?: true,
             )
         }
@@ -163,6 +187,30 @@ class DataStoreFavoritesRepository(
         }
     }
 
+    override suspend fun setShowCurrencyOverlay(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[KEY_SHOW_CURRENCY_OVERLAY] = enabled
+        }
+    }
+
+    override suspend fun setBaseCurrencyPreference(preference: BaseCurrencyPreference) {
+        dataStore.edit { prefs ->
+            prefs[KEY_BASE_CURRENCY_PREFERENCE] = preference.name
+        }
+    }
+
+    override suspend fun setStreamAudioEnabled(enabled: Boolean) {
+        dataStore.edit { prefs ->
+            prefs[KEY_STREAM_AUDIO_ENABLED] = enabled
+        }
+    }
+
+    override suspend fun setWeatherUnitSystem(unitSystem: WeatherUnitSystem) {
+        dataStore.edit { prefs ->
+            prefs[KEY_WEATHER_UNIT_SYSTEM] = unitSystem.name
+        }
+    }
+
     override suspend fun setOledProtectionEnabled(enabled: Boolean) {
         dataStore.edit { prefs ->
             prefs[KEY_OLED_PROTECTION_ENABLED] = enabled
@@ -183,6 +231,10 @@ class DataStoreFavoritesRepository(
         val KEY_SHOW_WEATHER_OVERLAY = booleanPreferencesKey("show_weather_overlay")
         val KEY_SHOW_AIR_QUALITY_OVERLAY = booleanPreferencesKey("show_air_quality_overlay")
         val KEY_SHOW_SOLAR_OVERLAY = booleanPreferencesKey("show_solar_overlay")
+        val KEY_SHOW_CURRENCY_OVERLAY = booleanPreferencesKey("show_currency_overlay")
+        val KEY_BASE_CURRENCY_PREFERENCE = stringPreferencesKey("base_currency_preference")
+        val KEY_STREAM_AUDIO_ENABLED = booleanPreferencesKey("stream_audio_enabled")
+        val KEY_WEATHER_UNIT_SYSTEM = stringPreferencesKey("weather_unit_system")
         val KEY_OLED_PROTECTION_ENABLED = booleanPreferencesKey("oled_protection_enabled")
     }
 }

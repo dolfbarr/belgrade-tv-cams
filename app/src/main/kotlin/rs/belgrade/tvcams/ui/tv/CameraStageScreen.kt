@@ -85,6 +85,8 @@ import rs.belgrade.tvcams.R
 import rs.belgrade.tvcams.data.stream.OkHttpStreamUrlResolver
 import rs.belgrade.tvcams.domain.airquality.AirQualityBand
 import rs.belgrade.tvcams.domain.airquality.CurrentAirQuality
+import rs.belgrade.tvcams.domain.currency.BaseCurrencyPreference
+import rs.belgrade.tvcams.domain.currency.CurrencyQuote
 import rs.belgrade.tvcams.domain.favorites.InfoPanelPosition
 import rs.belgrade.tvcams.domain.favorites.PerformanceMode
 import rs.belgrade.tvcams.domain.favorites.QualityFilter
@@ -111,6 +113,7 @@ import rs.belgrade.tvcams.domain.tv.TvKeyRouter
 import rs.belgrade.tvcams.domain.tv.TvRemoteAction
 import rs.belgrade.tvcams.domain.tv.TvStageState
 import rs.belgrade.tvcams.domain.weather.CurrentWeather
+import rs.belgrade.tvcams.domain.weather.WeatherUnitSystem
 import rs.belgrade.tvcams.player.DualTransportCameraSurface
 import rs.belgrade.tvcams.player.PlaybackTelemetry
 import java.time.Instant
@@ -154,6 +157,7 @@ fun CameraStageScreen(
     streamResolver: OkHttpStreamUrlResolver,
     onAction: (TvRemoteAction) -> Unit,
     onTelemetryChanged: (PlaybackTelemetry) -> Unit,
+    currentCurrencyQuote: CurrencyQuote? = null,
     streamRetryNonce: Int = 0,
     enableBackHandler: Boolean = true,
     isScreensaverMode: Boolean = false,
@@ -271,6 +275,7 @@ fun CameraStageScreen(
             .focusable(),
     ) {
         // Layer 0: Adaptive 1920x1080 / low-spec stream surface with poster underlay & OLED pixel orbit
+        val effectiveAudioEnabled = state.streamAudioEnabled && !isScreensaverMode
         if (enableLiveStreamPlayback) {
             DualTransportCameraSurface(
                 camera = streamCamera ?: activeCam,
@@ -279,6 +284,10 @@ fun CameraStageScreen(
                 performanceMode = state.performanceMode,
                 oledOrbitOffset = oledOrbit,
                 onTelemetryChanged = onTelemetryChanged,
+                isAudioEnabled = effectiveAudioEnabled,
+                onAudioTrackAvailabilityChanged = { hasAudio ->
+                    onAction(TvRemoteAction.StreamAudioTrackChanged(hasAudio))
+                },
                 manualRetryNonce = streamRetryNonce,
                 modifier = Modifier.fillMaxSize(),
             )
@@ -342,11 +351,13 @@ fun CameraStageScreen(
         val weatherModel = if (state.showWeatherOverlay) currentWeather else null
         val aqiModel = if (state.showAirQualityOverlay) currentAirQuality else null
         val solarModel = if (state.showSolarOverlay) solarState.value else null
+        val currencyModel = if (state.showCurrencyOverlay) currentCurrencyQuote else null
         val showAmbientBar = !cameraName.isNullOrBlank() ||
             clockReading != null ||
             weatherModel != null ||
             aqiModel != null ||
-            solarModel != null
+            solarModel != null ||
+            currencyModel != null
 
         val panelBoxAlignment = when (panelPosition) {
             InfoPanelPosition.BOTTOM_CENTER -> Alignment.BottomCenter
@@ -401,8 +412,10 @@ fun CameraStageScreen(
                         countryFallbackLabel = countryFallbackLabel,
                         clockReading = clockReading,
                         weather = weatherModel,
+                        weatherUnitSystem = state.weatherUnitSystem,
                         airQuality = aqiModel,
                         solarStatus = solarModel,
+                        currencyQuote = currencyModel,
                         horizontalAlignment = panelColumnAlignment,
                     )
                 }
@@ -421,6 +434,7 @@ fun CameraStageScreen(
                             isFavorite = state.isCurrentFavorite,
                             autoRotateLabel = effectiveRotate.takeIf { it.enabled }?.displayLabel(),
                             telemetry = telemetry,
+                            currencyQuote = currentCurrencyQuote,
                         )
                     }
                 }
@@ -434,8 +448,10 @@ fun CameraStageScreen(
                         countryFallbackLabel = countryFallbackLabel,
                         clockReading = clockReading,
                         weather = weatherModel,
+                        weatherUnitSystem = state.weatherUnitSystem,
                         airQuality = aqiModel,
                         solarStatus = solarModel,
+                        currencyQuote = currencyModel,
                         horizontalAlignment = panelColumnAlignment,
                     )
                 }
@@ -451,6 +467,7 @@ fun CameraStageScreen(
         ) {
             CameraQuickStrip(
                 state = state,
+                isScreensaverMode = isScreensaverMode,
                 onAction = onAction,
             )
         }
@@ -562,19 +579,22 @@ private fun AmbientClockWeatherBar(
     countryFallbackLabel: String?,
     clockReading: DualClockReading?,
     weather: CurrentWeather?,
+    weatherUnitSystem: WeatherUnitSystem = WeatherUnitSystem.METRIC,
     airQuality: CurrentAirQuality?,
     solarStatus: SolarStatus?,
+    currencyQuote: CurrencyQuote? = null,
     horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
     modifier: Modifier = Modifier,
 ) {
     val hasTelemetry = clockReading != null ||
         weather != null ||
         airQuality != null ||
-        solarStatus != null
+        solarStatus != null ||
+        currencyQuote != null
 
     Column(
         modifier = modifier
-            .widthIn(max = 840.dp)
+            .widthIn(max = 1080.dp)
             .clip(RoundedCornerShape(10.dp))
             .background(PillSurface)
             .border(1.dp, PillBorder, RoundedCornerShape(10.dp))
@@ -679,7 +699,7 @@ private fun AmbientClockWeatherBar(
                             size = 17.dp,
                         )
                         Text(
-                            text = weather.compactMetricsLabel(),
+                            text = weather.compactMetricsLabel(weatherUnitSystem),
                             style = TabularStyle,
                             color = TextSecondary,
                             fontSize = 13.sp,
@@ -736,6 +756,29 @@ private fun AmbientClockWeatherBar(
                             maxLines = 1,
                         )
                     }
+                    hasPreceding = true
+                }
+
+                if (currencyQuote != null) {
+                    if (hasPreceding) SeparatorDot()
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.testTag("ambient_currency_pill"),
+                    ) {
+                        CurrencyExchangeIcon(
+                            size = 15.dp,
+                            color = AccentSky,
+                        )
+                        Text(
+                            text = currencyQuote.compactLabel,
+                            style = TabularStyle,
+                            color = TextPrimary,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
         }
@@ -779,6 +822,10 @@ private fun mapAndroidKeyCode(keyCode: Int): TvKeyCode = when (keyCode) {
     KeyEvent.KEYCODE_GUIDE,
     -> TvKeyCode.MENU
     KeyEvent.KEYCODE_SEARCH -> TvKeyCode.SEARCH
+    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> TvKeyCode.MEDIA_PLAY_PAUSE
+    KeyEvent.KEYCODE_MUTE,
+    KeyEvent.KEYCODE_VOLUME_MUTE,
+    -> TvKeyCode.MUTE
     KeyEvent.KEYCODE_BACK -> TvKeyCode.BACK
     KeyEvent.KEYCODE_0, KeyEvent.KEYCODE_NUMPAD_0 -> TvKeyCode.DIGIT_0
     KeyEvent.KEYCODE_1, KeyEvent.KEYCODE_NUMPAD_1 -> TvKeyCode.DIGIT_1
@@ -1067,10 +1114,11 @@ private fun StreetInfoHud(
     isFavorite: Boolean,
     autoRotateLabel: String?,
     telemetry: PlaybackTelemetry,
+    currencyQuote: CurrencyQuote? = null,
 ) {
     Column(
         modifier = Modifier
-            .widthIn(min = 480.dp, max = 640.dp)
+            .widthIn(min = 480.dp, max = 660.dp)
             .clip(RoundedCornerShape(14.dp))
             .background(HudCardSurface)
             .border(1.dp, PillBorder, RoundedCornerShape(14.dp))
@@ -1145,6 +1193,27 @@ private fun StreetInfoHud(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+
+        if (currencyQuote != null) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.testTag("hud_currency_badge"),
+            ) {
+                CurrencyExchangeIcon(
+                    size = 14.dp,
+                    color = AccentSky,
+                )
+                Text(
+                    text = currencyQuote.detailLabel,
+                    style = TabularStyle,
+                    color = AccentSky,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(2.dp))
 
@@ -1278,6 +1347,7 @@ private fun rememberQuickStripChipColors() = FilterChipDefaults.colors(
 @Composable
 private fun CameraQuickStrip(
     state: TvStageState,
+    isScreensaverMode: Boolean = false,
     onAction: (TvRemoteAction) -> Unit,
 ) {
     val searchChipFocusRequester = remember { FocusRequester() }
@@ -1403,6 +1473,7 @@ private fun CameraQuickStrip(
         LazyRow(
             contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.testTag("strip_filter_row"),
         ) {
             item(key = "action_open_search") {
                 FilterChip(
@@ -1419,6 +1490,33 @@ private fun CameraQuickStrip(
                     ) {
                         SearchLensIcon(size = 14.dp)
                         Text(text = stringResource(R.string.action_search))
+                    }
+                }
+            }
+            item(key = "action_toggle_audio") {
+                val effectiveAudio = state.streamAudioEnabled && !isScreensaverMode
+                val streamLacksAudio = state.activeCamera?.isLiveVideo == false ||
+                    state.activeStreamHasAudioTrack == false
+                val audioChipLabel = when {
+                    !effectiveAudio -> "Muted"
+                    streamLacksAudio -> "No audio"
+                    else -> "Sound: On"
+                }
+                FilterChip(
+                    selected = effectiveAudio && !streamLacksAudio,
+                    onClick = { onAction(TvRemoteAction.ToggleStreamAudio) },
+                    colors = chipColors,
+                    modifier = Modifier.testTag("strip_toggle_audio_chip"),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    ) {
+                        SpeakerSoundIcon(
+                            muted = !effectiveAudio || streamLacksAudio,
+                            size = 14.dp,
+                        )
+                        Text(text = audioChipLabel)
                     }
                 }
             }
@@ -1647,7 +1745,9 @@ private fun SettingsSideDrawer(
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .testTag("settings_drawer_list"),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             item(key = "header_playback") {
@@ -1720,6 +1820,24 @@ private fun SettingsSideDrawer(
                     modifier = Modifier.testTag("setting_performance_chip"),
                 )
             }
+            item(key = "setting_stream_audio") {
+                val lacksAudio = state.activeCamera?.isLiveVideo == false ||
+                    state.activeStreamHasAudioTrack == false
+                val audioValue = when {
+                    isScreensaverMode -> "Muted (Screensaver)"
+                    !state.streamAudioEnabled -> "Muted"
+                    lacksAudio -> "On (No audio)"
+                    else -> "On"
+                }
+                DrawerSettingRow(
+                    label = "Stream sound",
+                    value = audioValue,
+                    selected = state.streamAudioEnabled && !isScreensaverMode,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleStreamAudio) },
+                    modifier = Modifier.testTag("setting_stream_audio_chip"),
+                )
+            }
 
             item(key = "header_display") {
                 Spacer(modifier = Modifier.height(6.dp))
@@ -1753,6 +1871,16 @@ private fun SettingsSideDrawer(
                     onClick = { onAction(TvRemoteAction.ToggleWeatherOverlay) },
                 )
             }
+            item(key = "setting_weather_units") {
+                DrawerSettingRow(
+                    label = "Weather units",
+                    value = state.weatherUnitSystem.displayLabel(),
+                    selected = state.weatherUnitSystem != WeatherUnitSystem.AUTO,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.CycleWeatherUnitSystem) },
+                    modifier = Modifier.testTag("setting_weather_units_chip"),
+                )
+            }
             item(key = "setting_aqi") {
                 DrawerSettingRow(
                     label = "Air quality",
@@ -1769,6 +1897,26 @@ private fun SettingsSideDrawer(
                     selected = state.showSolarOverlay,
                     chipColors = chipColors,
                     onClick = { onAction(TvRemoteAction.ToggleSolarOverlay) },
+                )
+            }
+            item(key = "setting_currency") {
+                DrawerSettingRow(
+                    label = "Currency rate",
+                    value = if (state.showCurrencyOverlay) "On" else "Off",
+                    selected = state.showCurrencyOverlay,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.ToggleCurrencyOverlay) },
+                    modifier = Modifier.testTag("setting_currency_overlay_chip"),
+                )
+            }
+            item(key = "setting_home_currency") {
+                DrawerSettingRow(
+                    label = "Home currency",
+                    value = state.baseCurrencyPreference.displayLabel(),
+                    selected = state.baseCurrencyPreference != BaseCurrencyPreference.AUTO,
+                    chipColors = chipColors,
+                    onClick = { onAction(TvRemoteAction.CycleBaseCurrencyPreference) },
+                    modifier = Modifier.testTag("setting_base_currency_chip"),
                 )
             }
             item(key = "setting_oled") {
