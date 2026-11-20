@@ -1838,6 +1838,7 @@ private fun CameraSearchOverlay(
     onAction: (TvRemoteAction) -> Unit,
 ) {
     val initialKeyFocusRequester = remember { FocusRequester() }
+    val resultsListState = rememberLazyListState()
     val chipColors = rememberQuickStripChipColors()
     val results = state.searchResults
     val activeId = state.activeCamera?.id
@@ -1846,6 +1847,12 @@ private fun CameraSearchOverlay(
     LaunchedEffect(Unit) {
         withFrameNanos { }
         runCatching { initialKeyFocusRequester.requestFocus() }
+    }
+
+    LaunchedEffect(state.searchQuery) {
+        if (results.isNotEmpty()) {
+            resultsListState.scrollToItem(0)
+        }
     }
 
     Column(
@@ -1996,6 +2003,7 @@ private fun CameraSearchOverlay(
             }
         } else {
             LazyRow(
+                state = resultsListState,
                 contentPadding = PaddingValues(horizontal = TvOverscanHorizontal),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalAlignment = Alignment.CenterVertically,

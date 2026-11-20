@@ -932,3 +932,40 @@ def test_youtube_streams_tab_match_refresh_and_probe() -> None:
         ].reachable
         is True
     )
+
+    # Needle priority & multi-candidate Innertube fallback when first candidate is stalled
+    multi_html = (
+        '"lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":'
+        '{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE",'
+        '"animationActivationTargetId":"StalledCrys"}}]}}]},"metadata":'
+        '{"lockupMetadataViewModel":{"title":{"content":"Crystal Bay Stalled Feed"}}}},'
+        '"lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":'
+        '{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE",'
+        '"animationActivationTargetId":"LiveXiang11"}}]}}]},"metadata":'
+        '{"lockupMetadataViewModel":{"title":{"content":"Crystal Bay Backup Feed"}}}}'
+    )
+    multi_transport = httpx.MockTransport(
+        lambda req: (
+            httpx.Response(200, text=multi_html)
+            if str(req.url) == "https://www.youtube.com/@samui/streams"
+            else handler(req)
+        )
+    )
+    samui_cam = replace(
+        cam_dynamic_primary,
+        id="th-samui-crystal",
+        streams=(
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/@samui/streams?match=Crystal Bay",
+            ),
+        ),
+    )
+    healed_samui = refresh_youtube_live_urls(
+        [samui_cam],
+        timeout_seconds=2.0,
+        transport=multi_transport,
+    )
+    assert healed_samui[0].streams[0].url == "https://www.youtube.com/watch?v=LiveXiang11"
+    samui_probe = probe_cameras_live(healed_samui, timeout_seconds=2.0, transport=multi_transport)
+    assert samui_probe["https://www.youtube.com/@samui/streams?match=Crystal Bay"].reachable is True

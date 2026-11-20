@@ -105,12 +105,28 @@ object StreamPayloadParsers {
             .replace("https://youtube.com/", "https://www.youtube.com/")
     }
 
-    fun extractYouTubeStreamsTabLiveVideoId(streamsHtml: String, matchKeyword: String): String? {
+    fun extractYouTubeStreamsTabLiveVideoIds(streamsHtml: String, matchKeyword: String): List<String> {
         val needles = matchKeyword
             .split('|')
             .map { it.trim().lowercase() }
             .filter { it.isNotEmpty() }
-        if (needles.isEmpty()) return null
+        if (needles.isEmpty()) return emptyList()
+
+        data class RankedCandidate(
+            val needleRank: Int,
+            val discoveryOrder: Int,
+            val videoId: String,
+        )
+
+        val candidates = ArrayList<RankedCandidate>()
+        var orderCounter = 0
+
+        fun recordIfMatched(videoId: String, decodedTitleLower: String) {
+            val rank = needles.indexOfFirst { decodedTitleLower.contains(it) }
+            if (rank >= 0) {
+                candidates.add(RankedCandidate(rank, orderCounter++, videoId))
+            }
+        }
 
         // 1. Modern YouTube Desktop Web schema (lockupViewModel)
         val lockupBlocks = streamsHtml.split("\"lockupViewModel\":{")
@@ -126,9 +142,7 @@ object StreamPayloadParsers {
             val decodedTitle = UNICODE_ESCAPE_RE.replace(rawTitle) { m ->
                 m.groupValues[1].toInt(16).toChar().toString()
             }.lowercase()
-            if (needles.any { decodedTitle.contains(it) }) {
-                return videoId
-            }
+            recordIfMatched(videoId, decodedTitle)
         }
 
         // 2. Legacy / fallback YouTube Web schema (videoRenderer)
@@ -144,12 +158,17 @@ object StreamPayloadParsers {
             val decodedTitle = UNICODE_ESCAPE_RE.replace(rawTitle) { m ->
                 m.groupValues[1].toInt(16).toChar().toString()
             }.lowercase()
-            if (needles.any { decodedTitle.contains(it) }) {
-                return videoId
-            }
+            recordIfMatched(videoId, decodedTitle)
         }
-        return null
+
+        return candidates
+            .sortedWith(compareBy<RankedCandidate> { it.needleRank }.thenBy { it.discoveryOrder })
+            .map { it.videoId }
+            .distinct()
     }
+
+    fun extractYouTubeStreamsTabLiveVideoId(streamsHtml: String, matchKeyword: String): String? =
+        extractYouTubeStreamsTabLiveVideoIds(streamsHtml, matchKeyword).firstOrNull()
 
     fun buildYouTubeInnertubePlayerPayload(videoId: String): String =
         buildJsonObject {

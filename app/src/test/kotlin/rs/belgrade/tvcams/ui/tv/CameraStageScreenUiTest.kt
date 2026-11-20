@@ -199,8 +199,13 @@ class CameraStageScreenUiTest {
         composeRule.waitForIdle()
         assertEquals("tim", uiState.searchQuery)
 
-        composeRule.onNodeWithTag("camera_card_us-nyc-ts")
+        val firstCardBounds = composeRule.onNodeWithTag("camera_card_us-nyc-ts")
             .assertIsDisplayed()
+            .fetchSemanticsNode()
+            .boundsInRoot
+        assertTrue(firstCardBounds.left >= 0f, "First search card must not clip off left edge (left=${firstCardBounds.left})")
+
+        composeRule.onNodeWithTag("camera_card_us-nyc-ts")
             .performTvSelect()
         composeRule.waitForIdle()
 

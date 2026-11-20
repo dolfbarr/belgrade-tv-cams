@@ -82,7 +82,11 @@
       "streams": [
         {
           "type": "HLS",
-          "url": "https://wzmedia.dot.ca.gov/D7/CCTV-101.stream/playlist.m3u8"
+          "url": "https://wzmedia.dot.ca.gov/D7/CCTV-101.stream/playlist.m3u8",
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Referer": "https://cwwp2.dot.ca.gov/"
+          }
         }
       ]
     }

@@ -214,12 +214,12 @@ def extract_live_videos_from_streams_html(html_text: str) -> list[tuple[str, str
     return discovered
 
 
-def _resolve_youtube_streams_match_id(
+def _resolve_youtube_streams_match_ids(
     client: httpx.Client,
     streams_url: str,
     match_keyword: str,
     streams_cache: dict[str, list[tuple[str, str]]] | None = None,
-) -> str | None:
+) -> list[str]:
     if streams_cache is not None and streams_url in streams_cache:
         live_items = streams_cache[streams_url]
     else:
@@ -227,19 +227,39 @@ def _resolve_youtube_streams_match_id(
         if not (200 <= resp.status_code < 300):
             if streams_cache is not None:
                 streams_cache[streams_url] = []
-            return None
+            return []
         live_items = extract_live_videos_from_streams_html(resp.text)
         if streams_cache is not None:
             streams_cache[streams_url] = live_items
 
     needles = [part.strip().lower() for part in match_keyword.split("|") if part.strip()]
     if not needles:
-        return None
-    for vid, title_text in live_items:
+        return []
+    ranked: list[tuple[int, int, str]] = []
+    for order_idx, (vid, title_text) in enumerate(live_items):
         lowered_title = title_text.lower()
-        if any(needle in lowered_title for needle in needles):
-            return vid
-    return None
+        for rank_idx, needle in enumerate(needles):
+            if needle in lowered_title:
+                ranked.append((rank_idx, order_idx, vid))
+                break
+    ranked.sort(key=lambda item: (item[0], item[1]))
+    deduped: list[str] = []
+    seen_ids: set[str] = set()
+    for _, _, vid in ranked:
+        if vid not in seen_ids:
+            seen_ids.add(vid)
+            deduped.append(vid)
+    return deduped
+
+
+def _resolve_youtube_streams_match_id(
+    client: httpx.Client,
+    streams_url: str,
+    match_keyword: str,
+    streams_cache: dict[str, list[tuple[str, str]]] | None = None,
+) -> str | None:
+    ids = _resolve_youtube_streams_match_ids(client, streams_url, match_keyword, streams_cache)
+    return ids[0] if ids else None
 
 
 def _resolve_youtube_canonical_live_id(
@@ -464,7 +484,7 @@ def refresh_youtube_live_urls(
                     vid_health_cache[vid] = False
             return vid_health_cache[vid]
 
-        def _resolve_channel_descriptor(url: str) -> str | None:
+        def _resolve_channel_candidates(url: str) -> list[str]:
             channel_live_url = extract_youtube_channel_live_url(url)
             if channel_live_url is not None:
                 if channel_live_url not in channel_live_cache:
@@ -474,21 +494,22 @@ def refresh_youtube_live_urls(
                         )
                     except (httpx.HTTPError, ValueError, KeyError):
                         channel_live_cache[channel_live_url] = None
-                return channel_live_cache[channel_live_url]
+                canon = channel_live_cache[channel_live_url]
+                return [canon] if canon else []
 
             match_spec = extract_youtube_streams_match_spec(url)
             if match_spec is not None:
                 streams_url, keyword = match_spec
                 try:
-                    return _resolve_youtube_streams_match_id(
+                    return _resolve_youtube_streams_match_ids(
                         client,
                         streams_url,
                         keyword,
                         streams_tab_cache,
-                    )
+                    )[:4]
                 except (httpx.HTTPError, ValueError, KeyError):
-                    return None
-            return None
+                    return []
+            return []
 
         updated_cameras: list[CameraEntry] = []
         for camera in cameras:
@@ -507,12 +528,18 @@ def refresh_youtube_live_urls(
                 for s in camera.streams:
                     if s.type != StreamTransportType.YOUTUBE_LIVE:
                         continue
-                    cand_vid = _resolve_channel_descriptor(s.url) or extract_youtube_video_id(s.url)
-                    if cand_vid and _is_vid_healthy(
-                        cand_vid,
-                        f"https://www.youtube.com/watch?v={cand_vid}",
-                    ):
-                        promoted_vid = cand_vid
+                    cands = _resolve_channel_candidates(s.url)
+                    direct = extract_youtube_video_id(s.url)
+                    if direct and direct not in cands:
+                        cands.append(direct)
+                    for cand_vid in cands:
+                        if _is_vid_healthy(
+                            cand_vid,
+                            f"https://www.youtube.com/watch?v={cand_vid}",
+                        ):
+                            promoted_vid = cand_vid
+                            break
+                    if promoted_vid is not None:
                         break
 
                 if promoted_vid is None:
@@ -560,16 +587,14 @@ def refresh_youtube_live_urls(
             for s in camera.streams[1:]:
                 if s.type != StreamTransportType.YOUTUBE_LIVE:
                     continue
-                cand_vid = _resolve_channel_descriptor(s.url)
-                if (
-                    cand_vid is not None
-                    and cand_vid != primary_vid
-                    and _is_vid_healthy(
+                for cand_vid in _resolve_channel_candidates(s.url):
+                    if cand_vid != primary_vid and _is_vid_healthy(
                         cand_vid,
                         f"https://www.youtube.com/watch?v={cand_vid}",
-                    )
-                ):
-                    fresh_vid = cand_vid
+                    ):
+                        fresh_vid = cand_vid
+                        break
+                if fresh_vid is not None:
                     break
 
             if fresh_vid is None:
@@ -613,15 +638,26 @@ def _probe_single_stream(
             if match_spec is not None:
                 streams_url, keyword = match_spec
                 with youtube_sem:
-                    resolved_id = _resolve_youtube_streams_match_id(client, streams_url, keyword)
-                    if resolved_id is None:
+                    candidate_ids = _resolve_youtube_streams_match_ids(
+                        client,
+                        streams_url,
+                        keyword,
+                    )[:4]
+                    if not candidate_ids:
                         return ProbeResult(
                             stream.url,
                             False,
                             200,
                             f"No active live broadcast matching '{keyword}'",
                         )
-                    return _probe_youtube_video_id(client, resolved_id, stream.url)
+                    last_res: ProbeResult | None = None
+                    for cand_id in candidate_ids:
+                        res = _probe_youtube_video_id(client, cand_id, stream.url)
+                        if res.reachable:
+                            return res
+                        last_res = res
+                    assert last_res is not None
+                    return last_res
             return ProbeResult(stream.url, False, None, "Invalid YouTube video ID")
 
         if stream.type == StreamTransportType.RUTUBE_LIVE:

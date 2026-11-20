@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026111923,
-  "updated_at": "2026-11-19T23:40:49Z",
+  "revision": 2026112003,
+  "updated_at": "2026-11-20T01:42:47Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -7017,7 +7017,11 @@
       "streams": [
         {
           "type": "HLS",
-          "url": "https://wzmedia.dot.ca.gov/D7/CCTV-101.stream/playlist.m3u8"
+          "url": "https://wzmedia.dot.ca.gov/D7/CCTV-101.stream/playlist.m3u8",
+          "headers": {
+            "Referer": "https://cwwp2.dot.ca.gov/",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+          }
         }
       ]
     },
@@ -10029,7 +10033,7 @@
       "municipality": "Maret, Ko Samui",
       "category": "SQUARES",
       "direction": "East across Crystal Bay granite boulders and turquoise cove toward the Gulf of Thailand",
-      "poster_url": "https://i.ytimg.com/vi/YTxRAVKxFIM/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/3N3ZwIB_X4Y/hqdefault.jpg",
       "coordinates": {
         "lat": 9.4644,
         "lon": 100.0444
@@ -10037,11 +10041,11 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=YTxRAVKxFIM"
+          "url": "https://www.youtube.com/watch?v=3N3ZwIB_X4Y"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Crystal%20Bay%7CLamai%7CSilver%20Beach"
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Crystal%20Bay%7CSilver%20Beach"
         }
       ]
     }

@@ -1333,6 +1333,15 @@ class DomainSuiteTest {
             "LiveRialto2",
             StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "Rialto Bridge"),
         )
+        // Earlier needle specificity beats earlier page position
+        val samuiHtml = """
+            "lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE","animationActivationTargetId":"BondiLamai1"}}]}}]},"metadata":{"lockupMetadataViewModel":{"title":{"content":"Bondi Aussie Bar | Lamai | Koh Samui"}}}},
+            "lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE","animationActivationTargetId":"CrystBay4K1"}}]}}]},"metadata":{"lockupMetadataViewModel":{"title":{"content":"Crystal Bay Yacht Club Lamai | Koh Samui"}}}}
+        """.trimIndent()
+        assertEquals(
+            listOf("CrystBay4K1", "BondiLamai1"),
+            StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoIds(samuiHtml, "Crystal Bay|Lamai"),
+        )
         assertNull(StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "Nonexistent"))
         assertNull(StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoId(streamsHtml, "  |  "))
     }

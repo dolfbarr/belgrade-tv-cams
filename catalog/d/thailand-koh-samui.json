@@ -48,7 +48,7 @@
       "municipality": "Maret, Ko Samui",
       "category": "SQUARES",
       "direction": "East across Crystal Bay granite boulders and turquoise cove toward the Gulf of Thailand",
-      "poster_url": "https://i.ytimg.com/vi/YTxRAVKxFIM/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/3N3ZwIB_X4Y/hqdefault.jpg",
       "coordinates": {
         "lat": 9.4644,
         "lon": 100.0444
@@ -56,11 +56,11 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=YTxRAVKxFIM"
+          "url": "https://www.youtube.com/watch?v=3N3ZwIB_X4Y"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Crystal%20Bay%7CLamai%7CSilver%20Beach"
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Crystal%20Bay%7CSilver%20Beach"
         }
       ]
     }
