@@ -1,0 +1,43 @@
+{
+  "country": "SINGAPORE",
+  "country_name": "Singapore",
+  "country_iso": "SG",
+  "city": "SINGAPORE",
+  "city_name": "Singapore",
+  "timezone": "Asia/Singapore",
+  "cameras": [
+    {
+      "id": "sg-sin-marina-bay-skyline",
+      "name": "Marina Bay Sands & Downtown Core Skyline",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Fullerton Road",
+        "Marina Boulevard",
+        "Downtown Core"
+      ],
+      "municipality": "Central Region, Singapore",
+      "category": "SQUARES",
+      "direction": "East-Southeast across Marina Bay toward Marina Bay Sands, ArtScience Museum, and Helix Bridge",
+      "poster_url": "https://i.ytimg.com/vi/XOSI6hwEDP0/hqdefault.jpg",
+      "coordinates": {
+        "lat": 1.2868,
+        "lon": 103.8545
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=XOSI6hwEDP0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@dikipidia/streams?match=Marina%20Bay%7CSingapore"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@dikipidia/live"
+        }
+      ]
+    }
+  ]
+}

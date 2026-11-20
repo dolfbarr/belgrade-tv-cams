@@ -1,0 +1,181 @@
+{
+  "country": "TAIWAN",
+  "country_name": "Taiwan",
+  "country_iso": "TW",
+  "city": "TAIPEI",
+  "city_name": "Taipei",
+  "timezone": "Asia/Taipei",
+  "cameras": [
+    {
+      "id": "tw-tpe-xiangshan-101",
+      "name": "Taipei 101 Skyline from Xiangshan (Elephant Mountain)",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Xiangshan Hiking Trail",
+        "Sec. 5, Xinyi Road",
+        "Xinyi District"
+      ],
+      "municipality": "Taipei City",
+      "category": "SQUARES",
+      "direction": "Northwest toward Taipei 101 and the Xinyi Financial District",
+      "poster_url": "https://i.ytimg.com/vi/z_fY1pj1VBw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0269,
+        "lon": 121.5766
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=z_fY1pj1VBw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taipeitravelofficial/streams?match=Xiangshan%7C%E8%B1%A1%E5%B1%B1"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-dadaocheng-wharf",
+      "name": "Dadaocheng Wharf & Tamsui River",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Minsheng West Road",
+        "Yanping Riverside Park",
+        "Datong District"
+      ],
+      "municipality": "Taipei City",
+      "category": "SQUARES",
+      "direction": "West-Southwest across Pier 5 Plaza and the Tamsui River",
+      "poster_url": "https://i.ytimg.com/vi/Ndo_8RuefH4/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0565,
+        "lon": 121.5075
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Ndo_8RuefH4"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taipeitravelofficial/streams?match=Dadaocheng%7C%E5%A4%A7%E7%A8%BB%E5%9F%95"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-bishan-temple",
+      "name": "Bishan Temple Taipei Basin Skyline",
+      "quality": "UHD_4K",
+      "streets": [
+        "Bishan Road",
+        "Sec. 3, Neihu Road",
+        "Neihu District"
+      ],
+      "municipality": "Taipei City",
+      "category": "SQUARES",
+      "direction": "South-Southwest across the Taipei Basin toward Taipei 101",
+      "poster_url": "https://i.ytimg.com/vi/uvwfYzwY8tg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0886,
+        "lon": 121.5872
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=uvwfYzwY8tg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taipeitravelofficial/streams?match=Bishan%7C%E7%A2%A7%E5%B1%B1%E5%B7%96"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-jiufen-mountain-street",
+      "name": "Jiufen Red Lantern Mountain Street",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Jishan Street",
+        "Shuqi Road",
+        "Qiche Road"
+      ],
+      "municipality": "Ruifang, New Taipei City",
+      "category": "BOULEVARDS",
+      "direction": "Northwest from Kaicheng Hall over Jiufen Village and Keelung Mountain",
+      "poster_url": "https://i.ytimg.com/vi/XSD5ptYisw8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.108,
+        "lon": 121.8466
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=XSD5ptYisw8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ntctour/streams?match=Jiufen%7C%E4%B9%9D%E4%BB%BD"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-tamsui-fishermans-wharf",
+      "name": "Tamsui Fisherman's Wharf & Lover's Bridge",
+      "quality": "UHD_4K",
+      "streets": [
+        "Guanhai Road",
+        "Lover's Bridge",
+        "Tamsui District"
+      ],
+      "municipality": "Tamsui, New Taipei City",
+      "category": "BRIDGES",
+      "direction": "West-Southwest across Lover's Bridge and the Tamsui Estuary",
+      "poster_url": "https://i.ytimg.com/vi/xwAWSh35uuw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.183,
+        "lon": 121.4108
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=xwAWSh35uuw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ntctour/streams?match=Tamsui%7C%E6%B7%A1%E6%B0%B4"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-taoyuan-airport-runway",
+      "name": "Taoyuan International Airport Runways",
+      "quality": "UHD_4K",
+      "streets": [
+        "Hangzhan South Road",
+        "Terminal 2 Observation Deck",
+        "Dayuan District"
+      ],
+      "municipality": "Taoyuan City",
+      "category": "HIGHWAYS",
+      "direction": "Southeast across Terminal 2 Apron and South Runway 05R/23L",
+      "poster_url": "https://i.ytimg.com/vi/y3_x8el5ZJY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0764,
+        "lon": 121.2239
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=y3_x8el5ZJY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taoyuanairport/streams?match=Runway%7C%E8%B7%91%E9%81%93"
+        }
+      ]
+    }
+  ]
+}

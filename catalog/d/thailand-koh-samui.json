@@ -1,0 +1,68 @@
+{
+  "country": "THAILAND",
+  "country_name": "Thailand",
+  "country_iso": "TH",
+  "city": "KOH_SAMUI",
+  "city_name": "Koh Samui",
+  "timezone": "Asia/Bangkok",
+  "cameras": [
+    {
+      "id": "th-usm-fishermans-village-bophut",
+      "name": "Fisherman's Village — Bophut Beach",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Bophut Beach Road",
+        "Fisherman's Village Walking Street",
+        "Bophut Bay"
+      ],
+      "municipality": "Bo Phut, Ko Samui",
+      "category": "SQUARES",
+      "direction": "North across Bophut Beach toward Koh Phangan",
+      "poster_url": "https://i.ytimg.com/vi/CSp55hSd_6A/hqdefault.jpg",
+      "coordinates": {
+        "lat": 9.56,
+        "lon": 100.0303
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=CSp55hSd_6A"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Bophut%7CFisherman"
+        }
+      ]
+    },
+    {
+      "id": "th-usm-crystal-bay-lamai",
+      "name": "Crystal Bay — Silver Beach & Lamai",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Thong Takian Bay",
+        "Silver Beach Waterfront",
+        "Route 4169"
+      ],
+      "municipality": "Maret, Ko Samui",
+      "category": "SQUARES",
+      "direction": "East across Crystal Bay granite boulders and turquoise cove toward the Gulf of Thailand",
+      "poster_url": "https://i.ytimg.com/vi/3N3ZwIB_X4Y/hqdefault.jpg",
+      "coordinates": {
+        "lat": 9.4644,
+        "lon": 100.0444
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=3N3ZwIB_X4Y"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Crystal%20Bay%7CSilver%20Beach"
+        }
+      ]
+    }
+  ]
+}

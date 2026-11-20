@@ -26,10 +26,12 @@ from catalog_probe.models import (
 from catalog_probe.prober import (
     ProbeResult,
     apply_probe_ordering,
+    extract_live_videos_from_streams_html,
     extract_naxi_hq_streams,
     extract_naxi_lq_snapshots,
     extract_toll4all_streams,
     extract_youtube_channel_live_url,
+    extract_youtube_streams_match_spec,
     extract_youtube_video_id,
     normalize_snapshot_url,
     probe_cameras_live,
@@ -52,7 +54,7 @@ def test_extract_youtube_video_id_variants() -> None:
 
 
 def test_curated_v5_world_catalog_invariants() -> None:
-    cameras = build_curated_cameras()
+    cameras = build_curated_cameras(contributions_dir=Path("/nonexistent"))
     assert len(cameras) == 225
 
     seen_ids: set[str] = set()
@@ -214,6 +216,26 @@ def test_curated_v5_world_catalog_invariants() -> None:
         CameraCategory.BOULEVARDS,
         CameraCategory.HIGHWAYS,
     }
+
+    all_cameras = build_curated_cameras()
+    assert len(all_cameras) >= 225
+    all_seen_ids: set[str] = set()
+    by_city: dict[CameraCity, list[CameraEntry]] = {}
+    for cam in all_cameras:
+        assert cam.id not in all_seen_ids, f"Duplicate global camera ID: {cam.id}"
+        all_seen_ids.add(cam.id)
+        assert cam.country is not None
+        assert cam.poster_url.startswith("https://")
+        assert len(cam.streams) >= 1
+        for stream in cam.streams:
+            assert stream.url.startswith("https://")
+        by_city.setdefault(cam.city, []).append(cam)
+
+    for city, city_cams in by_city.items():
+        live_count = sum(1 for c in city_cams if c.is_live_video)
+        assert live_count >= 1, f"City {city} has zero live video streams!"
+        sort_keys = [(0 if c.is_live_video else 1, c.quality.sort_rank) for c in city_cams]
+        assert sort_keys == sorted(sort_keys), f"City {city} violated live-first/HD-first order"
 
 
 def test_extract_upstream_html_parsers() -> None:
@@ -781,3 +803,169 @@ def test_drop_in_community_contribution_file_loads_and_validates(tmp_path: Path)
     )
     with pytest.raises(ValueError, match="invalid IANA timezone"):
         parse_contribution_file(bad_tz_file)
+
+
+def test_youtube_streams_tab_match_refresh_and_probe() -> None:
+    spec = extract_youtube_streams_match_spec(
+        "https://www.youtube.com/@taipeitravelofficial/streams?match=%E8%B1%A1%E5%B1%B1%7CXiangshan"
+    )
+    assert spec == (
+        "https://www.youtube.com/@taipeitravelofficial/streams",
+        "象山|Xiangshan",
+    )
+    assert extract_youtube_streams_match_spec("https://www.youtube.com/@foo/streams") is None
+    assert extract_youtube_streams_match_spec("https://example.com/@foo/streams?match=bar") is None
+
+    streams_html = (
+        '"lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":'
+        '{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":'
+        '"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE","animationActivationTargetId":"LiveXiang11"}}]}}]},'
+        '"metadata":{"lockupMetadataViewModel":{"title":{"content":'
+        '"\\u3010Taipei 4K\\u3011象山 Xiangshan Taipei 101"}}}},'
+        '"lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":'
+        '{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":'
+        '"THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT","animationActivationTargetId":"VodArchive1"}}]}}]},'
+        '"metadata":{"lockupMetadataViewModel":{"title":{"content":"Old Replay"}}}},'
+        '{"videoRenderer":{"videoId":"LiveDadao22","title":{"runs":[{"text":'
+        '"Taipei Dadaocheng Wharf"}]},'
+        '"thumbnailOverlays":[{"thumbnailOverlayTimeStatusRenderer":{"style":"LIVE"}}]}}'
+    )
+    discovered = extract_live_videos_from_streams_html(streams_html)
+    assert [vid for vid, _ in discovered] == ["LiveXiang11", "LiveDadao22"]
+
+    cam_dynamic_primary = CameraEntry(
+        id="tw-tpe-xiangshan",
+        name="Taipei 101 Xiangshan",
+        country=CameraCountry("TAIWAN"),
+        city=CameraCity("TAIPEI"),
+        quality=VideoQuality.UHD_4K,
+        timezone="Asia/Taipei",
+        streets=("Xiangshan Trail",),
+        municipality="Xinyi",
+        category=CameraCategory.SQUARES,
+        direction="NW",
+        poster_url="https://i.ytimg.com/vi/00000000000/hqdefault.jpg",
+        coordinates=GeoCoordinates(25.0269, 121.5766),
+        streams=(
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/@taipeitravelofficial/streams?match=象山|Xiangshan",
+            ),
+        ),
+    )
+    cam_rotated_primary = CameraEntry(
+        id="tw-tpe-dadaocheng",
+        name="Dadaocheng Wharf",
+        country=CameraCountry("TAIWAN"),
+        city=CameraCity("TAIPEI"),
+        quality=VideoQuality.UHD_4K,
+        timezone="Asia/Taipei",
+        streets=("Minsheng W Rd",),
+        municipality="Datong",
+        category=CameraCategory.SQUARES,
+        direction="W",
+        poster_url="https://i.ytimg.com/vi/StaleVideo9/hqdefault.jpg",
+        coordinates=GeoCoordinates(25.0565, 121.5075),
+        streams=(
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/watch?v=StaleVideo9",
+            ),
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/@taipeitravelofficial/streams?match=Dadaocheng",
+            ),
+        ),
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        if url == "https://www.youtube.com/@taipeitravelofficial/streams":
+            return httpx.Response(200, text=streams_html)
+        if "youtubei/v1/player" in url and request.method == "POST":
+            vid = json.loads(request.content.decode("utf-8")).get("videoId")
+            if vid in ("LiveXiang11", "LiveDadao22"):
+                return httpx.Response(
+                    200,
+                    json={
+                        "playabilityStatus": {"status": "OK"},
+                        "videoDetails": {"videoId": vid, "isLive": True},
+                        "streamingData": {
+                            "hlsManifestUrl": (
+                                f"https://manifest.googlevideo.com/api/manifest/hls_variant/"
+                                f"id/{vid}.1/file/index.m3u8"
+                            )
+                        },
+                    },
+                )
+            return httpx.Response(
+                200,
+                json={
+                    "playabilityStatus": {"status": "OK"},
+                    "videoDetails": {"videoId": vid, "isLive": False},
+                    "streamingData": {},
+                },
+            )
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    refreshed = refresh_youtube_live_urls(
+        [cam_dynamic_primary, cam_rotated_primary],
+        timeout_seconds=2.0,
+        transport=transport,
+    )
+    assert refreshed[0].streams[0].url == "https://www.youtube.com/watch?v=LiveXiang11"
+    assert (
+        refreshed[0].streams[1].url
+        == "https://www.youtube.com/@taipeitravelofficial/streams?match=象山|Xiangshan"
+    )
+    assert refreshed[0].poster_url == "https://i.ytimg.com/vi/LiveXiang11/hqdefault.jpg"
+
+    assert refreshed[1].streams[0].url == "https://www.youtube.com/watch?v=LiveDadao22"
+    assert refreshed[1].poster_url == "https://i.ytimg.com/vi/LiveDadao22/hqdefault.jpg"
+
+    probe_res = probe_cameras_live(refreshed, timeout_seconds=2.0, transport=transport)
+    assert probe_res["https://www.youtube.com/watch?v=LiveXiang11"].reachable is True
+    assert (
+        probe_res[
+            "https://www.youtube.com/@taipeitravelofficial/streams?match=象山|Xiangshan"
+        ].reachable
+        is True
+    )
+
+    # Needle priority & multi-candidate Innertube fallback when first candidate is stalled
+    multi_html = (
+        '"lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":'
+        '{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE",'
+        '"animationActivationTargetId":"StalledCrys"}}]}}]},"metadata":'
+        '{"lockupMetadataViewModel":{"title":{"content":"Crystal Bay Stalled Feed"}}}},'
+        '"lockupViewModel":{"contentImage":{"overlays":[{"thumbnailBottomOverlayViewModel":'
+        '{"badges":[{"thumbnailBadgeViewModel":{"badgeStyle":"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE",'
+        '"animationActivationTargetId":"LiveXiang11"}}]}}]},"metadata":'
+        '{"lockupMetadataViewModel":{"title":{"content":"Crystal Bay Backup Feed"}}}}'
+    )
+    multi_transport = httpx.MockTransport(
+        lambda req: (
+            httpx.Response(200, text=multi_html)
+            if str(req.url) == "https://www.youtube.com/@samui/streams"
+            else handler(req)
+        )
+    )
+    samui_cam = replace(
+        cam_dynamic_primary,
+        id="th-samui-crystal",
+        streams=(
+            StreamDescriptor(
+                StreamTransportType.YOUTUBE_LIVE,
+                "https://www.youtube.com/@samui/streams?match=Crystal Bay",
+            ),
+        ),
+    )
+    healed_samui = refresh_youtube_live_urls(
+        [samui_cam],
+        timeout_seconds=2.0,
+        transport=multi_transport,
+    )
+    assert healed_samui[0].streams[0].url == "https://www.youtube.com/watch?v=LiveXiang11"
+    samui_probe = probe_cameras_live(healed_samui, timeout_seconds=2.0, transport=multi_transport)
+    assert samui_probe["https://www.youtube.com/@samui/streams?match=Crystal Bay"].reachable is True

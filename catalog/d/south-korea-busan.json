@@ -1,0 +1,74 @@
+{
+  "country": "SOUTH_KOREA",
+  "city": "BUSAN",
+  "city_name": "Busan",
+  "timezone": "Asia/Seoul",
+  "cameras": [
+    {
+      "id": "kr-pus-haeundae-beach-4k",
+      "name": "Haeundae Beach & Marine City Skyline",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Haeundaehaebyeon-ro",
+        "Dalmaji-gil",
+        "Gunam-ro"
+      ],
+      "municipality": "Haeundae-gu, Busan",
+      "category": "BOULEVARDS",
+      "direction": "West-Southwest across Haeundae Beach toward Dongbaekseom and Marine City skyline",
+      "poster_url": "https://i.ytimg.com/vi/rKh675PnlP4/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.1585,
+        "lon": 129.165
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=rKh675PnlP4"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanHaeundaeLive/streams?match=%ED%95%B4%EC%9A%B4%EB%8C%80%7CHaeundae"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanHaeundaeLive/live"
+        }
+      ]
+    },
+    {
+      "id": "kr-pus-gwangalli-diamond-bridge-4k",
+      "name": "Gwangalli Beach & Gwangan Diamond Bridge",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Gwanganhaebyeon-ro",
+        "Gwangan Bridge",
+        "Namcheonbada-ro"
+      ],
+      "municipality": "Suyeong-gu, Busan",
+      "category": "BRIDGES",
+      "direction": "Southeast across Gwangalli Beach toward Gwangan Diamond Bridge main span",
+      "poster_url": "https://i.ytimg.com/vi/GZ8MwCX_n14/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.1542,
+        "lon": 129.1206
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=GZ8MwCX_n14"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanLive/streams?match=%EA%B4%91%EC%95%88%7CGwangalli"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanLive/live"
+        }
+      ]
+    }
+  ]
+}

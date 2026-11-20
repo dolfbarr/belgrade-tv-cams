@@ -49,6 +49,7 @@ private val FlagBorderColor = Color(0x4DFFFFFF)
 private val VECTOR_FLAG_ISOS: Set<String> = setOf(
     "RS", "RU", "ES", "RO", "GB", "FR", "NL", "DE", "GE", "AM", "US", "KR", "JP",
     "AT", "CH", "IT", "BE", "IE", "PL", "UA", "CZ", "HU", "BG", "SE", "NO", "FI", "DK", "CA",
+    "HR", "TR", "IS", "PT", "TW", "TH", "AU", "SG", "HK", "AE", "IL", "BR", "SX", "MX",
 )
 
 @OptIn(ExperimentalTvMaterial3Api::class)
@@ -286,6 +287,106 @@ fun CountryFlagIcon(
                 drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(w * 0.25f, 0f), size = Size(w * 0.50f, h))
                 drawRect(color = Color(0xFFFF0000), topLeft = Offset(w * 0.75f, 0f), size = Size(w * 0.25f, h))
                 drawCircle(color = Color(0xFFFF0000), radius = h * 0.22f, center = Offset(w * 0.50f, h * 0.50f))
+            }
+            "IS" -> {
+                drawNordicCross(w, h, bg = Color(0xFF02529C), cross = Color(0xFFF8FAFC), thickness = 0.26f)
+                drawRect(color = Color(0xFFDC1E35), topLeft = Offset(0f, h * 0.43f), size = Size(w, h * 0.14f))
+                drawRect(color = Color(0xFFDC1E35), topLeft = Offset(w * 0.31f, 0f), size = Size(w * 0.10f, h))
+            }
+            "TR" -> {
+                drawRect(color = Color(0xFFE30A17), topLeft = Offset(0f, 0f), size = Size(w, h))
+                drawCircle(color = Color.White, radius = h * 0.26f, center = Offset(w * 0.40f, h * 0.50f))
+                drawCircle(color = Color(0xFFE30A17), radius = h * 0.21f, center = Offset(w * 0.45f, h * 0.50f))
+                drawCircle(color = Color.White, radius = h * 0.08f, center = Offset(w * 0.60f, h * 0.50f))
+            }
+            "PT" -> {
+                drawRect(color = Color(0xFF006600), topLeft = Offset(0f, 0f), size = Size(w * 0.40f, h))
+                drawRect(color = Color(0xFFFF0000), topLeft = Offset(w * 0.40f, 0f), size = Size(w * 0.60f, h))
+                drawCircle(color = Color(0xFFFFCC00), radius = h * 0.21f, center = Offset(w * 0.40f, h * 0.50f))
+            }
+            "TW" -> {
+                drawRect(color = Color(0xFFFE0000), topLeft = Offset(0f, 0f), size = Size(w, h))
+                drawRect(color = Color(0xFF000095), topLeft = Offset(0f, 0f), size = Size(w * 0.50f, h * 0.52f))
+                drawCircle(color = Color.White, radius = h * 0.14f, center = Offset(w * 0.25f, h * 0.26f))
+            }
+            "TH" -> {
+                val u = h / 6f
+                drawRect(color = Color(0xFFA51931), topLeft = Offset(0f, 0f), size = Size(w, u))
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, u), size = Size(w, u))
+                drawRect(color = Color(0xFF2D2A4A), topLeft = Offset(0f, u * 2f), size = Size(w, u * 2f))
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, u * 4f), size = Size(w, u))
+                drawRect(color = Color(0xFFA51931), topLeft = Offset(0f, u * 5f), size = Size(w, u))
+            }
+            "AU" -> {
+                drawRect(color = Color(0xFF00008B), topLeft = Offset(0f, 0f), size = Size(w, h))
+                val cw = w * 0.48f
+                val ch = h * 0.50f
+                drawRect(color = Color.White, topLeft = Offset(0f, ch * 0.36f), size = Size(cw, ch * 0.28f))
+                drawRect(color = Color.White, topLeft = Offset(cw * 0.38f, 0f), size = Size(cw * 0.24f, ch))
+                drawRect(color = Color(0xFFC8102E), topLeft = Offset(0f, ch * 0.42f), size = Size(cw, ch * 0.16f))
+                drawRect(color = Color(0xFFC8102E), topLeft = Offset(cw * 0.42f, 0f), size = Size(cw * 0.16f, ch))
+                drawCircle(color = Color.White, radius = h * 0.08f, center = Offset(w * 0.24f, h * 0.76f))
+                for ((sx, sy) in listOf(0.75f to 0.22f, 0.86f to 0.42f, 0.75f to 0.80f, 0.64f to 0.48f)) {
+                    drawCircle(color = Color.White, radius = h * 0.055f, center = Offset(w * sx, h * sy))
+                }
+            }
+            "SG" -> {
+                drawRect(color = Color(0xFFEF3340), topLeft = Offset(0f, 0f), size = Size(w, h * 0.50f))
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, h * 0.50f), size = Size(w, h * 0.50f))
+                drawCircle(color = Color.White, radius = h * 0.17f, center = Offset(w * 0.24f, h * 0.25f))
+                drawCircle(color = Color(0xFFEF3340), radius = h * 0.14f, center = Offset(w * 0.29f, h * 0.25f))
+            }
+            "HK" -> {
+                drawRect(color = Color(0xFFDE2910), topLeft = Offset(0f, 0f), size = Size(w, h))
+                for (i in 0 until 5) {
+                    val angle = Math.toRadians((i * 72.0) - 90.0)
+                    drawCircle(
+                        color = Color.White,
+                        radius = h * 0.095f,
+                        center = Offset(
+                            (w * 0.50f) + (h * 0.16f * cos(angle).toFloat()),
+                            (h * 0.50f) + (h * 0.16f * sin(angle).toFloat()),
+                        ),
+                    )
+                }
+            }
+            "AE" -> {
+                drawHorizontalTricolor(w, h, Color(0xFF00732F), Color(0xFFF8FAFC), Color(0xFF09090B))
+                drawRect(color = Color(0xFFFF0000), topLeft = Offset(0f, 0f), size = Size(w * 0.26f, h))
+            }
+            "IL" -> {
+                drawRect(color = Color(0xFFF8FAFC), topLeft = Offset(0f, 0f), size = Size(w, h))
+                val blue = Color(0xFF0038B8)
+                drawRect(color = blue, topLeft = Offset(0f, h * 0.12f), size = Size(w, h * 0.14f))
+                drawRect(color = blue, topLeft = Offset(0f, h * 0.74f), size = Size(w, h * 0.14f))
+                drawCircle(color = blue, radius = h * 0.17f, center = Offset(w * 0.50f, h * 0.50f), style = Stroke(width = 1.4f))
+            }
+            "BR" -> {
+                drawRect(color = Color(0xFF009C3B), topLeft = Offset(0f, 0f), size = Size(w, h))
+                val diamond = Path().apply {
+                    moveTo(w * 0.50f, h * 0.12f)
+                    lineTo(w * 0.88f, h * 0.50f)
+                    lineTo(w * 0.50f, h * 0.88f)
+                    lineTo(w * 0.12f, h * 0.50f)
+                    close()
+                }
+                drawPath(diamond, Color(0xFFFFDF00))
+                drawCircle(color = Color(0xFF002776), radius = h * 0.20f, center = Offset(w * 0.50f, h * 0.50f))
+            }
+            "SX" -> {
+                drawRect(color = Color(0xFFED2939), topLeft = Offset(0f, 0f), size = Size(w, h * 0.50f))
+                drawRect(color = Color(0xFF002654), topLeft = Offset(0f, h * 0.50f), size = Size(w, h * 0.50f))
+                val triangle = Path().apply {
+                    moveTo(0f, 0f)
+                    lineTo(w * 0.42f, h * 0.50f)
+                    lineTo(0f, h)
+                    close()
+                }
+                drawPath(triangle, Color(0xFFF8FAFC))
+            }
+            "MX" -> {
+                drawVerticalTricolor(w, h, Color(0xFF006847), Color(0xFFF8FAFC), Color(0xFFCE1126))
+                drawCircle(color = Color(0xFF8C6239), radius = h * 0.13f, center = Offset(w * 0.50f, h * 0.50f))
             }
         }
     }

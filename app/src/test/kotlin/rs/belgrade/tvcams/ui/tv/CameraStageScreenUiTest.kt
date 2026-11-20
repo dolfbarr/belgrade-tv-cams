@@ -116,7 +116,7 @@ class CameraStageScreenUiTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val manifest = AssetCatalogSeedSource(context).readSeed()
         assertEquals(5, manifest.schemaVersion)
-        assertEquals(225, manifest.cameras.size)
+        assertEquals(301, manifest.cameras.size)
         // Verify legacy v1-v4 seed files were removed from APK assets
         val assetFiles = context.assets.list("").orEmpty().toSet()
         assertTrue(assetFiles.contains("seed_catalog.v5.json"))
@@ -199,8 +199,13 @@ class CameraStageScreenUiTest {
         composeRule.waitForIdle()
         assertEquals("tim", uiState.searchQuery)
 
-        composeRule.onNodeWithTag("camera_card_us-nyc-ts")
+        val firstCardBounds = composeRule.onNodeWithTag("camera_card_us-nyc-ts")
             .assertIsDisplayed()
+            .fetchSemanticsNode()
+            .boundsInRoot
+        assertTrue(firstCardBounds.left >= 0f, "First search card must not clip off left edge (left=${firstCardBounds.left})")
+
+        composeRule.onNodeWithTag("camera_card_us-nyc-ts")
             .performTvSelect()
         composeRule.waitForIdle()
 
@@ -255,6 +260,30 @@ class CameraStageScreenUiTest {
         assertTrue(retriedCatalog)
         composeRule.onNodeWithTag("stream_unavailable_banner").assertIsDisplayed()
         composeRule.onNodeWithText("Retrying automatically in 6s").assertIsDisplayed()
+    }
+
+    @Test
+    fun countryFlagIconRendersAllFortyTwoVectorFlagsAndMonogramFallback() {
+        val allIsos = listOf(
+            "RS", "RU", "ES", "RO", "GB", "FR", "NL", "DE", "GE", "AM", "US", "KR", "JP",
+            "AT", "CH", "IT", "BE", "IE", "PL", "UA", "CZ", "HU", "BG", "SE", "NO", "FI", "DK", "CA",
+            "HR", "TR", "IS", "PT", "TW", "TH", "AU", "SG", "HK", "AE", "IL", "BR", "SX", "MX",
+            "ZZ",
+        )
+        composeRule.setContent {
+            MaterialTheme(colorScheme = darkColorScheme()) {
+                androidx.compose.foundation.layout.Row {
+                    for (iso in allIsos) {
+                        CountryFlagIcon(
+                            country = CameraCountry(iso),
+                            isoOverride = iso,
+                        )
+                    }
+                }
+            }
+        }
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText("ZZ").assertIsDisplayed()
     }
 
     @OptIn(ExperimentalTestApi::class)

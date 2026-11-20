@@ -87,10 +87,19 @@ class OkHttpStreamUrlResolver(
     }
 
     private fun resolveYouTubeLive(stream: StreamDescriptor): TimedResolution? = runCatching {
-        val videoId = StreamPayloadParsers.extractYouTubeVideoId(stream.url)
-            ?: resolveCanonicalYouTubeLiveId(stream.url)
-            ?: return@runCatching null
+        val candidateVideoIds = StreamPayloadParsers.extractYouTubeVideoId(stream.url)
+            ?.let(::listOf)
+            ?: resolveCandidateYouTubeLiveIds(stream.url)
+        if (candidateVideoIds.isEmpty()) return@runCatching null
 
+        for (videoId in candidateVideoIds.take(MAX_YOUTUBE_CANDIDATE_ATTEMPTS)) {
+            val resolved = fetchYouTubeInnertubeHls(videoId)
+            if (resolved != null) return@runCatching resolved
+        }
+        null
+    }.getOrNull()
+
+    private fun fetchYouTubeInnertubeHls(videoId: String): TimedResolution? = runCatching {
         val requestBody = StreamPayloadParsers.buildYouTubeInnertubePlayerPayload(videoId)
             .toRequestBody(JSON_MEDIA_TYPE)
 
@@ -123,22 +132,27 @@ class OkHttpStreamUrlResolver(
         }
     }.getOrNull()
 
-    private fun resolveCanonicalYouTubeLiveId(channelLiveUrl: String): String? = runCatching {
-        val watchUrl = StreamPayloadParsers.normalizeYouTubeLiveWatchUrl(channelLiveUrl)
+    private fun resolveCandidateYouTubeLiveIds(channelLiveUrl: String): List<String> = runCatching {
+        val matchKeyword = StreamPayloadParsers.extractYouTubeMatchQuery(channelLiveUrl)
+        val endpointUrl = StreamPayloadParsers.normalizeYouTubeChannelEndpointUrl(channelLiveUrl)
         val req = Request.Builder()
-            .url(watchUrl)
+            .url(endpointUrl)
             .get()
-            .header("User-Agent", StreamPayloadParsers.YOUTUBE_IOS_SAFARI_UA)
+            .header("User-Agent", StreamPayloadParsers.YOUTUBE_DESKTOP_WEB_UA)
             .header("Cookie", StreamPayloadParsers.YOUTUBE_SOCS_COOKIE)
             .header("Accept-Language", "en-US,en;q=0.9")
             .build()
 
         generalHttpClient.newCall(req).execute().use { resp ->
-            if (!resp.isSuccessful) return@use null
-            val html = resp.body?.string() ?: return@use null
-            StreamPayloadParsers.extractYouTubeCanonicalVideoId(html)
+            if (!resp.isSuccessful) return@use emptyList()
+            val html = resp.body?.string() ?: return@use emptyList()
+            if (matchKeyword != null) {
+                StreamPayloadParsers.extractYouTubeStreamsTabLiveVideoIds(html, matchKeyword)
+            } else {
+                listOfNotNull(StreamPayloadParsers.extractYouTubeCanonicalVideoId(html))
+            }
         }
-    }.getOrNull()
+    }.getOrDefault(emptyList())
 
     private fun resolveRutubeLive(stream: StreamDescriptor): ResolvedHlsStream? = runCatching {
         val videoId = StreamPayloadParsers.extractRutubeVideoId(stream.url)
@@ -195,6 +209,7 @@ class OkHttpStreamUrlResolver(
         const val DEFAULT_CACHE_TTL_MS: Long = 20L * 60L * 1000L
         const val DEFAULT_RUTUBE_OPTIONS_BASE_URL: String = "https://rutube.ru/api/play/options"
         const val DEFAULT_IPCAMLIVE_STATE_URL: String = "https://ipcamlive.com/ajax/getcamerastreamstate.php"
+        private const val MAX_YOUTUBE_CANDIDATE_ATTEMPTS: Int = 4
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
     }
 }

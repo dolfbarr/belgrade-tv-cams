@@ -8,6 +8,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
 import rs.belgrade.tvcams.domain.model.StreamDescriptor
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 data class ResolvedHlsStream(
     val hlsUrl: String,
@@ -35,6 +37,10 @@ object StreamPayloadParsers {
         "Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) " +
             "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1"
 
+    const val YOUTUBE_DESKTOP_WEB_UA: String =
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 " +
+            "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+
     const val YOUTUBE_SOCS_COOKIE: String =
         "SOCS=CAISNQgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjMwODI5LjA3X3AxGgJlbiACGgYIgJnPpwY"
 
@@ -53,6 +59,10 @@ object StreamPayloadParsers {
     private val IPCAMLIVE_ALIAS_PARAM_RE = Regex("[?&](?:camera)?alias=([A-Za-z0-9_-]+)")
     private val IPCAMLIVE_PATH_RE = Regex("ipcamlive\\.com/([A-Za-z0-9_-]+)/?$")
     private val PLAIN_ALIAS_RE = Regex("^[A-Za-z0-9_-]{3,64}$")
+    private val UNICODE_ESCAPE_RE = Regex("\\\\u([0-9a-fA-F]{4})")
+    private val YOUTUBE_LOCKUP_VID_RE = Regex(
+        "\"(?:watchEndpoint\":\\{\"videoId|addedVideoId|contentId|animationActivationTargetId)\":\"([A-Za-z0-9_-]{11})\"",
+    )
 
     private val lenientJson = Json {
         ignoreUnknownKeys = true
@@ -72,6 +82,93 @@ object StreamPayloadParsers {
         if (!watchOrChannelHtml.contains("\"isLive\":true")) return null
         return YOUTUBE_CANONICAL_WATCH_RE.find(watchOrChannelHtml)?.groupValues?.getOrNull(1)
     }
+
+    fun extractYouTubeMatchQuery(channelStreamsUrl: String): String? {
+        val query = channelStreamsUrl.trim().substringAfter('?', "")
+        if (query.isEmpty()) return null
+        for (pair in query.split('&')) {
+            if (pair.startsWith("match=")) {
+                val raw = pair.removePrefix("match=")
+                val decoded = runCatching {
+                    URLDecoder.decode(raw, StandardCharsets.UTF_8.name())
+                }.getOrDefault(raw).trim()
+                return decoded.takeIf { it.isNotEmpty() }
+            }
+        }
+        return null
+    }
+
+    fun normalizeYouTubeChannelEndpointUrl(channelUrl: String): String {
+        val withoutQuery = channelUrl.trim().substringBefore('?').trimEnd('/')
+        return withoutQuery
+            .replace("https://m.youtube.com/", "https://www.youtube.com/")
+            .replace("https://youtube.com/", "https://www.youtube.com/")
+    }
+
+    fun extractYouTubeStreamsTabLiveVideoIds(streamsHtml: String, matchKeyword: String): List<String> {
+        val needles = matchKeyword
+            .split('|')
+            .map { it.trim().lowercase() }
+            .filter { it.isNotEmpty() }
+        if (needles.isEmpty()) return emptyList()
+
+        data class RankedCandidate(
+            val needleRank: Int,
+            val discoveryOrder: Int,
+            val videoId: String,
+        )
+
+        val candidates = ArrayList<RankedCandidate>()
+        var orderCounter = 0
+
+        fun recordIfMatched(videoId: String, decodedTitleLower: String) {
+            val rank = needles.indexOfFirst { decodedTitleLower.contains(it) }
+            if (rank >= 0) {
+                candidates.add(RankedCandidate(rank, orderCounter++, videoId))
+            }
+        }
+
+        // 1. Modern YouTube Desktop Web schema (lockupViewModel)
+        val lockupBlocks = streamsHtml.split("\"lockupViewModel\":{")
+        for (i in 1 until lockupBlocks.size) {
+            val chunk = lockupBlocks[i].take(12_000)
+            if (!chunk.contains("\"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE\"")) continue
+            val videoId = YOUTUBE_LOCKUP_VID_RE.find(chunk)?.groupValues?.getOrNull(1) ?: continue
+            if (!YOUTUBE_ID_RE.matches(videoId)) continue
+            val rawTitle = chunk
+                .substringAfter("\"lockupMetadataViewModel\":{\"title\":{\"content\":\"", "")
+                .substringBefore("\"}", "")
+                .ifEmpty { chunk.take(700) }
+            val decodedTitle = UNICODE_ESCAPE_RE.replace(rawTitle) { m ->
+                m.groupValues[1].toInt(16).toChar().toString()
+            }.lowercase()
+            recordIfMatched(videoId, decodedTitle)
+        }
+
+        // 2. Legacy / fallback YouTube Web schema (videoRenderer)
+        val blocks = streamsHtml.split("\"videoRenderer\":{\"videoId\":\"")
+        for (i in 1 until blocks.size) {
+            val chunk = blocks[i].take(5_000)
+            val videoId = chunk.take(11)
+            if (!YOUTUBE_ID_RE.matches(videoId)) continue
+            if (!chunk.contains("\"style\":\"LIVE\"") && !chunk.contains("\"BADGE_STYLE_TYPE_LIVE_NOW\"")) {
+                continue
+            }
+            val rawTitle = chunk.substringAfter("\"title\":", "").take(700)
+            val decodedTitle = UNICODE_ESCAPE_RE.replace(rawTitle) { m ->
+                m.groupValues[1].toInt(16).toChar().toString()
+            }.lowercase()
+            recordIfMatched(videoId, decodedTitle)
+        }
+
+        return candidates
+            .sortedWith(compareBy<RankedCandidate> { it.needleRank }.thenBy { it.discoveryOrder })
+            .map { it.videoId }
+            .distinct()
+    }
+
+    fun extractYouTubeStreamsTabLiveVideoId(streamsHtml: String, matchKeyword: String): String? =
+        extractYouTubeStreamsTabLiveVideoIds(streamsHtml, matchKeyword).firstOrNull()
 
     fun buildYouTubeInnertubePlayerPayload(videoId: String): String =
         buildJsonObject {

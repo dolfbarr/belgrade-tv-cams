@@ -1,0 +1,97 @@
+{
+  "country": "ICELAND",
+  "country_name": "Iceland",
+  "country_iso": "IS",
+  "city": "REYKJAVIK",
+  "city_name": "Reykjavik",
+  "timezone": "Atlantic/Reykjavik",
+  "cameras": [
+    {
+      "id": "is-rek-volcano-afartv-4k",
+      "name": "Reykjanes Volcano & Sundhnúkar Crater Row",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Grindavíkurvegur",
+        "Norðurljósavegur",
+        "Nesvegur"
+      ],
+      "municipality": "Grindavíkurbær",
+      "category": "HIGHWAYS",
+      "direction": "Northeast across the Reykjanes volcanic fissure zone and Sundhnúkar crater row",
+      "poster_url": "https://i.ytimg.com/vi/1JUEghgYHPk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 63.8827,
+        "lon": -22.405
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=1JUEghgYHPk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@afartv/streams?match=Iceland%20Volcano%7CIceland"
+        }
+      ]
+    },
+    {
+      "id": "is-rek-perlan-skyline",
+      "name": "Reykjavik Skyline from Perlan",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Varmahlíð",
+        "Bústaðavegur",
+        "Flugvallarvegur"
+      ],
+      "municipality": "Reykjavíkurborg",
+      "category": "BOULEVARDS",
+      "direction": "Northwest from Perlan dome over Hallgrímskirkja, central Reykjavik, and Faxaflói Bay",
+      "poster_url": "https://i.ytimg.com/vi/WuBmLBuvKYA/hqdefault.jpg",
+      "coordinates": {
+        "lat": 64.1292,
+        "lon": -21.9189
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=WuBmLBuvKYA"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@mbl_is/streams?match=Perlan%7CReykjav"
+        }
+      ]
+    },
+    {
+      "id": "is-rek-grindavik-ruv",
+      "name": "Grindavík & Sundhnúkagígar Volcano Monitor",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Norðurljósavegur",
+        "Suðurstrandarvegur",
+        "Víkurbraut"
+      ],
+      "municipality": "Grindavíkurbær",
+      "category": "HIGHWAYS",
+      "direction": "Northeast RÚV monitoring view of Grindavík, Sýlingarfell, and Sundhnúkagígar",
+      "poster_url": "https://i.ytimg.com/vi/kXD4A9uFHcg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 63.865,
+        "lon": -22.4367
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=kXD4A9uFHcg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ruvohf/streams?match=Grindavik%7CGrindav%C3%ADk%7CS%C3%BDlingarfell%7CSylingarfell%7CEldgos"
+        }
+      ]
+    }
+  ]
+}

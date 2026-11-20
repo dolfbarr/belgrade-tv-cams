@@ -1,0 +1,43 @@
+{
+  "country": "CANADA",
+  "country_name": "Canada",
+  "country_iso": "CA",
+  "city": "TORONTO",
+  "city_name": "Toronto",
+  "timezone": "America/Toronto",
+  "cameras": [
+    {
+      "id": "ca-yyz-skyline-cn-tower-4k",
+      "name": "Toronto Skyline, CN Tower & Lake Ontario",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Gardiner Expy",
+        "Lake Shore Blvd W",
+        "King St W"
+      ],
+      "municipality": "Toronto",
+      "category": "BOULEVARDS",
+      "direction": "East across the Gardiner Expressway and Lake Ontario toward the CN Tower and Financial District",
+      "poster_url": "https://i.ytimg.com/vi/bbjwotvAvDM/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.6387,
+        "lon": -79.4368
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=bbjwotvAvDM"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TorontoLive4k/streams?match=Toronto"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TorontoLive4k/live"
+        }
+      ]
+    }
+  ]
+}

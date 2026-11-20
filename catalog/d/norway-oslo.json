@@ -1,0 +1,67 @@
+{
+  "country": "NORWAY",
+  "country_name": "Norway",
+  "country_iso": "NO",
+  "city": "OSLO",
+  "city_name": "Oslo",
+  "timezone": "Europe/Oslo",
+  "cameras": [
+    {
+      "id": "no-osl-city-fjord-live",
+      "name": "Oslo City Skyline & Oslofjord",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Dronning Eufemias gate",
+        "Bjørvika",
+        "Oslofjorden"
+      ],
+      "municipality": "Oslo kommune",
+      "category": "BOULEVARDS",
+      "direction": "Across central Oslo waterfront, Barcode skyline, and the inner Oslofjord",
+      "poster_url": "https://i.ytimg.com/vi/faKBmRq0lYg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 59.9075,
+        "lon": 10.7536
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=faKBmRq0lYg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@NorwayLive3/live"
+        }
+      ]
+    },
+    {
+      "id": "no-osl-tryvann-skimore",
+      "name": "Holmenkollen & Tryvann Alpine Slopes",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Tryvannsveien",
+        "Holmenkollen",
+        "Nordmarka"
+      ],
+      "municipality": "Vestre Aker, Oslo",
+      "category": "HIGHWAYS",
+      "direction": "Live mountain weather and ski slopes above Oslo at Skimore Tryvann",
+      "poster_url": "https://i.ytimg.com/vi/qyeyVNulaiU/hqdefault.jpg",
+      "coordinates": {
+        "lat": 59.9856,
+        "lon": 10.6678
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=qyeyVNulaiU"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@NorwayLive/live"
+        }
+      ]
+    }
+  ]
+}

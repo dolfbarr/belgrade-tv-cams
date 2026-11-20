@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112000,
-  "updated_at": "2026-11-20T00:37:50Z",
+  "revision": 2026112003,
+  "updated_at": "2026-11-20T01:42:47Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -6160,6 +6160,76 @@
       ]
     },
     {
+      "id": "de-ham-port-elbphilharmonie",
+      "name": "Port of Hamburg & Elbphilharmonie",
+      "country": "GERMANY",
+      "city": "HAMBURG",
+      "city_name": "Hamburg",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Europe/Berlin",
+      "streets": [
+        "Platz der Deutschen Einheit",
+        "Am Kaiserkai",
+        "Bei den St. Pauli-Landungsbrücken"
+      ],
+      "municipality": "Hamburg-Mitte",
+      "category": "BRIDGES",
+      "direction": "West across the Norderelbe harbor channel, Landungsbrücken, and ship traffic",
+      "poster_url": "https://i.ytimg.com/vi/GF1DYvxDq44/hqdefault.jpg",
+      "coordinates": {
+        "lat": 53.5414,
+        "lon": 9.9842
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=GF1DYvxDq44"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Livespotting/streams?match=Hamburger%20Hafen%7CHamburg"
+        }
+      ]
+    },
+    {
+      "id": "de-ham-landungsbruecken-24",
+      "name": "St. Pauli Landungsbrücken & Cap San Diego",
+      "country": "GERMANY",
+      "city": "HAMBURG",
+      "city_name": "Hamburg",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Berlin",
+      "streets": [
+        "Überseebrücke",
+        "Vorsetzen",
+        "Bei den St. Pauli-Landungsbrücken"
+      ],
+      "municipality": "Hamburg-Mitte",
+      "category": "BRIDGES",
+      "direction": "West-Northwest from Cap San Diego over Überseebrücke and St. Pauli Landungsbrücken",
+      "poster_url": "https://i.ytimg.com/vi/idYU-7HrTu8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 53.5432,
+        "lon": 9.9762
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=idYU-7HrTu8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@hamburghafenlive24/live"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@hamburghafenlive24/streams?match=Hamburg%20Hafen"
+        }
+      ]
+    },
+    {
       "id": "ge-tbs-mtkvari-narikala",
       "name": "Old Tbilisi — Mtkvari River, Narikala & TV Tower",
       "country": "GEORGIA",
@@ -6751,6 +6821,371 @@
       ]
     },
     {
+      "id": "us-jac-town-square-elk-arches",
+      "name": "Jackson Town Square Elk Antler Arches",
+      "country": "USA",
+      "city": "JACKSON_HOLE",
+      "city_name": "Jackson Hole",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "America/Denver",
+      "streets": [
+        "W Broadway",
+        "N Cache St",
+        "E Deloney Ave"
+      ],
+      "municipality": "Jackson, Wyoming",
+      "category": "SQUARES",
+      "direction": "Northeast from Broadway and Cache St across the southwest Elk Antler Arch of Town Square",
+      "poster_url": "https://i.ytimg.com/vi/1EiC9bvVGnk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.4731,
+        "lon": -110.7629
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=1EiC9bvVGnk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=FmoclK_hKz8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SeeJH/streams?match=Town%20Square"
+        }
+      ]
+    },
+    {
+      "id": "us-las-strip-sphere-4k",
+      "name": "Las Vegas Strip & Sphere Exosphere",
+      "country": "USA",
+      "city": "LAS_VEGAS",
+      "city_name": "Las Vegas",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "America/Los_Angeles",
+      "streets": [
+        "Sands Ave",
+        "Koval Ln",
+        "S Las Vegas Blvd"
+      ],
+      "municipality": "Paradise, Las Vegas",
+      "category": "BOULEVARDS",
+      "direction": "Across the central Las Vegas Strip resort corridor toward the Sphere exterior LED exosphere",
+      "poster_url": "https://i.ytimg.com/vi/C1hrfERKzbg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 36.1211,
+        "lon": -115.1619
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=C1hrfERKzbg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@LVsphere/streams?match=Sphere%7CLas%20Vegas"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@WatchTheSphere/streams?match=Sphere"
+        }
+      ]
+    },
+    {
+      "id": "us-las-fremont-street",
+      "name": "Fremont Street Experience & Viva Vision Canopy",
+      "country": "USA",
+      "city": "LAS_VEGAS",
+      "city_name": "Las Vegas",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/Los_Angeles",
+      "streets": [
+        "Fremont St",
+        "N 3rd St",
+        "N Casino Center Blvd"
+      ],
+      "municipality": "Las Vegas",
+      "category": "BOULEVARDS",
+      "direction": "West under the Viva Vision LED canopy along the Fremont Street pedestrian promenade",
+      "poster_url": "https://i.ytimg.com/vi/t8aUQeOwyV8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 36.1699,
+        "lon": -115.1436
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=t8aUQeOwyV8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@JustinClouse/streams?match=Fremont%7CLas%20Vegas"
+        }
+      ]
+    },
+    {
+      "id": "us-lax-venice-beach-boardwalk",
+      "name": "Venice Beach Boardwalk — Venice V Hotel",
+      "country": "USA",
+      "city": "LOS_ANGELES",
+      "city_name": "Los Angeles",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "America/Los_Angeles",
+      "streets": [
+        "Ocean Front Walk",
+        "Westminster Ave",
+        "Speedway"
+      ],
+      "municipality": "Venice, Los Angeles",
+      "category": "BOULEVARDS",
+      "direction": "West and northwest across Ocean Front Walk and Venice Beach shoreline",
+      "poster_url": "https://i.ytimg.com/vi/EO_1LWqsCNE/hqdefault.jpg",
+      "coordinates": {
+        "lat": 33.9882,
+        "lon": -118.4754
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=EO_1LWqsCNE"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Teleport.camera/streams?match=Venice%20Beach"
+        }
+      ]
+    },
+    {
+      "id": "us-lax-runways-25l-25r",
+      "name": "LAX Airport Runways 25L/25R — H Hotel Rooftop",
+      "country": "USA",
+      "city": "LOS_ANGELES",
+      "city_name": "Los Angeles",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/Los_Angeles",
+      "streets": [
+        "W Century Blvd",
+        "Aviation Blvd",
+        "World Way"
+      ],
+      "municipality": "Los Angeles",
+      "category": "HIGHWAYS",
+      "direction": "Southwest from H Hotel rooftop toward LAX South Complex Runways 25L and 25R",
+      "poster_url": "https://i.ytimg.com/vi/KzsNnyN8D_Q/hqdefault.jpg",
+      "coordinates": {
+        "lat": 33.9459,
+        "lon": -118.3927
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=KzsNnyN8D_Q"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@AirlineVideosLivePlus/streams?match=LAX%7CLos%20Angeles"
+        }
+      ]
+    },
+    {
+      "id": "us-lax-us101-ventura-fwy",
+      "name": "US-101 Ventura Freeway at Ventura Blvd",
+      "country": "USA",
+      "city": "LOS_ANGELES",
+      "city_name": "Los Angeles",
+      "quality": "HD_720P",
+      "timezone": "America/Los_Angeles",
+      "streets": [
+        "US-101 (Ventura Fwy)",
+        "Ventura Blvd",
+        "Sepulveda Blvd"
+      ],
+      "municipality": "Sherman Oaks, Los Angeles",
+      "category": "HIGHWAYS",
+      "direction": "Along the US-101 Ventura Freeway corridor near Ventura Blvd and I-405 interchange",
+      "poster_url": "https://i.ytimg.com/vi/EO_1LWqsCNE/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.1583,
+        "lon": -118.4686
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://wzmedia.dot.ca.gov/D7/CCTV-101.stream/playlist.m3u8",
+          "headers": {
+            "Referer": "https://cwwp2.dot.ca.gov/",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    },
+    {
+      "id": "us-mia-portmiami-skyline",
+      "name": "PortMiami Cruise Channel & Downtown Skyline",
+      "country": "USA",
+      "city": "MIAMI",
+      "city_name": "Miami & Key West",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/New_York",
+      "streets": [
+        "Chopin Plaza",
+        "Biscayne Blvd",
+        "Port Blvd"
+      ],
+      "municipality": "Miami",
+      "category": "BOULEVARDS",
+      "direction": "East from InterContinental Miami across Biscayne Bay toward PortMiami and Government Cut",
+      "poster_url": "https://i.ytimg.com/vi/DxZziUUr6CY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.7724,
+        "lon": -80.1854
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=DxZziUUr6CY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@PTZtv/streams?match=Port%20Miami%7CPortMiami"
+        }
+      ]
+    },
+    {
+      "id": "us-mia-coral-city-underwater",
+      "name": "Coral City Underwater Reef at PortMiami",
+      "country": "USA",
+      "city": "MIAMI",
+      "city_name": "Miami & Key West",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/New_York",
+      "streets": [
+        "MacArthur Causeway",
+        "N Cruise Blvd",
+        "Government Cut"
+      ],
+      "municipality": "Miami",
+      "category": "BOULEVARDS",
+      "direction": "Submerged at 3m depth along the east PortMiami riprap shoreline facing urban coral reef habitat",
+      "poster_url": "https://i.ytimg.com/vi/7i8ARjIeM2k/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.78,
+        "lon": -80.1797
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=7i8ARjIeM2k"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@CoralMorphologic/streams?match=Coral%20City"
+        }
+      ]
+    },
+    {
+      "id": "us-mia-hollywood-beach-broadwalk",
+      "name": "Hollywood Beach Broadwalk",
+      "country": "USA",
+      "city": "MIAMI",
+      "city_name": "Miami & Key West",
+      "quality": "FHD_1080P",
+      "timezone": "America/New_York",
+      "streets": [
+        "N Broadwalk",
+        "Johnson St",
+        "A1A"
+      ],
+      "municipality": "Hollywood, Greater Miami",
+      "category": "BOULEVARDS",
+      "direction": "East across the palm-lined Hollywood Beach Broadwalk and Atlantic shoreline",
+      "poster_url": "https://i.ytimg.com/vi/cmkAbDUEoyA/hqdefault.jpg",
+      "coordinates": {
+        "lat": 26.0112,
+        "lon": -80.1156
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=cmkAbDUEoyA"
+        }
+      ]
+    },
+    {
+      "id": "us-mia-key-west-harbor",
+      "name": "Key West Harbor & Mallory Square Waterfront",
+      "country": "USA",
+      "city": "MIAMI",
+      "city_name": "Miami & Key West",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/New_York",
+      "streets": [
+        "Whitehead St",
+        "Wall St",
+        "Front St"
+      ],
+      "municipality": "Key West",
+      "category": "SQUARES",
+      "direction": "Northwest across Mallory Square and Key West Harbor channel",
+      "poster_url": "https://i.ytimg.com/vi/iHJbTrQSZys/hqdefault.jpg",
+      "coordinates": {
+        "lat": 24.5591,
+        "lon": -81.8069
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=iHJbTrQSZys"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@PTZtv/streams?match=Key%20West"
+        }
+      ]
+    },
+    {
+      "id": "us-sfo-bay-bridge-embarcadero",
+      "name": "San Francisco–Oakland Bay Bridge & Embarcadero",
+      "country": "USA",
+      "city": "SAN_FRANCISCO",
+      "city_name": "San Francisco",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/Los_Angeles",
+      "streets": [
+        "Front St",
+        "The Embarcadero",
+        "Green St"
+      ],
+      "municipality": "San Francisco",
+      "category": "BRIDGES",
+      "direction": "Southeast across the Embarcadero waterfront toward the Bay Bridge West Span",
+      "poster_url": "https://i.ytimg.com/vi/G8RIAgPxaMc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 37.8001,
+        "lon": -122.3999
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=G8RIAgPxaMc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@abc7news/streams?match=Bay%20Bridge%7CSan%20Francisco%7CRoof%20Cam"
+        }
+      ]
+    },
+    {
       "id": "kr-sel-banpo-bridge-4k",
       "name": "Hangang River — Banpo Bridge Rainbow Fountain 4K",
       "country": "SOUTH_KOREA",
@@ -7037,6 +7472,113 @@
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=C3hW1VrwmNc"
+        }
+      ]
+    },
+    {
+      "id": "kr-pus-haeundae-beach-4k",
+      "name": "Haeundae Beach & Marine City Skyline",
+      "country": "SOUTH_KOREA",
+      "city": "BUSAN",
+      "city_name": "Busan",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Seoul",
+      "streets": [
+        "Haeundaehaebyeon-ro",
+        "Dalmaji-gil",
+        "Gunam-ro"
+      ],
+      "municipality": "Haeundae-gu, Busan",
+      "category": "BOULEVARDS",
+      "direction": "West-Southwest across Haeundae Beach toward Dongbaekseom and Marine City skyline",
+      "poster_url": "https://i.ytimg.com/vi/rKh675PnlP4/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.1585,
+        "lon": 129.165
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=rKh675PnlP4"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanHaeundaeLive/streams?match=%ED%95%B4%EC%9A%B4%EB%8C%80%7CHaeundae"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanHaeundaeLive/live"
+        }
+      ]
+    },
+    {
+      "id": "kr-pus-gwangalli-diamond-bridge-4k",
+      "name": "Gwangalli Beach & Gwangan Diamond Bridge",
+      "country": "SOUTH_KOREA",
+      "city": "BUSAN",
+      "city_name": "Busan",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Seoul",
+      "streets": [
+        "Gwanganhaebyeon-ro",
+        "Gwangan Bridge",
+        "Namcheonbada-ro"
+      ],
+      "municipality": "Suyeong-gu, Busan",
+      "category": "BRIDGES",
+      "direction": "Southeast across Gwangalli Beach toward Gwangan Diamond Bridge main span",
+      "poster_url": "https://i.ytimg.com/vi/GZ8MwCX_n14/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.1542,
+        "lon": 129.1206
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=GZ8MwCX_n14"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanLive/streams?match=%EA%B4%91%EC%95%88%7CGwangalli"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@BusanLive/live"
+        }
+      ]
+    },
+    {
+      "id": "kr-cju-seongsan-ilchulbong",
+      "name": "Seongsan Ilchulbong (Sunrise Peak) & Coast",
+      "country": "SOUTH_KOREA",
+      "city": "JEJU",
+      "city_name": "Jeju Island",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Seoul",
+      "streets": [
+        "Ilchul-ro",
+        "Seongsan Ilchulbong",
+        "Goseong-ri"
+      ],
+      "municipality": "Seogwipo-si, Jeju",
+      "category": "SQUARES",
+      "direction": "East across the volcanic tuff cone of Seongsan Ilchulbong and Jeju eastern coastline",
+      "poster_url": "https://i.ytimg.com/vi/udRDI1uDdvQ/hqdefault.jpg",
+      "coordinates": {
+        "lat": 33.4581,
+        "lon": 126.9425
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=udRDI1uDdvQ"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@GiGAeyesLiveTV/streams?match=%EC%84%B1%EC%82%B0%EC%9D%BC%EC%B6%9C%EB%B4%89%7CSeongsan"
         }
       ]
     },
@@ -7418,6 +7960,2092 @@
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=NsFHt76uwh8"
+        }
+      ]
+    },
+    {
+      "id": "jp-kyo-higashiyama-kiyomizudera",
+      "name": "Higashiyama & Kiyomizu-dera Overlook",
+      "country": "JAPAN",
+      "city": "KYOTO",
+      "city_name": "Kyoto",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Kiyomizu-zaka",
+        "Matsubara-dori",
+        "Otowa-san"
+      ],
+      "municipality": "Higashiyama-ku, Kyoto",
+      "category": "SQUARES",
+      "direction": "East toward Kiyomizu-dera pagoda and the Higashiyama mountain range",
+      "poster_url": "https://i.ytimg.com/vi/-nSBtuB98FM/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.9948,
+        "lon": 135.7849
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=-nSBtuB98FM"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@kyotolivecamera/streams?match=%E6%B8%85%E6%B0%B4%E5%AF%BA%7CKiyomizu"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@kyotolivecamera/live"
+        }
+      ]
+    },
+    {
+      "id": "jp-kyo-jr-station-shinkansen",
+      "name": "JR Kyoto Station Tokaido Shinkansen & Tracks",
+      "country": "JAPAN",
+      "city": "KYOTO",
+      "city_name": "Kyoto",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "JR Kyoto Station",
+        "Hachijo-dori",
+        "Karasuma-dori"
+      ],
+      "municipality": "Shimogyo-ku, Kyoto",
+      "category": "HIGHWAYS",
+      "direction": "East-West along Tokaido Shinkansen, JR Kyoto Line, and Sagano Line tracks",
+      "poster_url": "https://i.ytimg.com/vi/TLkLbIDOb-I/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.9852,
+        "lon": 135.7584
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=TLkLbIDOb-I"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@JRKyotoStationLiveCam/streams?match=JR%E4%BA%AC%E9%83%BD%E9%A7%85%7CKyoto%20Station"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@JRKyotoStationLiveCam/live"
+        }
+      ]
+    },
+    {
+      "id": "jp-fuj-oshino-hakkai-4k",
+      "name": "Mount Fuji World Heritage View — Oshino Hakkai",
+      "country": "JAPAN",
+      "city": "MOUNT_FUJI",
+      "city_name": "Mount Fuji",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Oshino Hakkai",
+        "Shibokusa-dori",
+        "Prefectural Route 717"
+      ],
+      "municipality": "Oshino, Yamanashi",
+      "category": "SQUARES",
+      "direction": "Southwest toward Mount Fuji summit across Oshino Hakkai thatched roofs",
+      "poster_url": "https://i.ytimg.com/vi/PxzwnWh1dKk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.4601,
+        "lon": 138.8329
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=PxzwnWh1dKk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@FujigokoTV/streams?match=%E5%BF%8D%E9%87%8E%E5%85%AB%E6%B5%B7%7COshino"
+        }
+      ]
+    },
+    {
+      "id": "jp-fuj-lake-kawaguchiko",
+      "name": "Mount Fuji from Lake Kawaguchiko",
+      "country": "JAPAN",
+      "city": "MOUNT_FUJI",
+      "city_name": "Mount Fuji",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Kohoku View Line",
+        "Prefectural Route 21",
+        "Oishi Park"
+      ],
+      "municipality": "Fujikawaguchiko, Yamanashi",
+      "category": "BOULEVARDS",
+      "direction": "South across Lake Kawaguchiko toward Mount Fuji",
+      "poster_url": "https://i.ytimg.com/vi/1cnReFAU04k/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.5229,
+        "lon": 138.7459
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=1cnReFAU04k"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@KawaguchikoTV/streams?match=%E6%B2%B3%E5%8F%A3%E6%B9%96%E3%81%8B%E3%82%89%E3%81%AE%7CKawaguchiko"
+        }
+      ]
+    },
+    {
+      "id": "jp-fuj-lake-yamanakako",
+      "name": "Mount Fuji from Lake Yamanakako",
+      "country": "JAPAN",
+      "city": "MOUNT_FUJI",
+      "city_name": "Mount Fuji",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Marimo-dori",
+        "Prefectural Route 729",
+        "Nagaike Shinsui Park"
+      ],
+      "municipality": "Yamanakako, Yamanashi",
+      "category": "BOULEVARDS",
+      "direction": "West-Southwest across Lake Yamanakako toward Mount Fuji",
+      "poster_url": "https://i.ytimg.com/vi/F2NbYrc-gBU/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.427,
+        "lon": 138.8713
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=F2NbYrc-gBU"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@KawaguchikoTV/streams?match=%E5%B1%B1%E4%B8%AD%E6%B9%96%7CYamanakako"
+        }
+      ]
+    },
+    {
+      "id": "jp-fuj-shizuoka-slopes",
+      "name": "Mount Fuji Southern Slopes — Fuji City Shizuoka",
+      "country": "JAPAN",
+      "city": "MOUNT_FUJI",
+      "city_name": "Mount Fuji",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Kashimacho",
+        "Prefectural Route 396",
+        "Tokaido Corridor"
+      ],
+      "municipality": "Fuji, Shizuoka",
+      "category": "BOULEVARDS",
+      "direction": "North toward Mount Fuji southern slopes and Hoei crater",
+      "poster_url": "https://i.ytimg.com/vi/hZ0wpgVLmJw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 35.1592,
+        "lon": 138.6505
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=hZ0wpgVLmJw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@isobeshiki/streams?match=%E5%AF%8C%E5%A3%AB%E5%B1%B1%7CMount%20Fuji"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@isobeshiki/live"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-fukushima-skyline-4k",
+      "name": "Osaka Skyline & Loop Line — Fukushima",
+      "country": "JAPAN",
+      "city": "OSAKA",
+      "city_name": "Osaka",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Osaka Loop Line",
+        "Naniwa-suji",
+        "Fukushima-ku"
+      ],
+      "municipality": "Fukushima-ku, Osaka",
+      "category": "HIGHWAYS",
+      "direction": "West across urban Osaka rooftops and the elevated Osaka Loop Line corridor",
+      "poster_url": "https://i.ytimg.com/vi/R6cWQHTQq-c/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.6966,
+        "lon": 135.4864
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=R6cWQHTQq-c"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@osakalive/streams?match=4K%7COsaka"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-dotonbori-glico",
+      "name": "Dotonbori Canal & Glico Sign",
+      "country": "JAPAN",
+      "city": "OSAKA",
+      "city_name": "Osaka",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Ebisubashi",
+        "Dotonbori-dori",
+        "Shinsaibashi-suji"
+      ],
+      "municipality": "Chuo-ku, Osaka",
+      "category": "BRIDGES",
+      "direction": "West-Southwest across Ebisubashi toward the Glico Running Man sign and Dotonbori Canal",
+      "poster_url": "https://i.ytimg.com/vi/6OgYfTMOmhY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.669,
+        "lon": 135.5011
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=6OgYfTMOmhY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@mbsnews/streams?match=%E9%81%93%E9%A0%93%E5%A0%80%7CDotonbori"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-dotonbori-ebisubashi",
+      "name": "Dotonbori Ebisubashi Promenade",
+      "country": "JAPAN",
+      "city": "OSAKA",
+      "city_name": "Osaka",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Ebisubashi",
+        "Soemoncho-dori",
+        "Tombori River Walk"
+      ],
+      "municipality": "Chuo-ku, Osaka",
+      "category": "SQUARES",
+      "direction": "North from Tombori Station across the Ebisubashi footbridge",
+      "poster_url": "https://i.ytimg.com/vi/e3cn8nzj42I/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.6691,
+        "lon": 135.5013
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=e3cn8nzj42I"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@RVJplanet/streams?match=%E9%81%93%E9%A0%93%E5%A0%80%7CDotonbori"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@RVJplanet/live"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-osaka-castle",
+      "name": "Osaka Castle & Temmabashi",
+      "country": "JAPAN",
+      "city": "OSAKA",
+      "city_name": "Osaka",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Osakajo",
+        "Tanimachi-suji",
+        "Temmabashi"
+      ],
+      "municipality": "Chuo-ku, Osaka",
+      "category": "SQUARES",
+      "direction": "Southeast across Osaka Castle Park moat toward the illuminated main keep",
+      "poster_url": "https://i.ytimg.com/vi/dOKOq-jU1b8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.6873,
+        "lon": 135.5259
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=dOKOq-jU1b8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@tvosakanews/streams?match=%E5%A4%A7%E9%98%AA%E5%9F%8E%7COsaka%20Castle"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-itami-airport-rwy32l",
+      "name": "Osaka Itami International Airport Runways",
+      "country": "JAPAN",
+      "city": "OSAKA",
+      "city_name": "Osaka",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tokyo",
+      "streets": [
+        "Runway 32L",
+        "Itami Sky Park",
+        "National Route 176"
+      ],
+      "municipality": "Toyonaka, Osaka",
+      "category": "HIGHWAYS",
+      "direction": "Southwest across Itami terminal apron toward Runways 32L and 32R",
+      "poster_url": "https://i.ytimg.com/vi/8zxjzSKfyWo/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.7906,
+        "lon": 135.441
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=8zxjzSKfyWo"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=nVeVH2ssSYI"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@mbsnews/streams?match=%E4%BC%8A%E4%B8%B9%E7%A9%BA%E6%B8%AF%7CItami"
+        }
+      ]
+    },
+    {
+      "id": "au-syd-harbour-mcmahons-point",
+      "name": "Sydney Harbour Bridge & Opera House — McMahons Point",
+      "country": "AUSTRALIA",
+      "country_name": "Australia",
+      "country_iso": "AU",
+      "city": "SYDNEY",
+      "city_name": "Sydney",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Australia/Sydney",
+      "streets": [
+        "Blues Point Road",
+        "East Crescent Street",
+        "Port Jackson"
+      ],
+      "municipality": "North Sydney",
+      "category": "BRIDGES",
+      "direction": "Southeast across Port Jackson framing Sydney Harbour Bridge and Sydney Opera House",
+      "poster_url": "https://i.ytimg.com/vi/0F-vs59QJas/hqdefault.jpg",
+      "coordinates": {
+        "lat": -33.8499,
+        "lon": 151.2039
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=0F-vs59QJas"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SydneyHarbourLIVE/live"
+        }
+      ]
+    },
+    {
+      "id": "au-syd-harbour-kirribilli",
+      "name": "Circular Quay & Sydney Harbour — Kirribilli",
+      "country": "AUSTRALIA",
+      "country_name": "Australia",
+      "country_iso": "AU",
+      "city": "SYDNEY",
+      "city_name": "Sydney",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Australia/Sydney",
+      "streets": [
+        "Jeffrey Street",
+        "Holbrook Avenue",
+        "Carabella Street"
+      ],
+      "municipality": "North Sydney",
+      "category": "BRIDGES",
+      "direction": "Southwest from Kirribilli across Port Jackson toward Sydney Opera House and Circular Quay",
+      "poster_url": "https://i.ytimg.com/vi/5uZa3-RMFos/hqdefault.jpg",
+      "coordinates": {
+        "lat": -33.8486,
+        "lon": 151.2194
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=5uZa3-RMFos"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@webcamsydney/streams?match=WebcamSydney%201"
+        }
+      ]
+    },
+    {
+      "id": "au-syd-harbour-panning",
+      "name": "Port Jackson 180° Harbour Sweep",
+      "country": "AUSTRALIA",
+      "country_name": "Australia",
+      "country_iso": "AU",
+      "city": "SYDNEY",
+      "city_name": "Sydney",
+      "quality": "FHD_1080P",
+      "timezone": "Australia/Sydney",
+      "streets": [
+        "Kirribilli Point",
+        "Port Jackson",
+        "Bennelong Point"
+      ],
+      "municipality": "North Sydney",
+      "category": "BRIDGES",
+      "direction": "Continuous 180-degree panning view across Sydney Harbour, Circular Quay ferries, and Opera House",
+      "poster_url": "https://i.ytimg.com/vi/jshwkG1ZpP8/hqdefault.jpg",
+      "coordinates": {
+        "lat": -33.8502,
+        "lon": 151.2205
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=jshwkG1ZpP8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@webcamsydney/streams?match=WebcamSydney%202"
+        }
+      ]
+    },
+    {
+      "id": "at-vie-wetter-panorama",
+      "name": "Austrian Alps & Cities Wetter-Panorama",
+      "country": "AUSTRIA",
+      "country_name": "Austria",
+      "country_iso": "AT",
+      "city": "VIENNA",
+      "city_name": "Vienna & Alps",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Vienna",
+      "streets": [
+        "Stephansplatz",
+        "Rathausplatz",
+        "Innere Stadt"
+      ],
+      "municipality": "Stadt Wien / Österreich",
+      "category": "SQUARES",
+      "direction": "Feratel Wetter-Panorama live broadcast across Vienna and Austrian alpine summits",
+      "poster_url": "https://i.ytimg.com/vi/NIuO6hrFTrg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 48.2085,
+        "lon": 16.3732
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=NIuO6hrFTrg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@feratel_yourwindowtotheworld/streams?match=Wetter-Panorama"
+        }
+      ]
+    },
+    {
+      "id": "at-vie-rathausplatz-municipal",
+      "name": "Vienna Rathausturm & Burgtheater",
+      "country": "AUSTRIA",
+      "country_name": "Austria",
+      "country_iso": "AT",
+      "city": "VIENNA",
+      "city_name": "Vienna & Alps",
+      "quality": "HD_720P",
+      "timezone": "Europe/Vienna",
+      "streets": [
+        "Rathausplatz",
+        "Universitätsring",
+        "Friedrich-Schmidt-Platz"
+      ],
+      "municipality": "Innere Stadt, Wien",
+      "category": "SQUARES",
+      "direction": "East from Vienna City Hall Tower across Rathausplatz, Burgtheater, and Innere Stadt",
+      "poster_url": "https://www.wien.gv.at/webcam-rturm/rturm1.jpeg",
+      "coordinates": {
+        "lat": 48.2108,
+        "lon": 16.3564
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.wien.gv.at/webcam-rturm/rturm1.jpeg",
+          "interval_ms": 30000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1510611070/original.jpg",
+          "interval_ms": 60000
+        }
+      ]
+    },
+    {
+      "id": "br-rio-copacabana-beach",
+      "name": "Copacabana Beach & Avenida Atlântica",
+      "country": "BRAZIL",
+      "country_name": "Brazil",
+      "country_iso": "BR",
+      "city": "RIO_DE_JANEIRO",
+      "city_name": "Rio de Janeiro",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/Sao_Paulo",
+      "streets": [
+        "Avenida Atlântica",
+        "Rua Duvivier",
+        "Rua Rodolfo Dantas"
+      ],
+      "municipality": "Copacabana, Rio de Janeiro",
+      "category": "BOULEVARDS",
+      "direction": "South along Avenida Atlântica promenade and Copacabana Beach shoreline",
+      "poster_url": "https://i.ytimg.com/vi/WEl_I5vmuSs/hqdefault.jpg",
+      "coordinates": {
+        "lat": -22.9675,
+        "lon": -43.182
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=WEl_I5vmuSs"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@homesinrio3840/streams?match=Copacabana%7CRio"
+        }
+      ]
+    },
+    {
+      "id": "ca-yyz-skyline-cn-tower-4k",
+      "name": "Toronto Skyline, CN Tower & Lake Ontario",
+      "country": "CANADA",
+      "country_name": "Canada",
+      "country_iso": "CA",
+      "city": "TORONTO",
+      "city_name": "Toronto",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "America/Toronto",
+      "streets": [
+        "Gardiner Expy",
+        "Lake Shore Blvd W",
+        "King St W"
+      ],
+      "municipality": "Toronto",
+      "category": "BOULEVARDS",
+      "direction": "East across the Gardiner Expressway and Lake Ontario toward the CN Tower and Financial District",
+      "poster_url": "https://i.ytimg.com/vi/bbjwotvAvDM/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.6387,
+        "lon": -79.4368
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=bbjwotvAvDM"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TorontoLive4k/streams?match=Toronto"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TorontoLive4k/live"
+        }
+      ]
+    },
+    {
+      "id": "hr-dal-hvar-harbor",
+      "name": "Hvar Town Harbor & Pakleni Islands",
+      "country": "CROATIA",
+      "country_name": "Croatia",
+      "country_iso": "HR",
+      "city": "DALMATIA",
+      "city_name": "Dalmatian Coast",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Zagreb",
+      "streets": [
+        "Riva",
+        "Trg svetog Stjepana",
+        "Hvarska luka"
+      ],
+      "municipality": "Grad Hvar, Splitsko-dalmatinska",
+      "category": "SQUARES",
+      "direction": "Southwest overlooking the entrance to Hvar Harbor, Riva promenade, and the Pakleni Islands",
+      "poster_url": "https://i.ytimg.com/vi/0wHWHAFnNh0/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.1725,
+        "lon": 16.4419
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=0wHWHAFnNh0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@HvarLive/live"
+        }
+      ]
+    },
+    {
+      "id": "hr-dal-primosten-peninsula",
+      "name": "Primošten Old Town Peninsula",
+      "country": "CROATIA",
+      "country_name": "Croatia",
+      "country_iso": "HR",
+      "city": "DALMATIA",
+      "city_name": "Dalmatian Coast",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Zagreb",
+      "streets": [
+        "Obala hrvatskih branitelja",
+        "Trg biskupa Josipa Arnerića",
+        "Mala Raduča"
+      ],
+      "municipality": "Primošten, Šibensko-kninska",
+      "category": "BOULEVARDS",
+      "direction": "Panoramic view across the Adriatic bay toward the walled island peninsula of Primošten",
+      "poster_url": "https://i.ytimg.com/vi/upOiG0CMlnw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.5858,
+        "lon": 15.9228
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=upOiG0CMlnw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@croatia_live/streams?match=Primo%C5%A1ten%7CPrimosten"
+        }
+      ]
+    },
+    {
+      "id": "hr-dal-murter-slanica-beach",
+      "name": "Slanica Beach — Murter Island",
+      "country": "CROATIA",
+      "country_name": "Croatia",
+      "country_iso": "HR",
+      "city": "DALMATIA",
+      "city_name": "Dalmatian Coast",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Zagreb",
+      "streets": [
+        "Uvala Slanica",
+        "Put Slanice",
+        "Otok Murter"
+      ],
+      "municipality": "Murter-Kornati, Šibensko-kninska",
+      "category": "SQUARES",
+      "direction": "West across turquoise Slanica Cove toward the Kornati archipelago",
+      "poster_url": "https://i.ytimg.com/vi/KNFJTgYbGlc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.8153,
+        "lon": 15.5811
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=KNFJTgYbGlc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@worldscam-y5q/streams?match=Slanica%7CMurter"
+        }
+      ]
+    },
+    {
+      "id": "cz-prg-old-town-camstreamer",
+      "name": "Prague Historic Center & Vltava Skyline",
+      "country": "CZECHIA",
+      "country_name": "Czechia",
+      "country_iso": "CZ",
+      "city": "PRAGUE",
+      "city_name": "Prague",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Prague",
+      "streets": [
+        "Smetanovo nábřeží",
+        "Karlův most",
+        "Staré Město"
+      ],
+      "municipality": "Praha 1 (Staré Město)",
+      "category": "BRIDGES",
+      "direction": "Across central Prague rooftops and the Vltava corridor powered by CamStreamer",
+      "poster_url": "https://i.ytimg.com/vi/kvYMIaXclIE/hqdefault.jpg",
+      "coordinates": {
+        "lat": 50.0847,
+        "lon": 14.4141
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=kvYMIaXclIE"
+        }
+      ]
+    },
+    {
+      "id": "cz-prg-city-center-its",
+      "name": "Prague City Center Live Panorama",
+      "country": "CZECHIA",
+      "country_name": "Czechia",
+      "country_iso": "CZ",
+      "city": "PRAGUE",
+      "city_name": "Prague",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Prague",
+      "streets": [
+        "Magistrála",
+        "Nové Město",
+        "Vinohrady"
+      ],
+      "municipality": "Praha 2",
+      "category": "BOULEVARDS",
+      "direction": "Elevated view over central Prague avenues and historic spires",
+      "poster_url": "https://i.ytimg.com/vi/3C8W4Rlgiog/hqdefault.jpg",
+      "coordinates": {
+        "lat": 50.0755,
+        "lon": 14.4306
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=3C8W4Rlgiog"
+        }
+      ]
+    },
+    {
+      "id": "cz-prg-vaclav-havel-airport",
+      "name": "Václav Havel Airport Prague — Runway 06/24",
+      "country": "CZECHIA",
+      "country_name": "Czechia",
+      "country_iso": "CZ",
+      "city": "PRAGUE",
+      "city_name": "Prague",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Prague",
+      "streets": [
+        "Aviatická",
+        "K Letišti",
+        "Na Staré silnici"
+      ],
+      "municipality": "Praha 6 (Ruzyně)",
+      "category": "HIGHWAYS",
+      "direction": "Northeast from the Kněževes spotting embankment across Runway 06/24 arrivals and departures",
+      "poster_url": "https://i.ytimg.com/vi/Deo_lcwn8lk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 50.1156,
+        "lon": 14.2651
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Deo_lcwn8lk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SlowTVLive/streams?match=Airport%7CPlanespotting"
+        }
+      ]
+    },
+    {
+      "id": "hk-hkg-tst-victoria-harbour",
+      "name": "Tsim Sha Tsui & Victoria Harbour Skyline",
+      "country": "HONG_KONG",
+      "country_name": "Hong Kong",
+      "country_iso": "HK",
+      "city": "HONG_KONG",
+      "city_name": "Hong Kong",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Hong_Kong",
+      "streets": [
+        "Salisbury Road",
+        "Tsim Sha Tsui Promenade",
+        "Victoria Harbour"
+      ],
+      "municipality": "Yau Tsim Mong, Kowloon",
+      "category": "BRIDGES",
+      "direction": "Across Victoria Harbour between Tsim Sha Tsui waterfront and Hong Kong Island",
+      "poster_url": "https://i.ytimg.com/vi/Z8NTLkEFZjg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 22.294,
+        "lon": 114.1722
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Z8NTLkEFZjg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Brainrolling/streams?match=HONG%20KONG%7C%E9%A6%99%E6%B8%AF"
+        }
+      ]
+    },
+    {
+      "id": "hk-hkg-east-kowloon-harbour",
+      "name": "East Kowloon & Lei Yue Mun Harbour",
+      "country": "HONG_KONG",
+      "country_name": "Hong Kong",
+      "country_iso": "HK",
+      "city": "HONG_KONG",
+      "city_name": "Hong Kong",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Hong_Kong",
+      "streets": [
+        "Kwun Tong Bypass",
+        "Kai Tak Cruise Terminal",
+        "Victoria Harbour East"
+      ],
+      "municipality": "Kwun Tong, Kowloon",
+      "category": "BOULEVARDS",
+      "direction": "Southwest over eastern Victoria Harbour, Kai Tak, and Hong Kong Island East",
+      "poster_url": "https://i.ytimg.com/vi/XN-ArdUrqtc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 22.3088,
+        "lon": 114.225
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=XN-ArdUrqtc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@marcuswong7614/live"
+        }
+      ]
+    },
+    {
+      "id": "is-rek-volcano-afartv-4k",
+      "name": "Reykjanes Volcano & Sundhnúkar Crater Row",
+      "country": "ICELAND",
+      "country_name": "Iceland",
+      "country_iso": "IS",
+      "city": "REYKJAVIK",
+      "city_name": "Reykjavik",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Atlantic/Reykjavik",
+      "streets": [
+        "Grindavíkurvegur",
+        "Norðurljósavegur",
+        "Nesvegur"
+      ],
+      "municipality": "Grindavíkurbær",
+      "category": "HIGHWAYS",
+      "direction": "Northeast across the Reykjanes volcanic fissure zone and Sundhnúkar crater row",
+      "poster_url": "https://i.ytimg.com/vi/1JUEghgYHPk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 63.8827,
+        "lon": -22.405
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=1JUEghgYHPk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@afartv/streams?match=Iceland%20Volcano%7CIceland"
+        }
+      ]
+    },
+    {
+      "id": "is-rek-perlan-skyline",
+      "name": "Reykjavik Skyline from Perlan",
+      "country": "ICELAND",
+      "country_name": "Iceland",
+      "country_iso": "IS",
+      "city": "REYKJAVIK",
+      "city_name": "Reykjavik",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Atlantic/Reykjavik",
+      "streets": [
+        "Varmahlíð",
+        "Bústaðavegur",
+        "Flugvallarvegur"
+      ],
+      "municipality": "Reykjavíkurborg",
+      "category": "BOULEVARDS",
+      "direction": "Northwest from Perlan dome over Hallgrímskirkja, central Reykjavik, and Faxaflói Bay",
+      "poster_url": "https://i.ytimg.com/vi/WuBmLBuvKYA/hqdefault.jpg",
+      "coordinates": {
+        "lat": 64.1292,
+        "lon": -21.9189
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=WuBmLBuvKYA"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@mbl_is/streams?match=Perlan%7CReykjav"
+        }
+      ]
+    },
+    {
+      "id": "is-rek-grindavik-ruv",
+      "name": "Grindavík & Sundhnúkagígar Volcano Monitor",
+      "country": "ICELAND",
+      "country_name": "Iceland",
+      "country_iso": "IS",
+      "city": "REYKJAVIK",
+      "city_name": "Reykjavik",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Atlantic/Reykjavik",
+      "streets": [
+        "Norðurljósavegur",
+        "Suðurstrandarvegur",
+        "Víkurbraut"
+      ],
+      "municipality": "Grindavíkurbær",
+      "category": "HIGHWAYS",
+      "direction": "Northeast RÚV monitoring view of Grindavík, Sýlingarfell, and Sundhnúkagígar",
+      "poster_url": "https://i.ytimg.com/vi/kXD4A9uFHcg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 63.865,
+        "lon": -22.4367
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=kXD4A9uFHcg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ruvohf/streams?match=Grindavik%7CGrindav%C3%ADk%7CS%C3%BDlingarfell%7CSylingarfell%7CEldgos"
+        }
+      ]
+    },
+    {
+      "id": "ie-dub-temple-bar",
+      "name": "Temple Bar Crossroads",
+      "country": "IRELAND",
+      "country_name": "Ireland",
+      "country_iso": "IE",
+      "city": "DUBLIN",
+      "city_name": "Dublin",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Dublin",
+      "streets": [
+        "Temple Bar",
+        "Temple Lane South",
+        "Fleet Street"
+      ],
+      "municipality": "Dublin 2",
+      "category": "SQUARES",
+      "direction": "Overhead view of cobblestone pedestrian life outside The Temple Bar in central Dublin",
+      "poster_url": "https://i.ytimg.com/vi/3nyPER2kzqk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 53.3455,
+        "lon": -6.2642
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=3nyPER2kzqk"
+        }
+      ]
+    },
+    {
+      "id": "il-jrs-western-wall-plaza",
+      "name": "Western Wall Main Plaza (HaKotel)",
+      "country": "ISRAEL",
+      "country_name": "Israel",
+      "country_iso": "IL",
+      "city": "JERUSALEM",
+      "city_name": "Jerusalem",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Jerusalem",
+      "streets": [
+        "Western Wall Plaza",
+        "Ma'ale HaShalom",
+        "HaGai Street"
+      ],
+      "municipality": "Old City, Jerusalem",
+      "category": "SQUARES",
+      "direction": "East across the Jewish Quarter prayer plaza toward the Herodian limestone Western Wall",
+      "poster_url": "https://i.ytimg.com/vi/LMHUcDktP-w/hqdefault.jpg",
+      "coordinates": {
+        "lat": 31.7767,
+        "lon": 35.2345
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=LMHUcDktP-w"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@The.Western.Wall.TheKotel/streams?match=Main%20Plaza%7CWestern%20Wall%7CKotel%7C%D7%94%D7%9B%D7%95%D7%AA%D7%9C"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@The.Western.Wall.TheKotel/live"
+        }
+      ]
+    },
+    {
+      "id": "it-rom-st-peters-square",
+      "name": "St. Peter's Square & Basilica",
+      "country": "ITALY",
+      "country_name": "Italy",
+      "country_iso": "IT",
+      "city": "ROME",
+      "city_name": "Rome",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Rome",
+      "streets": [
+        "Piazza San Pietro",
+        "Piazza Pio XII",
+        "Via della Conciliazione"
+      ],
+      "municipality": "Vatican City / Municipio I, Roma",
+      "category": "SQUARES",
+      "direction": "West from Bernini's Colonnade across St. Peter's Square toward St. Peter's Basilica",
+      "poster_url": "https://i.ytimg.com/vi/03pYP2Nmreo/hqdefault.jpg",
+      "coordinates": {
+        "lat": 41.9022,
+        "lon": 12.4548
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=03pYP2Nmreo"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@VaticanNews/streams?match=Vatican%20Media%20Live%7CSan%20Pietro"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-rialto-bridge",
+      "name": "Rialto Bridge & Grand Canal",
+      "country": "ITALY",
+      "country_name": "Italy",
+      "country_iso": "IT",
+      "city": "VENICE",
+      "city_name": "Venice",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Europe/Rome",
+      "streets": [
+        "Ponte di Rialto",
+        "Riva del Carbon",
+        "Canal Grande"
+      ],
+      "municipality": "San Marco, Venezia",
+      "category": "BRIDGES",
+      "direction": "Northeast from Palazzo Bembo along Riva del Carbon toward the Rialto Bridge and Grand Canal",
+      "poster_url": "https://i.ytimg.com/vi/nviU2HYj-Jc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4371,
+        "lon": 12.3351
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=nviU2HYj-Jc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Rialto"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-grand-canal-ca-angeli",
+      "name": "Grand Canal — Ca' Angeli",
+      "country": "ITALY",
+      "country_name": "Italy",
+      "country_iso": "IT",
+      "city": "VENICE",
+      "city_name": "Venice",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Europe/Rome",
+      "streets": [
+        "Canal Grande",
+        "Calle del Traghetto della Madoneta",
+        "Riva del Vin"
+      ],
+      "municipality": "San Polo, Venezia",
+      "category": "BOULEVARDS",
+      "direction": "East from Ca' Angeli across the central bend of the Grand Canal toward San Marco palazzi",
+      "poster_url": "https://i.ytimg.com/vi/zKGzYuT5tg0/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4379,
+        "lon": 12.3312
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=zKGzYuT5tg0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Angeli"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-ponte-degli-scalzi",
+      "name": "Ponte degli Scalzi & Grand Canal",
+      "country": "ITALY",
+      "country_name": "Italy",
+      "country_iso": "IT",
+      "city": "VENICE",
+      "city_name": "Venice",
+      "quality": "UHD_4K",
+      "timezone": "Europe/Rome",
+      "streets": [
+        "Ponte degli Scalzi",
+        "Canal Grande",
+        "Rio Terà Lista di Spagna"
+      ],
+      "municipality": "Cannaregio, Venezia",
+      "category": "BRIDGES",
+      "direction": "South over the Ponte degli Scalzi stone arch bridge and western Grand Canal",
+      "poster_url": "https://i.ytimg.com/vi/9r4CJfpflmA/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4419,
+        "lon": 12.3226
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=9r4CJfpflmA"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Scalzi"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-ponte-delle-guglie",
+      "name": "Ponte delle Guglie & Cannaregio Canal",
+      "country": "ITALY",
+      "country_name": "Italy",
+      "country_iso": "IT",
+      "city": "VENICE",
+      "city_name": "Venice",
+      "quality": "UHD_4K",
+      "timezone": "Europe/Rome",
+      "streets": [
+        "Ponte delle Guglie",
+        "Canale di Cannaregio",
+        "Fondamenta di Cannaregio"
+      ],
+      "municipality": "Cannaregio, Venezia",
+      "category": "BRIDGES",
+      "direction": "Southeast along the Cannaregio Canal toward the obelisk-topped Ponte delle Guglie",
+      "poster_url": "https://i.ytimg.com/vi/GQbUdGhHw_o/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4442,
+        "lon": 12.325
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=GQbUdGhHw_o"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Guglie"
+        }
+      ]
+    },
+    {
+      "id": "it-vce-bacino-san-marco",
+      "name": "St. Mark's Basin — Bacino di San Marco",
+      "country": "ITALY",
+      "country_name": "Italy",
+      "country_iso": "IT",
+      "city": "VENICE",
+      "city_name": "Venice",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Rome",
+      "streets": [
+        "Bacino di San Marco",
+        "Riva dei Sette Martiri",
+        "Via Giuseppe Garibaldi"
+      ],
+      "municipality": "Castello, Venezia",
+      "category": "BOULEVARDS",
+      "direction": "Southwest from Hotel Ca' Formenta across Bacino di San Marco toward San Giorgio Maggiore",
+      "poster_url": "https://i.ytimg.com/vi/ASqGNET31VY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.4325,
+        "lon": 12.3515
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=ASqGNET31VY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=San%20Marco%7CBacino"
+        }
+      ]
+    },
+    {
+      "id": "mx-mex-zocalo-constitucion",
+      "name": "Zócalo — Plaza de la Constitución",
+      "country": "MEXICO",
+      "country_name": "Mexico",
+      "country_iso": "MX",
+      "city": "MEXICO_CITY",
+      "city_name": "Mexico City",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "America/Mexico_City",
+      "streets": [
+        "Plaza de la Constitución",
+        "Av. 16 de Septiembre",
+        "Av. Francisco I. Madero"
+      ],
+      "municipality": "Cuauhtémoc, Ciudad de México",
+      "category": "SQUARES",
+      "direction": "Northeast from Gran Hotel Ciudad de México across the Zócalo toward the Metropolitan Cathedral and National Palace",
+      "poster_url": "https://i.ytimg.com/vi/PlFvNP1YNGY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 19.4325,
+        "lon": -99.1333
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=PlFvNP1YNGY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@webcamsdemexico/streams?match=Z%C3%B3calo%7CZocalo%7CConstituci%C3%B3n%7CCDMX"
+        }
+      ]
+    },
+    {
+      "id": "no-osl-city-fjord-live",
+      "name": "Oslo City Skyline & Oslofjord",
+      "country": "NORWAY",
+      "country_name": "Norway",
+      "country_iso": "NO",
+      "city": "OSLO",
+      "city_name": "Oslo",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Oslo",
+      "streets": [
+        "Dronning Eufemias gate",
+        "Bjørvika",
+        "Oslofjorden"
+      ],
+      "municipality": "Oslo kommune",
+      "category": "BOULEVARDS",
+      "direction": "Across central Oslo waterfront, Barcode skyline, and the inner Oslofjord",
+      "poster_url": "https://i.ytimg.com/vi/faKBmRq0lYg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 59.9075,
+        "lon": 10.7536
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=faKBmRq0lYg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@NorwayLive3/live"
+        }
+      ]
+    },
+    {
+      "id": "no-osl-tryvann-skimore",
+      "name": "Holmenkollen & Tryvann Alpine Slopes",
+      "country": "NORWAY",
+      "country_name": "Norway",
+      "country_iso": "NO",
+      "city": "OSLO",
+      "city_name": "Oslo",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Oslo",
+      "streets": [
+        "Tryvannsveien",
+        "Holmenkollen",
+        "Nordmarka"
+      ],
+      "municipality": "Vestre Aker, Oslo",
+      "category": "HIGHWAYS",
+      "direction": "Live mountain weather and ski slopes above Oslo at Skimore Tryvann",
+      "poster_url": "https://i.ytimg.com/vi/qyeyVNulaiU/hqdefault.jpg",
+      "coordinates": {
+        "lat": 59.9856,
+        "lon": 10.6678
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=qyeyVNulaiU"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@NorwayLive/live"
+        }
+      ]
+    },
+    {
+      "id": "no-tos-narvik-harbor",
+      "name": "Port of Narvik & Ofotfjord",
+      "country": "NORWAY",
+      "country_name": "Norway",
+      "country_iso": "NO",
+      "city": "TROMSO",
+      "city_name": "Arctic Norway",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Oslo",
+      "streets": [
+        "Havnegata",
+        "Fagernesveien",
+        "Ofotfjorden"
+      ],
+      "municipality": "Narvik kommune, Nordland",
+      "category": "BRIDGES",
+      "direction": "Across the Arctic ice-free harbor of Narvik, shipping quays, and surrounding fjord peaks",
+      "poster_url": "https://i.ytimg.com/vi/v-sOAF0rcZQ/hqdefault.jpg",
+      "coordinates": {
+        "lat": 68.4272,
+        "lon": 17.4208
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=v-sOAF0rcZQ"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@NorwayLive2/live"
+        }
+      ]
+    },
+    {
+      "id": "no-tos-skarsvag-north-cape",
+      "name": "Skarsvåg Fishing Village — North Cape",
+      "country": "NORWAY",
+      "country_name": "Norway",
+      "country_iso": "NO",
+      "city": "TROMSO",
+      "city_name": "Arctic Norway",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Oslo",
+      "streets": [
+        "Børnesveien",
+        "Nordkappveien",
+        "Risfjorden"
+      ],
+      "municipality": "Nordkapp kommune, Finnmark",
+      "category": "SQUARES",
+      "direction": "Over the harbor of Skarsvåg at 71°N, the northernmost fishing village in the world",
+      "poster_url": "https://i.ytimg.com/vi/iMqrD-HBDGo/hqdefault.jpg",
+      "coordinates": {
+        "lat": 71.1128,
+        "lon": 25.8267
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=iMqrD-HBDGo"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@skarsvagbygdelaglivecam9253/live"
+        }
+      ]
+    },
+    {
+      "id": "no-tos-uit-skycam",
+      "name": "Tromsø UiT Campus & Northern Lights Cam",
+      "country": "NORWAY",
+      "country_name": "Norway",
+      "country_iso": "NO",
+      "city": "TROMSO",
+      "city_name": "Arctic Norway",
+      "quality": "HD_720P",
+      "timezone": "Europe/Oslo",
+      "streets": [
+        "Hansine Hansens veg",
+        "Dramsvegen",
+        "Stakkevollvegen"
+      ],
+      "municipality": "Tromsø kommune",
+      "category": "BOULEVARDS",
+      "direction": "Southwest from UiT Arctic University of Norway overlooking Tromsøya and Kvaløya",
+      "poster_url": "https://weather.cs.uit.no/wcam0/wcam0_1280.jpg",
+      "coordinates": {
+        "lat": 69.6819,
+        "lon": 18.9777
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://weather.cs.uit.no/wcam0/wcam0_1280.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "pt-lis-tagus-25-abril",
+      "name": "Tagus River, 25 de Abril Bridge & Cristo Rei",
+      "country": "PORTUGAL",
+      "country_name": "Portugal",
+      "country_iso": "PT",
+      "city": "LISBON",
+      "city_name": "Lisbon",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Lisbon",
+      "streets": [
+        "Avenida Engenheiro Duarte Pacheco",
+        "Ponte 25 de Abril",
+        "Rio Tejo"
+      ],
+      "municipality": "Campo de Ourique, Lisboa",
+      "category": "BRIDGES",
+      "direction": "Southwest from Amoreiras across Lisbon toward the 25 de Abril Bridge, Tagus estuary, and Cristo Rei",
+      "poster_url": "https://i.ytimg.com/vi/tKIgNtEgLN0/hqdefault.jpg",
+      "coordinates": {
+        "lat": 38.7231,
+        "lon": -9.1621
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=tKIgNtEgLN0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@IloveLx/live"
+        }
+      ]
+    },
+    {
+      "id": "pt-lis-humberto-delgado-airport",
+      "name": "Lisbon Humberto Delgado Airport — Runway 02/20",
+      "country": "PORTUGAL",
+      "country_name": "Portugal",
+      "country_iso": "PT",
+      "city": "LISBON",
+      "city_name": "Lisbon",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Lisbon",
+      "streets": [
+        "Alameda das Comunidades Portuguesas",
+        "Avenida Berlim",
+        "Segunda Circular"
+      ],
+      "municipality": "Olivais, Lisboa",
+      "category": "HIGHWAYS",
+      "direction": "Across Runway 02/20 and active taxiways at Lisbon Humberto Delgado Airport",
+      "poster_url": "https://i.ytimg.com/vi/IMrR2A-afgg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 38.7739,
+        "lon": -9.1352
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=IMrR2A-afgg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@AviacaoTV/live"
+        }
+      ]
+    },
+    {
+      "id": "sg-sin-marina-bay-skyline",
+      "name": "Marina Bay Sands & Downtown Core Skyline",
+      "country": "SINGAPORE",
+      "country_name": "Singapore",
+      "country_iso": "SG",
+      "city": "SINGAPORE",
+      "city_name": "Singapore",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Singapore",
+      "streets": [
+        "Fullerton Road",
+        "Marina Boulevard",
+        "Downtown Core"
+      ],
+      "municipality": "Central Region, Singapore",
+      "category": "SQUARES",
+      "direction": "East-Southeast across Marina Bay toward Marina Bay Sands, ArtScience Museum, and Helix Bridge",
+      "poster_url": "https://i.ytimg.com/vi/XOSI6hwEDP0/hqdefault.jpg",
+      "coordinates": {
+        "lat": 1.2868,
+        "lon": 103.8545
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=XOSI6hwEDP0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@dikipidia/streams?match=Marina%20Bay%7CSingapore"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@dikipidia/live"
+        }
+      ]
+    },
+    {
+      "id": "sx-sxm-maho-beach-runway-10",
+      "name": "Princess Juliana Airport (SXM) Jet Blast — Maho Beach",
+      "country": "SINT_MAARTEN",
+      "country_name": "Sint Maarten",
+      "country_iso": "SX",
+      "city": "MAHO_BEACH",
+      "city_name": "Maho Beach",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "America/Lower_Princes",
+      "streets": [
+        "Rhine Rd",
+        "Beacon Hill Rd",
+        "Airport Rd"
+      ],
+      "municipality": "Simpson Bay",
+      "category": "BOULEVARDS",
+      "direction": "East across Maho Beach and Beacon Hill Road into Runway 10 threshold",
+      "poster_url": "https://i.ytimg.com/vi/N27ReV6sfYQ/hqdefault.jpg",
+      "coordinates": {
+        "lat": 18.0385,
+        "lon": -63.1185
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=N27ReV6sfYQ"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SHOWMECaribbean/streams?match=Maho%20Beach%7CSXM"
+        }
+      ]
+    },
+    {
+      "id": "ch-zmt-schweiz-panorama",
+      "name": "Swiss Alps & Matterhorn Panorama",
+      "country": "SWITZERLAND",
+      "country_name": "Switzerland",
+      "country_iso": "CH",
+      "city": "ZERMATT",
+      "city_name": "Swiss Alps",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Zurich",
+      "streets": [
+        "Gornergrat",
+        "Bahnhofstrasse",
+        "Hofmattstrasse"
+      ],
+      "municipality": "Gemeinde Zermatt",
+      "category": "SQUARES",
+      "direction": "Southwest across high-alpine Swiss peaks including the Matterhorn and Valais glaciers",
+      "poster_url": "https://i.ytimg.com/vi/enYFXf8u7Lc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 45.9833,
+        "lon": 7.7822
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=enYFXf8u7Lc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@feratel_yourwindowtotheworld/streams?match=Schweiz%20Panorama%7CSwiss%20Alps"
+        }
+      ]
+    },
+    {
+      "id": "tw-ali-eryanping-clouds",
+      "name": "Alishan Eryanping Trail Sea of Clouds",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "ALISHAN",
+      "city_name": "Alishan & Sun Moon Lake",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Provincial Highway 18",
+        "Xiding Tea Trail",
+        "Fanlu Township"
+      ],
+      "municipality": "Chiayi County",
+      "category": "SQUARES",
+      "direction": "West over tea terraces and sea of clouds toward the Chianan Plain",
+      "poster_url": "https://i.ytimg.com/vi/j2L_559nCjc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 23.4255,
+        "lon": 120.653
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=j2L_559nCjc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Alishannsa/streams?match=Eryanping%7C%E4%BA%8C%E5%BB%B6%E5%B9%B3"
+        }
+      ]
+    },
+    {
+      "id": "tw-ali-fenqihu-old-street",
+      "name": "Alishan Fenqihu Old Street",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "ALISHAN",
+      "city_name": "Alishan & Sun Moon Lake",
+      "quality": "UHD_4K",
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Fenqihu Old Street",
+        "County Road 169",
+        "Zhuqi Township"
+      ],
+      "municipality": "Chiayi County",
+      "category": "BOULEVARDS",
+      "direction": "South across Fenqihu Forest Railway Station and mountain village",
+      "poster_url": "https://i.ytimg.com/vi/B6eki-0-w0g/hqdefault.jpg",
+      "coordinates": {
+        "lat": 23.5053,
+        "lon": 120.6951
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=B6eki-0-w0g"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Alishannsa/streams?match=Fenqihu%7C%E5%A5%AE%E8%B5%B7%E6%B9%96"
+        }
+      ]
+    },
+    {
+      "id": "tw-ali-sun-moon-lake-ita-thao",
+      "name": "Sun Moon Lake Ita Thao Pier",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "ALISHAN",
+      "city_name": "Alishan & Sun Moon Lake",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Wenhua Street",
+        "Yiyong Street",
+        "Yuchi Township"
+      ],
+      "municipality": "Nantou County",
+      "category": "SQUARES",
+      "direction": "Northwest across Ita Thao Pier and the Sun Moon Lake alpine basin",
+      "poster_url": "https://i.ytimg.com/vi/5plRdP_APCk/hqdefault.jpg",
+      "coordinates": {
+        "lat": 23.8496,
+        "lon": 120.9287
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=5plRdP_APCk"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UCqSwmN_PNRjWmvedMMN8SmQ/streams?match=%E4%BC%8A%E9%81%94%E9%82%B5%7CIta%20Tha"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-xiangshan-101",
+      "name": "Taipei 101 Skyline from Xiangshan (Elephant Mountain)",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "TAIPEI",
+      "city_name": "Taipei",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Xiangshan Hiking Trail",
+        "Sec. 5, Xinyi Road",
+        "Xinyi District"
+      ],
+      "municipality": "Taipei City",
+      "category": "SQUARES",
+      "direction": "Northwest toward Taipei 101 and the Xinyi Financial District",
+      "poster_url": "https://i.ytimg.com/vi/z_fY1pj1VBw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0269,
+        "lon": 121.5766
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=z_fY1pj1VBw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taipeitravelofficial/streams?match=Xiangshan%7C%E8%B1%A1%E5%B1%B1"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-dadaocheng-wharf",
+      "name": "Dadaocheng Wharf & Tamsui River",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "TAIPEI",
+      "city_name": "Taipei",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Minsheng West Road",
+        "Yanping Riverside Park",
+        "Datong District"
+      ],
+      "municipality": "Taipei City",
+      "category": "SQUARES",
+      "direction": "West-Southwest across Pier 5 Plaza and the Tamsui River",
+      "poster_url": "https://i.ytimg.com/vi/Ndo_8RuefH4/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0565,
+        "lon": 121.5075
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Ndo_8RuefH4"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taipeitravelofficial/streams?match=Dadaocheng%7C%E5%A4%A7%E7%A8%BB%E5%9F%95"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-bishan-temple",
+      "name": "Bishan Temple Taipei Basin Skyline",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "TAIPEI",
+      "city_name": "Taipei",
+      "quality": "UHD_4K",
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Bishan Road",
+        "Sec. 3, Neihu Road",
+        "Neihu District"
+      ],
+      "municipality": "Taipei City",
+      "category": "SQUARES",
+      "direction": "South-Southwest across the Taipei Basin toward Taipei 101",
+      "poster_url": "https://i.ytimg.com/vi/uvwfYzwY8tg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0886,
+        "lon": 121.5872
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=uvwfYzwY8tg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taipeitravelofficial/streams?match=Bishan%7C%E7%A2%A7%E5%B1%B1%E5%B7%96"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-jiufen-mountain-street",
+      "name": "Jiufen Red Lantern Mountain Street",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "TAIPEI",
+      "city_name": "Taipei",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Jishan Street",
+        "Shuqi Road",
+        "Qiche Road"
+      ],
+      "municipality": "Ruifang, New Taipei City",
+      "category": "BOULEVARDS",
+      "direction": "Northwest from Kaicheng Hall over Jiufen Village and Keelung Mountain",
+      "poster_url": "https://i.ytimg.com/vi/XSD5ptYisw8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.108,
+        "lon": 121.8466
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=XSD5ptYisw8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ntctour/streams?match=Jiufen%7C%E4%B9%9D%E4%BB%BD"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-tamsui-fishermans-wharf",
+      "name": "Tamsui Fisherman's Wharf & Lover's Bridge",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "TAIPEI",
+      "city_name": "Taipei",
+      "quality": "UHD_4K",
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Guanhai Road",
+        "Lover's Bridge",
+        "Tamsui District"
+      ],
+      "municipality": "Tamsui, New Taipei City",
+      "category": "BRIDGES",
+      "direction": "West-Southwest across Lover's Bridge and the Tamsui Estuary",
+      "poster_url": "https://i.ytimg.com/vi/xwAWSh35uuw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.183,
+        "lon": 121.4108
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=xwAWSh35uuw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ntctour/streams?match=Tamsui%7C%E6%B7%A1%E6%B0%B4"
+        }
+      ]
+    },
+    {
+      "id": "tw-tpe-taoyuan-airport-runway",
+      "name": "Taoyuan International Airport Runways",
+      "country": "TAIWAN",
+      "country_name": "Taiwan",
+      "country_iso": "TW",
+      "city": "TAIPEI",
+      "city_name": "Taipei",
+      "quality": "UHD_4K",
+      "timezone": "Asia/Taipei",
+      "streets": [
+        "Hangzhan South Road",
+        "Terminal 2 Observation Deck",
+        "Dayuan District"
+      ],
+      "municipality": "Taoyuan City",
+      "category": "HIGHWAYS",
+      "direction": "Southeast across Terminal 2 Apron and South Runway 05R/23L",
+      "poster_url": "https://i.ytimg.com/vi/y3_x8el5ZJY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.0764,
+        "lon": 121.2239
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=y3_x8el5ZJY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@taoyuanairport/streams?match=Runway%7C%E8%B7%91%E9%81%93"
+        }
+      ]
+    },
+    {
+      "id": "th-bkk-sukhumvit-skyline-4k",
+      "name": "Bangkok 4K City Skyline",
+      "country": "THAILAND",
+      "country_name": "Thailand",
+      "country_iso": "TH",
+      "city": "BANGKOK",
+      "city_name": "Bangkok",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Bangkok",
+      "streets": [
+        "Sukhumvit Road",
+        "Soi Sukhumvit 19",
+        "Khlong Toei Nuea"
+      ],
+      "municipality": "Watthana, Bangkok",
+      "category": "BOULEVARDS",
+      "direction": "West over the Sukhumvit high-rise skyline toward Nana and Pathum Wan",
+      "poster_url": "https://i.ytimg.com/vi/LO6vvUIpmUg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 13.738,
+        "lon": 100.556
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=LO6vvUIpmUg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@bangkok-360/streams?match=Bangkok"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@bangkok-360/live"
+        }
+      ]
+    },
+    {
+      "id": "th-usm-fishermans-village-bophut",
+      "name": "Fisherman's Village — Bophut Beach",
+      "country": "THAILAND",
+      "country_name": "Thailand",
+      "country_iso": "TH",
+      "city": "KOH_SAMUI",
+      "city_name": "Koh Samui",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Bangkok",
+      "streets": [
+        "Bophut Beach Road",
+        "Fisherman's Village Walking Street",
+        "Bophut Bay"
+      ],
+      "municipality": "Bo Phut, Ko Samui",
+      "category": "SQUARES",
+      "direction": "North across Bophut Beach toward Koh Phangan",
+      "poster_url": "https://i.ytimg.com/vi/CSp55hSd_6A/hqdefault.jpg",
+      "coordinates": {
+        "lat": 9.56,
+        "lon": 100.0303
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=CSp55hSd_6A"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Bophut%7CFisherman"
+        }
+      ]
+    },
+    {
+      "id": "th-usm-crystal-bay-lamai",
+      "name": "Crystal Bay — Silver Beach & Lamai",
+      "country": "THAILAND",
+      "country_name": "Thailand",
+      "country_iso": "TH",
+      "city": "KOH_SAMUI",
+      "city_name": "Koh Samui",
+      "quality": "UHD_4K",
+      "featured": true,
+      "timezone": "Asia/Bangkok",
+      "streets": [
+        "Thong Takian Bay",
+        "Silver Beach Waterfront",
+        "Route 4169"
+      ],
+      "municipality": "Maret, Ko Samui",
+      "category": "SQUARES",
+      "direction": "East across Crystal Bay granite boulders and turquoise cove toward the Gulf of Thailand",
+      "poster_url": "https://i.ytimg.com/vi/3N3ZwIB_X4Y/hqdefault.jpg",
+      "coordinates": {
+        "lat": 9.4644,
+        "lon": 100.0444
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=3N3ZwIB_X4Y"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Crystal%20Bay%7CSilver%20Beach"
         }
       ]
     }

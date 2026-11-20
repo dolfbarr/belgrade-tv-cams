@@ -1,0 +1,68 @@
+{
+  "country": "HONG_KONG",
+  "country_name": "Hong Kong",
+  "country_iso": "HK",
+  "city": "HONG_KONG",
+  "city_name": "Hong Kong",
+  "timezone": "Asia/Hong_Kong",
+  "cameras": [
+    {
+      "id": "hk-hkg-tst-victoria-harbour",
+      "name": "Tsim Sha Tsui & Victoria Harbour Skyline",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Salisbury Road",
+        "Tsim Sha Tsui Promenade",
+        "Victoria Harbour"
+      ],
+      "municipality": "Yau Tsim Mong, Kowloon",
+      "category": "BRIDGES",
+      "direction": "Across Victoria Harbour between Tsim Sha Tsui waterfront and Hong Kong Island",
+      "poster_url": "https://i.ytimg.com/vi/Z8NTLkEFZjg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 22.294,
+        "lon": 114.1722
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Z8NTLkEFZjg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Brainrolling/streams?match=HONG%20KONG%7C%E9%A6%99%E6%B8%AF"
+        }
+      ]
+    },
+    {
+      "id": "hk-hkg-east-kowloon-harbour",
+      "name": "East Kowloon & Lei Yue Mun Harbour",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Kwun Tong Bypass",
+        "Kai Tak Cruise Terminal",
+        "Victoria Harbour East"
+      ],
+      "municipality": "Kwun Tong, Kowloon",
+      "category": "BOULEVARDS",
+      "direction": "Southwest over eastern Victoria Harbour, Kai Tak, and Hong Kong Island East",
+      "poster_url": "https://i.ytimg.com/vi/XN-ArdUrqtc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 22.3088,
+        "lon": 114.225
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=XN-ArdUrqtc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@marcuswong7614/live"
+        }
+      ]
+    }
+  ]
+}

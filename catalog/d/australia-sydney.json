@@ -1,0 +1,96 @@
+{
+  "country": "AUSTRALIA",
+  "country_name": "Australia",
+  "country_iso": "AU",
+  "city": "SYDNEY",
+  "city_name": "Sydney",
+  "timezone": "Australia/Sydney",
+  "cameras": [
+    {
+      "id": "au-syd-harbour-mcmahons-point",
+      "name": "Sydney Harbour Bridge & Opera House — McMahons Point",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Blues Point Road",
+        "East Crescent Street",
+        "Port Jackson"
+      ],
+      "municipality": "North Sydney",
+      "category": "BRIDGES",
+      "direction": "Southeast across Port Jackson framing Sydney Harbour Bridge and Sydney Opera House",
+      "poster_url": "https://i.ytimg.com/vi/0F-vs59QJas/hqdefault.jpg",
+      "coordinates": {
+        "lat": -33.8499,
+        "lon": 151.2039
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=0F-vs59QJas"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@SydneyHarbourLIVE/live"
+        }
+      ]
+    },
+    {
+      "id": "au-syd-harbour-kirribilli",
+      "name": "Circular Quay & Sydney Harbour — Kirribilli",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Jeffrey Street",
+        "Holbrook Avenue",
+        "Carabella Street"
+      ],
+      "municipality": "North Sydney",
+      "category": "BRIDGES",
+      "direction": "Southwest from Kirribilli across Port Jackson toward Sydney Opera House and Circular Quay",
+      "poster_url": "https://i.ytimg.com/vi/5uZa3-RMFos/hqdefault.jpg",
+      "coordinates": {
+        "lat": -33.8486,
+        "lon": 151.2194
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=5uZa3-RMFos"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@webcamsydney/streams?match=WebcamSydney%201"
+        }
+      ]
+    },
+    {
+      "id": "au-syd-harbour-panning",
+      "name": "Port Jackson 180° Harbour Sweep",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Kirribilli Point",
+        "Port Jackson",
+        "Bennelong Point"
+      ],
+      "municipality": "North Sydney",
+      "category": "BRIDGES",
+      "direction": "Continuous 180-degree panning view across Sydney Harbour, Circular Quay ferries, and Opera House",
+      "poster_url": "https://i.ytimg.com/vi/jshwkG1ZpP8/hqdefault.jpg",
+      "coordinates": {
+        "lat": -33.8502,
+        "lon": 151.2205
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=jshwkG1ZpP8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@webcamsydney/streams?match=WebcamSydney%202"
+        }
+      ]
+    }
+  ]
+}

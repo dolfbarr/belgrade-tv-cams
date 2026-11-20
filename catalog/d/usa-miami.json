@@ -1,0 +1,119 @@
+{
+  "country": "USA",
+  "city": "MIAMI",
+  "city_name": "Miami & Key West",
+  "timezone": "America/New_York",
+  "cameras": [
+    {
+      "id": "us-mia-portmiami-skyline",
+      "name": "PortMiami Cruise Channel & Downtown Skyline",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Chopin Plaza",
+        "Biscayne Blvd",
+        "Port Blvd"
+      ],
+      "municipality": "Miami",
+      "category": "BOULEVARDS",
+      "direction": "East from InterContinental Miami across Biscayne Bay toward PortMiami and Government Cut",
+      "poster_url": "https://i.ytimg.com/vi/DxZziUUr6CY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.7724,
+        "lon": -80.1854
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=DxZziUUr6CY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@PTZtv/streams?match=Port%20Miami%7CPortMiami"
+        }
+      ]
+    },
+    {
+      "id": "us-mia-coral-city-underwater",
+      "name": "Coral City Underwater Reef at PortMiami",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "MacArthur Causeway",
+        "N Cruise Blvd",
+        "Government Cut"
+      ],
+      "municipality": "Miami",
+      "category": "BOULEVARDS",
+      "direction": "Submerged at 3m depth along the east PortMiami riprap shoreline facing urban coral reef habitat",
+      "poster_url": "https://i.ytimg.com/vi/7i8ARjIeM2k/hqdefault.jpg",
+      "coordinates": {
+        "lat": 25.78,
+        "lon": -80.1797
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=7i8ARjIeM2k"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@CoralMorphologic/streams?match=Coral%20City"
+        }
+      ]
+    },
+    {
+      "id": "us-mia-hollywood-beach-broadwalk",
+      "name": "Hollywood Beach Broadwalk",
+      "quality": "FHD_1080P",
+      "streets": [
+        "N Broadwalk",
+        "Johnson St",
+        "A1A"
+      ],
+      "municipality": "Hollywood, Greater Miami",
+      "category": "BOULEVARDS",
+      "direction": "East across the palm-lined Hollywood Beach Broadwalk and Atlantic shoreline",
+      "poster_url": "https://i.ytimg.com/vi/cmkAbDUEoyA/hqdefault.jpg",
+      "coordinates": {
+        "lat": 26.0112,
+        "lon": -80.1156
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=cmkAbDUEoyA"
+        }
+      ]
+    },
+    {
+      "id": "us-mia-key-west-harbor",
+      "name": "Key West Harbor & Mallory Square Waterfront",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Whitehead St",
+        "Wall St",
+        "Front St"
+      ],
+      "municipality": "Key West",
+      "category": "SQUARES",
+      "direction": "Northwest across Mallory Square and Key West Harbor channel",
+      "poster_url": "https://i.ytimg.com/vi/iHJbTrQSZys/hqdefault.jpg",
+      "coordinates": {
+        "lat": 24.5591,
+        "lon": -81.8069
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=iHJbTrQSZys"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@PTZtv/streams?match=Key%20West"
+        }
+      ]
+    }
+  ]
+}

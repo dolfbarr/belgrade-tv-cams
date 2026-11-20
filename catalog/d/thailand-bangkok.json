@@ -1,0 +1,43 @@
+{
+  "country": "THAILAND",
+  "country_name": "Thailand",
+  "country_iso": "TH",
+  "city": "BANGKOK",
+  "city_name": "Bangkok",
+  "timezone": "Asia/Bangkok",
+  "cameras": [
+    {
+      "id": "th-bkk-sukhumvit-skyline-4k",
+      "name": "Bangkok 4K City Skyline",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Sukhumvit Road",
+        "Soi Sukhumvit 19",
+        "Khlong Toei Nuea"
+      ],
+      "municipality": "Watthana, Bangkok",
+      "category": "BOULEVARDS",
+      "direction": "West over the Sukhumvit high-rise skyline toward Nana and Pathum Wan",
+      "poster_url": "https://i.ytimg.com/vi/LO6vvUIpmUg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 13.738,
+        "lon": 100.556
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=LO6vvUIpmUg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@bangkok-360/streams?match=Bangkok"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@bangkok-360/live"
+        }
+      ]
+    }
+  ]
+}

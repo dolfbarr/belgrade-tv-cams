@@ -1,0 +1,96 @@
+{
+  "country": "CROATIA",
+  "country_name": "Croatia",
+  "country_iso": "HR",
+  "city": "DALMATIA",
+  "city_name": "Dalmatian Coast",
+  "timezone": "Europe/Zagreb",
+  "cameras": [
+    {
+      "id": "hr-dal-hvar-harbor",
+      "name": "Hvar Town Harbor & Pakleni Islands",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Riva",
+        "Trg svetog Stjepana",
+        "Hvarska luka"
+      ],
+      "municipality": "Grad Hvar, Splitsko-dalmatinska",
+      "category": "SQUARES",
+      "direction": "Southwest overlooking the entrance to Hvar Harbor, Riva promenade, and the Pakleni Islands",
+      "poster_url": "https://i.ytimg.com/vi/0wHWHAFnNh0/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.1725,
+        "lon": 16.4419
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=0wHWHAFnNh0"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@HvarLive/live"
+        }
+      ]
+    },
+    {
+      "id": "hr-dal-primosten-peninsula",
+      "name": "Primošten Old Town Peninsula",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Obala hrvatskih branitelja",
+        "Trg biskupa Josipa Arnerića",
+        "Mala Raduča"
+      ],
+      "municipality": "Primošten, Šibensko-kninska",
+      "category": "BOULEVARDS",
+      "direction": "Panoramic view across the Adriatic bay toward the walled island peninsula of Primošten",
+      "poster_url": "https://i.ytimg.com/vi/upOiG0CMlnw/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.5858,
+        "lon": 15.9228
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=upOiG0CMlnw"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@croatia_live/streams?match=Primo%C5%A1ten%7CPrimosten"
+        }
+      ]
+    },
+    {
+      "id": "hr-dal-murter-slanica-beach",
+      "name": "Slanica Beach — Murter Island",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Uvala Slanica",
+        "Put Slanice",
+        "Otok Murter"
+      ],
+      "municipality": "Murter-Kornati, Šibensko-kninska",
+      "category": "SQUARES",
+      "direction": "West across turquoise Slanica Cove toward the Kornati archipelago",
+      "poster_url": "https://i.ytimg.com/vi/KNFJTgYbGlc/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.8153,
+        "lon": 15.5811
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=KNFJTgYbGlc"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@worldscam-y5q/streams?match=Slanica%7CMurter"
+        }
+      ]
+    }
+  ]
+}

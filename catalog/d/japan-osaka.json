@@ -1,0 +1,159 @@
+{
+  "country": "JAPAN",
+  "city": "OSAKA",
+  "city_name": "Osaka",
+  "timezone": "Asia/Tokyo",
+  "cameras": [
+    {
+      "id": "jp-osa-fukushima-skyline-4k",
+      "name": "Osaka Skyline & Loop Line — Fukushima",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Osaka Loop Line",
+        "Naniwa-suji",
+        "Fukushima-ku"
+      ],
+      "municipality": "Fukushima-ku, Osaka",
+      "category": "HIGHWAYS",
+      "direction": "West across urban Osaka rooftops and the elevated Osaka Loop Line corridor",
+      "poster_url": "https://i.ytimg.com/vi/R6cWQHTQq-c/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.6966,
+        "lon": 135.4864
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=R6cWQHTQq-c"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@osakalive/streams?match=4K%7COsaka"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-dotonbori-glico",
+      "name": "Dotonbori Canal & Glico Sign",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Ebisubashi",
+        "Dotonbori-dori",
+        "Shinsaibashi-suji"
+      ],
+      "municipality": "Chuo-ku, Osaka",
+      "category": "BRIDGES",
+      "direction": "West-Southwest across Ebisubashi toward the Glico Running Man sign and Dotonbori Canal",
+      "poster_url": "https://i.ytimg.com/vi/6OgYfTMOmhY/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.669,
+        "lon": 135.5011
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=6OgYfTMOmhY"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@mbsnews/streams?match=%E9%81%93%E9%A0%93%E5%A0%80%7CDotonbori"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-dotonbori-ebisubashi",
+      "name": "Dotonbori Ebisubashi Promenade",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Ebisubashi",
+        "Soemoncho-dori",
+        "Tombori River Walk"
+      ],
+      "municipality": "Chuo-ku, Osaka",
+      "category": "SQUARES",
+      "direction": "North from Tombori Station across the Ebisubashi footbridge",
+      "poster_url": "https://i.ytimg.com/vi/e3cn8nzj42I/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.6691,
+        "lon": 135.5013
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=e3cn8nzj42I"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@RVJplanet/streams?match=%E9%81%93%E9%A0%93%E5%A0%80%7CDotonbori"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@RVJplanet/live"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-osaka-castle",
+      "name": "Osaka Castle & Temmabashi",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Osakajo",
+        "Tanimachi-suji",
+        "Temmabashi"
+      ],
+      "municipality": "Chuo-ku, Osaka",
+      "category": "SQUARES",
+      "direction": "Southeast across Osaka Castle Park moat toward the illuminated main keep",
+      "poster_url": "https://i.ytimg.com/vi/dOKOq-jU1b8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.6873,
+        "lon": 135.5259
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=dOKOq-jU1b8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@tvosakanews/streams?match=%E5%A4%A7%E9%98%AA%E5%9F%8E%7COsaka%20Castle"
+        }
+      ]
+    },
+    {
+      "id": "jp-osa-itami-airport-rwy32l",
+      "name": "Osaka Itami International Airport Runways",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Runway 32L",
+        "Itami Sky Park",
+        "National Route 176"
+      ],
+      "municipality": "Toyonaka, Osaka",
+      "category": "HIGHWAYS",
+      "direction": "Southwest across Itami terminal apron toward Runways 32L and 32R",
+      "poster_url": "https://i.ytimg.com/vi/8zxjzSKfyWo/hqdefault.jpg",
+      "coordinates": {
+        "lat": 34.7906,
+        "lon": 135.441
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=8zxjzSKfyWo"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=nVeVH2ssSYI"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@mbsnews/streams?match=%E4%BC%8A%E4%B8%B9%E7%A9%BA%E6%B8%AF%7CItami"
+        }
+      ]
+    }
+  ]
+}

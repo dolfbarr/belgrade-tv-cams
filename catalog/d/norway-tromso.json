@@ -1,0 +1,94 @@
+{
+  "country": "NORWAY",
+  "country_name": "Norway",
+  "country_iso": "NO",
+  "city": "TROMSO",
+  "city_name": "Arctic Norway",
+  "timezone": "Europe/Oslo",
+  "cameras": [
+    {
+      "id": "no-tos-narvik-harbor",
+      "name": "Port of Narvik & Ofotfjord",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Havnegata",
+        "Fagernesveien",
+        "Ofotfjorden"
+      ],
+      "municipality": "Narvik kommune, Nordland",
+      "category": "BRIDGES",
+      "direction": "Across the Arctic ice-free harbor of Narvik, shipping quays, and surrounding fjord peaks",
+      "poster_url": "https://i.ytimg.com/vi/v-sOAF0rcZQ/hqdefault.jpg",
+      "coordinates": {
+        "lat": 68.4272,
+        "lon": 17.4208
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=v-sOAF0rcZQ"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@NorwayLive2/live"
+        }
+      ]
+    },
+    {
+      "id": "no-tos-skarsvag-north-cape",
+      "name": "Skarsvåg Fishing Village — North Cape",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Børnesveien",
+        "Nordkappveien",
+        "Risfjorden"
+      ],
+      "municipality": "Nordkapp kommune, Finnmark",
+      "category": "SQUARES",
+      "direction": "Over the harbor of Skarsvåg at 71°N, the northernmost fishing village in the world",
+      "poster_url": "https://i.ytimg.com/vi/iMqrD-HBDGo/hqdefault.jpg",
+      "coordinates": {
+        "lat": 71.1128,
+        "lon": 25.8267
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=iMqrD-HBDGo"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@skarsvagbygdelaglivecam9253/live"
+        }
+      ]
+    },
+    {
+      "id": "no-tos-uit-skycam",
+      "name": "Tromsø UiT Campus & Northern Lights Cam",
+      "quality": "HD_720P",
+      "streets": [
+        "Hansine Hansens veg",
+        "Dramsvegen",
+        "Stakkevollvegen"
+      ],
+      "municipality": "Tromsø kommune",
+      "category": "BOULEVARDS",
+      "direction": "Southwest from UiT Arctic University of Norway overlooking Tromsøya and Kvaløya",
+      "poster_url": "https://weather.cs.uit.no/wcam0/wcam0_1280.jpg",
+      "coordinates": {
+        "lat": 69.6819,
+        "lon": 18.9777
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://weather.cs.uit.no/wcam0/wcam0_1280.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "_"
+        }
+      ]
+    }
+  ]
+}

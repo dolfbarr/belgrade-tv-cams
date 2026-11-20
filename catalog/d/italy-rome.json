@@ -1,0 +1,39 @@
+{
+  "country": "ITALY",
+  "country_name": "Italy",
+  "country_iso": "IT",
+  "city": "ROME",
+  "city_name": "Rome",
+  "timezone": "Europe/Rome",
+  "cameras": [
+    {
+      "id": "it-rom-st-peters-square",
+      "name": "St. Peter's Square & Basilica",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Piazza San Pietro",
+        "Piazza Pio XII",
+        "Via della Conciliazione"
+      ],
+      "municipality": "Vatican City / Municipio I, Roma",
+      "category": "SQUARES",
+      "direction": "West from Bernini's Colonnade across St. Peter's Square toward St. Peter's Basilica",
+      "poster_url": "https://i.ytimg.com/vi/03pYP2Nmreo/hqdefault.jpg",
+      "coordinates": {
+        "lat": 41.9022,
+        "lon": 12.4548
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=03pYP2Nmreo"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@VaticanNews/streams?match=Vatican%20Media%20Live%7CSan%20Pietro"
+        }
+      ]
+    }
+  ]
+}

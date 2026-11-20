@@ -1,0 +1,70 @@
+{
+  "country": "USA",
+  "city": "LAS_VEGAS",
+  "city_name": "Las Vegas",
+  "timezone": "America/Los_Angeles",
+  "cameras": [
+    {
+      "id": "us-las-strip-sphere-4k",
+      "name": "Las Vegas Strip & Sphere Exosphere",
+      "quality": "UHD_4K",
+      "featured": true,
+      "streets": [
+        "Sands Ave",
+        "Koval Ln",
+        "S Las Vegas Blvd"
+      ],
+      "municipality": "Paradise, Las Vegas",
+      "category": "BOULEVARDS",
+      "direction": "Across the central Las Vegas Strip resort corridor toward the Sphere exterior LED exosphere",
+      "poster_url": "https://i.ytimg.com/vi/C1hrfERKzbg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 36.1211,
+        "lon": -115.1619
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=C1hrfERKzbg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@LVsphere/streams?match=Sphere%7CLas%20Vegas"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@WatchTheSphere/streams?match=Sphere"
+        }
+      ]
+    },
+    {
+      "id": "us-las-fremont-street",
+      "name": "Fremont Street Experience & Viva Vision Canopy",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Fremont St",
+        "N 3rd St",
+        "N Casino Center Blvd"
+      ],
+      "municipality": "Las Vegas",
+      "category": "BOULEVARDS",
+      "direction": "West under the Viva Vision LED canopy along the Fremont Street pedestrian promenade",
+      "poster_url": "https://i.ytimg.com/vi/t8aUQeOwyV8/hqdefault.jpg",
+      "coordinates": {
+        "lat": 36.1699,
+        "lon": -115.1436
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=t8aUQeOwyV8"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@JustinClouse/streams?match=Fremont%7CLas%20Vegas"
+        }
+      ]
+    }
+  ]
+}

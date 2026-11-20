@@ -136,6 +136,15 @@ class HttpClientsAndResolverTest {
             )
         }
 
+        server.route("/@taipeitravelofficial/streams") {
+            val html = """{"videoRenderer":{"videoId":"Jw9tsexipts","title":{"runs":[{"text":"Taipei Xiangshan 101"}]},"thumbnailOverlays":[{"thumbnailOverlayTimeStatusRenderer":{"style":"LIVE"}}]}}"""
+            LoopbackResponse(
+                status = 200,
+                contentType = "text/html; charset=utf-8",
+                body = html.toByteArray(Charsets.UTF_8),
+            )
+        }
+
         server.route("/rutube/eba7bc75dd7994f0d7e22e1ad9e76a87/") {
             jsonResponse(
                 200,
@@ -207,6 +216,15 @@ class HttpClientsAndResolverTest {
         val resolvedFromChannel = resolver.resolveToHls(channelStream)
         assertNotNull(resolvedFromChannel)
         assertEquals(4, ytPostCount.get())
+
+        // Multi-camera /@handle/streams?match=<keyword> resolution -> Innertube POST
+        val streamsMatchDesc = StreamDescriptor(
+            StreamTransportType.YOUTUBE_LIVE,
+            "$baseUrl/@taipeitravelofficial/streams?match=Xiangshan",
+        )
+        val resolvedFromStreamsTab = resolver.resolveToHls(streamsMatchDesc)
+        assertNotNull(resolvedFromStreamsTab)
+        assertEquals(5, ytPostCount.get())
 
         // Offline YouTube stream returns null
         assertNull(
