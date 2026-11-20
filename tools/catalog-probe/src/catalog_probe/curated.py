@@ -1021,6 +1021,7 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             lon=20.4159,
             ott_slug="zarkovo",
             poster_url="https://kamere.24sedam.rs/js/cameras/zarkovo.webp",
+            fallback_jpg_num=4,
         ),
         # Belgrade Ring & Danube / Sava Corridors (10)
         _toll4all_front_camera(
@@ -3758,7 +3759,8 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             direction="Panoramic view across the East River toward the Empire State Building",
             lat=40.7450,
             lon=-73.9585,
-            video_id="_-elt-iymj0",
+            video_id="VGnFLdQW39A",
+            windy_fallback_id="1793910950",
         ),
         _youtube_live_camera(
             cam_id="us-nyc-summit-vanderbilt",
@@ -3992,7 +3994,8 @@ def build_curated_cameras(contributions_dir: Path | None = None) -> list[CameraE
             direction="4K UHD view over historic Jongno rooftops and forested Bugaksan peaks",
             lat=37.5805,
             lon=126.9818,
-            video_id="sVrpfQ-sjs0",
+            video_id="5gVrWGRZo9s",
+            windy_fallback_id="1689176350",
         ),
         _youtube_live_camera(
             cam_id="kr-sel-seoul-station",

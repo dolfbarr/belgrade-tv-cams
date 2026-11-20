@@ -1,0 +1,40 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "SUBOTICA",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "su-palic-jezero",
+      "name": "Jezero Palić — Velika terasa & Šetalište",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Obala Lajoša Vermeša",
+        "Velika terasa",
+        "Park Palić"
+      ],
+      "municipality": "Palić, Subotica",
+      "category": "SQUARES",
+      "direction": "Full HD 1080p pogled na obalu Palićkog jezera, mol i šetalište ispred Velike terase",
+      "poster_url": "https://g0.ipcamlive.com/player/snapshot.php?alias=kamerapalic",
+      "coordinates": {
+        "lat": 46.0983,
+        "lon": 19.7586
+      },
+      "streams": [
+        {
+          "type": "IPCAMLIVE",
+          "url": "https://ipcamlive.com/kamerapalic"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://g0.ipcamlive.com/player/snapshot.php?alias=kamerapalic",
+          "interval_ms": 4000,
+          "cache_buster_param": "t"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "country": "GEORGIA",
+  "country_name": "Georgia",
+  "country_iso": "GE",
+  "city": "KUTAISI",
+  "city_name": "Kutaisi & Svaneti",
+  "timezone": "Asia/Tbilisi",
+  "cameras": [
+    {
+      "id": "ge-kut-aghmashenebeli",
+      "name": "Kutaisi — Davit Aghmashenebeli Palm Avenue",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Davit Aghmashenebeli Avenue",
+        "Palm Boulevard",
+        "Central Kutaisi"
+      ],
+      "municipality": "Kutaisi, Imereti",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p view along Kutaisi's palm-lined Davit Aghmashenebeli Avenue and bike corridor",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/kutaisi1.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/kutaisi/"
+      },
+      "coordinates": {
+        "lat": 42.253,
+        "lon": 42.6905
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/kutaisi1.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/kutaisi/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/kutaisi1.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/kutaisi/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ge-kut-maysuradze-skyline",
+      "name": "Kutaisi — Rioni Valley & Maysuradze Skyline",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Maysuradze Street",
+        "Rioni River Valley",
+        "Bagrati Horizon"
+      ],
+      "municipality": "Kutaisi, Imereti",
+      "category": "SQUARES",
+      "direction": "Elevated 24/7 panorama across Kutaisi rooftops and the Imereti foothills",
+      "poster_url": "https://i.ytimg.com/vi/e0cDm8bDC34/hqdefault.jpg",
+      "coordinates": {
+        "lat": 42.2695,
+        "lon": 42.7082
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=e0cDm8bDC34"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UCX9DH3hxTALrso7sel64jLw/live"
+        }
+      ]
+    },
+    {
+      "id": "ge-kut-mestia-hatsvali",
+      "name": "Mestia (Svaneti) — Zuruldi Ridge & Mount Ushba (2,335 m)",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Hatsvali–Zuruldi Top Station",
+        "Mount Ushba (4,710 m)",
+        "Upper Svaneti"
+      ],
+      "municipality": "Mestia, Upper Svaneti",
+      "category": "SQUARES",
+      "direction": "Panoramic 2,335 m Greater Caucasus summit view from Zuruldi toward twin-peaked Mount Ushba",
+      "poster_url": "https://panodata.panomax.com/cams/5419/recent_reduced.jpg",
+      "coordinates": {
+        "lat": 43.0181,
+        "lon": 42.7428
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://panodata.panomax.com/cams/5419/recent_reduced.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "t"
+        }
+      ]
+    }
+  ]
+}

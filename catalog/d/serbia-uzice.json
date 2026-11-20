@@ -1,0 +1,150 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "UZICE",
+  "city_name": "Užice & Divčibare",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "rs-uzi-prilipac-izlaz",
+      "name": "Užice & Požega (Prilipac) — Izlaz ka Zlatiboru",
+      "quality": "HD_720P",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Petlja Prilipac — Požega — Užice"
+      ],
+      "municipality": "Požega / Užice",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni završetak autoputa Miloš Veliki (A2) kod Prilipca — smer ka Požegi, Užicu i Zlatiboru",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam21/index.jpg",
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      },
+      "coordinates": {
+        "lat": 43.8315,
+        "lon": 20.0682
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam21/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam21/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rs-uzi-prilipac-ulaz",
+      "name": "Užice & Požega (Prilipac) — Ulaz na Miloš Veliki",
+      "quality": "HD_720P",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Užice — Požega — Čačak — Beograd"
+      ],
+      "municipality": "Požega / Užice",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Prilipac — ulazak iz Užica i Požege na autoput A2 ka Beogradu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam22/index.jpg",
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      },
+      "coordinates": {
+        "lat": 43.8311,
+        "lon": 20.0688
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam22/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam22/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rs-uzi-divcibare-centar",
+      "name": "Divčibare — Centar & Planina Maljen",
+      "quality": "HD_720P",
+      "streets": [
+        "Valjevska ulica",
+        "Divčibare centar",
+        "Planina Maljen"
+      ],
+      "municipality": "Divčibare, Valjevo",
+      "category": "SQUARES",
+      "direction": "Pogled uživo na centar planinskog odmarališta Divčibare na Maljenu (980 m)",
+      "poster_url": "https://kamere.mojedivcibare.com/kam.jpg",
+      "coordinates": {
+        "lat": 44.1044,
+        "lon": 19.9917
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://kamere.mojedivcibare.com/kam.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1672910649/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-uzi-divcibare-skistaza",
+      "name": "Divčibare — Ski staza Crni vrh",
+      "quality": "HD_720P",
+      "streets": [
+        "Ski staza Crni vrh",
+        "Divčibare Ski Resort",
+        "Vrh Crni vrh (1.096 m)"
+      ],
+      "municipality": "Divčibare, Valjevo",
+      "category": "SQUARES",
+      "direction": "Pogled na podnožje ski-staze Crni vrh i žičaru na Divčibarama",
+      "poster_url": "https://kamere.mojedivcibare.com/skistaza.jpg",
+      "coordinates": {
+        "lat": 44.1089,
+        "lon": 20.0169
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://kamere.mojedivcibare.com/skistaza.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "_"
+        }
+      ]
+    }
+  ]
+}

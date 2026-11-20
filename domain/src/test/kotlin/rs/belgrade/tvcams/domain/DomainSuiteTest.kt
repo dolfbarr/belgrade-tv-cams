@@ -1081,11 +1081,11 @@ class DomainSuiteTest {
         val decoded = CatalogJsonCodec.decode(rawDiskJson)
 
         assertEquals(5, decoded.schemaVersion)
-        assertEquals(301, decoded.cameras.size)
+        assertEquals(351, decoded.cameras.size)
         val countries = decoded.cameras.map { it.resolvedCountry }.toSet()
         val cities = decoded.cameras.map { it.city }.toSet()
         assertEquals(32, countries.size)
-        assertEquals(56, cities.size)
+        assertEquals(73, cities.size)
         assertTrue(countries.containsAll(CameraCountry.entries))
         assertTrue(cities.containsAll(CameraCity.entries))
 

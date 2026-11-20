@@ -1,0 +1,128 @@
+{
+  "country": "GEORGIA",
+  "country_name": "Georgia",
+  "country_iso": "GE",
+  "city": "BAKURIANI",
+  "city_name": "Bakuriani",
+  "timezone": "Asia/Tbilisi",
+  "cameras": [
+    {
+      "id": "ge-bak-ski-ropeway",
+      "name": "Bakuriani — Ski Track & Mountain Ropeway",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Bakuriani Ski Track",
+        "Didveli / Kokhta Corridor",
+        "Trialeti Range"
+      ],
+      "municipality": "Bakuriani, Borjomi",
+      "category": "SQUARES",
+      "direction": "Live 1080p view of skiers, illuminated pistes, and mountain ropeway in Bakuriani",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani2.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/bakuriani/"
+      },
+      "coordinates": {
+        "lat": 41.7452,
+        "lon": 43.5315
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani2.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani2.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ge-bak-residence",
+      "name": "Bakuriani — Aghmashenebeli Street & Pine Valley",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Davit Aghmashenebeli Street",
+        "Bakuriani Residence",
+        "Lesser Caucasus"
+      ],
+      "municipality": "Bakuriani, Borjomi",
+      "category": "BOULEVARDS",
+      "direction": "Live resort view across Bakuriani's central valley and pine-covered Lesser Caucasus slopes",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/bakuriani/"
+      },
+      "coordinates": {
+        "lat": 41.7478,
+        "lon": 43.5292
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani1.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ge-bak-alpine-slopes",
+      "name": "Bakuriani — Upper Resort Panorama",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Koba Tsakadze Street",
+        "Bakuriani Ring",
+        "Kokhta Foothills"
+      ],
+      "municipality": "Bakuriani, Borjomi",
+      "category": "SQUARES",
+      "direction": "Live mountain weather and upper resort panorama in Bakuriani at 1,700 m",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani3.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/bakuriani/"
+      },
+      "coordinates": {
+        "lat": 41.7435,
+        "lon": 43.534
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani3.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani3.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        }
+      ]
+    }
+  ]
+}

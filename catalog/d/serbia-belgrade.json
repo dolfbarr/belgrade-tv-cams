@@ -1,0 +1,36 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "BELGRADE",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "bg-terazije-moskva",
+      "name": "Terazije — Hotel Moskva & Palata Albanija",
+      "quality": "HD_720P",
+      "streets": [
+        "Terazije",
+        "Kolarčeva",
+        "Kralja Milana",
+        "Prizrenska"
+      ],
+      "municipality": "Stari Grad",
+      "category": "SQUARES",
+      "direction": "Pogled duž Terazija ka Hotelu Moskva, Terazijskoj česmi i Palati Albanija",
+      "poster_url": "https://cdn.skylinewebcams.com/live2088.jpg",
+      "coordinates": {
+        "lat": 44.8133,
+        "lon": 20.4606
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live2088.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    }
+  ]
+}

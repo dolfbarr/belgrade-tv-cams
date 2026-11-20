@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "NIZHNY_NOVGOROD",
+  "city_name": "Nizhny Novgorod",
+  "timezone": "Europe/Moscow",
+  "cameras": [
+    {
+      "id": "ru-goj-kremlin-volga",
+      "name": "Nizhny Novgorod Kremlin & Volga Confluence",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Nizhny Novgorod Kremlin",
+        "Nizhne-Volzhskaya Embankment",
+        "Chkalov Staircase"
+      ],
+      "municipality": "Nizhegorodsky District, Nizhny Novgorod",
+      "category": "SQUARES",
+      "direction": "Live 1080p panorama of the red-brick Nizhny Novgorod Kremlin towers above the Volga River",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/f2/0f/f20fad3b5352344f4c4303158695b64d.jpg",
+      "coordinates": {
+        "lat": 56.3287,
+        "lon": 44.002
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/fbfe392c5537cde6a2ebda9be7f8163c/"
+        }
+      ]
+    }
+  ]
+}

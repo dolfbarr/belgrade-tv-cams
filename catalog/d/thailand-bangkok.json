@@ -8,34 +8,35 @@
   "cameras": [
     {
       "id": "th-bkk-sukhumvit-skyline-4k",
-      "name": "Bangkok 4K City Skyline",
+      "name": "Sukhumvit Road — Soi 19 Promenade 4K",
       "quality": "UHD_4K",
       "featured": true,
       "streets": [
         "Sukhumvit Road",
         "Soi Sukhumvit 19",
+        "Asok Junction",
         "Khlong Toei Nuea"
       ],
       "municipality": "Watthana, Bangkok",
       "category": "BOULEVARDS",
-      "direction": "West over the Sukhumvit high-rise skyline toward Nana and Pathum Wan",
-      "poster_url": "https://i.ytimg.com/vi/LO6vvUIpmUg/hqdefault.jpg",
+      "direction": "24/7 4K UHD street-level view along Sukhumvit Road at Soi 19 near Asok in central Bangkok",
+      "poster_url": "https://i.ytimg.com/vi/Q71sLS8h9a4/hqdefault.jpg",
       "coordinates": {
         "lat": 13.738,
-        "lon": 100.556
+        "lon": 100.5598
       },
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=LO6vvUIpmUg"
+          "url": "https://www.youtube.com/watch?v=Q71sLS8h9a4"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@bangkok-360/streams?match=Bangkok"
+          "url": "https://www.youtube.com/watch?v=UemFRPrl1hk"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@bangkok-360/live"
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Soi 19|Sukhumvit|Bangkok"
         }
       ]
     }

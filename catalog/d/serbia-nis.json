@@ -1,0 +1,99 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "NIS",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "rs-stp-babin-zub",
+      "name": "Stara planina — Babin zub (1.758 m)",
+      "quality": "HD_720P",
+      "streets": [
+        "Babin zub",
+        "Crni vrh",
+        "Ski centar Stara planina"
+      ],
+      "municipality": "Knjaževac / Pirot, Stara planina",
+      "category": "SQUARES",
+      "direction": "720p HD planinska kamera kod izlazne stanice žičare ispod stena Babinog zuba",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPBabinZubIzlaz",
+      "coordinates": {
+        "lat": 43.3833,
+        "lon": 22.6167
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPBabinZubIzlaz",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1390662340/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-stp-jabucko-ravniste",
+      "name": "Stara planina — Gondola Jabučko ravnište",
+      "quality": "HD_720P",
+      "streets": [
+        "Jabučko ravnište",
+        "Gondola Stara planina",
+        "Rudine"
+      ],
+      "municipality": "Knjaževac, Stara planina",
+      "category": "SQUARES",
+      "direction": "720p HD pogled na izlaznu stanicu gondole na Jabučkom ravništu",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPGondolaIzlaz",
+      "coordinates": {
+        "lat": 43.3765,
+        "lon": 22.6185
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPGondolaIzlaz",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1578590093/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-stp-midzor",
+      "name": "Stara planina — Pogled ka Midžoru (2.169 m)",
+      "quality": "HD_720P",
+      "streets": [
+        "Greben Stare planine",
+        "Vrh Midžor (2.169 m)",
+        "Sunčana dolina"
+      ],
+      "municipality": "Pirot / Knjaževac, Stara planina",
+      "category": "SQUARES",
+      "direction": "Visokogorska panorama ka najvišem vrhu uže Srbije — Midžoru (2.169 m)",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPMidzor",
+      "coordinates": {
+        "lat": 43.386,
+        "lon": 22.632
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPMidzor",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    }
+  ]
+}

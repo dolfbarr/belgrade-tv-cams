@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "UFA",
+  "city_name": "Ufa",
+  "timezone": "Asia/Yekaterinburg",
+  "cameras": [
+    {
+      "id": "ru-ufa-chernikovka-avenue",
+      "name": "Chernikovka & Pervomayskaya Grand Boulevard",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Pervomayskaya Street",
+        "Chernikovka District",
+        "Prospekt Oktyabrya Corridor"
+      ],
+      "municipality": "Kalininsky / Ordzhonikidzevsky, Ufa",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p elevated view across northern Ufa's neoclassical Chernikovka avenues",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/62/c1/62c13a5791a2add406499c2a2272e0a6.jpg",
+      "coordinates": {
+        "lat": 54.8156,
+        "lon": 56.0689
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/de2a6a4aa61c1d1ed991ce7cc10fb822/"
+        }
+      ]
+    }
+  ]
+}

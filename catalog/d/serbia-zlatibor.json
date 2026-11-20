@@ -1,0 +1,152 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "ZLATIBOR",
+  "city_name": "Zlatibor",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "rs-zla-kraljev-trg-live",
+      "name": "Zlatibor — Kraljev trg & Zlatiborsko jezero",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Kraljev trg",
+        "Zlatiborsko jezero",
+        "Šetalište"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "SQUARES",
+      "direction": "24/7 uživo prenos sa Kraljevog trga, promenade i jezera u centru Zlatibora",
+      "poster_url": "https://i.ytimg.com/vi/mJ8EEWSXrfg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.7275,
+        "lon": 19.7055
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=mJ8EEWSXrfg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ZlatiborRs/streams?match=Kraljev|Live kamera|Zlatibor"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live5452.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-kotroman-ulaz",
+      "name": "Mokra Gora (GP Kotroman) — Koridor E-761",
+      "quality": "SD",
+      "streets": [
+        "Državni put I B-28 / E-761",
+        "Kremna — Mokra Gora — Kotroman"
+      ],
+      "municipality": "Mokra Gora / Užice",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni planinski koridor E-761 pored Mokre Gore i Šarganske osmice — ulaz u Srbiju",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1640359624/original.jpg",
+      "coordinates": {
+        "lat": 43.7484,
+        "lon": 19.4023
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Kotroman/kotroman1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-tornik-panorama",
+      "name": "Ski centar Tornik — Vrh (1.496 m) & Čigota",
+      "quality": "HD_720P",
+      "streets": [
+        "Vrh Tornik (1.496 m)",
+        "Gold Gondola izlaz",
+        "Pogled ka Čigoti"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "SQUARES",
+      "direction": "Panoramska kamera sa najvišeg vrha Zlatibora (Tornik 1.496 m) ka grebenu Čigote",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1390661695/original.jpg",
+      "coordinates": {
+        "lat": 43.7318,
+        "lon": 19.7113
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1390661695/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-tornik-polaz",
+      "name": "Ski centar Tornik — Polaz šestosedne žičare",
+      "quality": "HD_720P",
+      "streets": [
+        "Ski centar Tornik",
+        "Ribničko jezero — Tornik",
+        "Šestosedna žičara"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "SQUARES",
+      "direction": "720p HD pogled na polaznu stanicu žičare i dojezd ski-staza na Torniku",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=TornikPolaz",
+      "coordinates": {
+        "lat": 43.7225,
+        "lon": 19.7042
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=TornikPolaz",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-park-centar",
+      "name": "Zlatibor — Borova šuma & Centralni park",
+      "quality": "HD_720P",
+      "streets": [
+        "Miladina Pećinara",
+        "Jezero — Park",
+        "Zlatibor centar"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "BOULEVARDS",
+      "direction": "Pogled preko centralnog parka i borove šume u turističkom centru Zlatibora",
+      "poster_url": "https://cdn.skylinewebcams.com/live5452.jpg",
+      "coordinates": {
+        "lat": 43.7268,
+        "lon": 19.706
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live5452.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1640359624/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    }
+  ]
+}

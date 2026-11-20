@@ -1,0 +1,87 @@
+{
+  "country": "ARMENIA",
+  "country_name": "Armenia",
+  "country_iso": "AM",
+  "city": "YEREVAN",
+  "timezone": "Asia/Yerevan",
+  "cameras": [
+    {
+      "id": "am-evn-kentron-skyline",
+      "name": "Central Yerevan — Kentron Skyline & Ararat Valley",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Kentron District",
+        "Mashtots Avenue",
+        "Republic Square Quarter"
+      ],
+      "municipality": "Kentron, Yerevan",
+      "category": "SQUARES",
+      "direction": "1080p weather and skyline view across downtown Yerevan toward the Ararat plain",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1719832822/original.jpg",
+      "coordinates": {
+        "lat": 40.1811,
+        "lon": 44.5136
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1719832822/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "am-evn-tsaghkadzor-teghenis",
+      "name": "Tsaghkadzor — Mount Teghenis Alpine Slopes",
+      "quality": "HD_720P",
+      "streets": [
+        "Mount Teghenis (2,819 m)",
+        "Tsaghkadzor Ski Slopes",
+        "Kecharis Highlands"
+      ],
+      "municipality": "Tsaghkadzor, Kotayk",
+      "category": "HIGHWAYS",
+      "direction": "Alpine weather snapshot overlooking the Mount Teghenis ski slopes in Tsaghkadzor",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1579077347/original.jpg",
+      "coordinates": {
+        "lat": 40.5332,
+        "lon": 44.7049
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1579077347/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "am-evn-byurakan-allsky",
+      "name": "Byurakan Astrophysical Observatory — 2.6m Dome AllSky",
+      "quality": "HD_720P",
+      "streets": [
+        "Byurakan Observatory",
+        "ZTA-2.6m Telescope Dome",
+        "Southern Slope of Aragats"
+      ],
+      "municipality": "Byurakan, Aragatsotn",
+      "category": "SQUARES",
+      "direction": "Astronomical sky and dome horizon camera at Viktor Ambartsumian Byurakan Observatory (1,405 m)",
+      "poster_url": "https://www.bao.am/ALLSKY/AllSkyCurrentImage.JPG",
+      "coordinates": {
+        "lat": 40.3304,
+        "lon": 44.2734
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.bao.am/ALLSKY/AllSkyCurrentImage.JPG",
+          "interval_ms": 60000,
+          "cache_buster_param": "t"
+        }
+      ]
+    }
+  ]
+}

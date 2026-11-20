@@ -1,0 +1,234 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "KOPAONIK",
+  "city_name": "Kopaonik & Raška",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "rs-kop-ibarska-spiljani",
+      "name": "Raška oblast (GP Špiljani) — Ibarska magistrala",
+      "quality": "SD",
+      "streets": [
+        "Državni put I B-22 (Ibarska magistrala)",
+        "Raška — Novi Pazar — Ribariće — Špiljani"
+      ],
+      "municipality": "Tutin / Raški okrug",
+      "category": "HIGHWAYS",
+      "direction": "Južni krak Ibarske magistrale kroz kanjon Ibra u Raškom okrugu — ulaz u Srbiju",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793911139/original.jpg",
+      "coordinates": {
+        "lat": 42.9104,
+        "lon": 20.3413
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Spiljani/spiljani1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-limska-gostun",
+      "name": "Dolina Lima (GP Gostun) — Južni Jadran E-763",
+      "quality": "SD",
+      "streets": [
+        "Državni put I B-23 / E-763",
+        "Prijepolje — Brodarevo — Gostun"
+      ],
+      "municipality": "Prijepolje / Jugozapadna Srbija",
+      "category": "HIGHWAYS",
+      "direction": "Međunarodni koridor E-763 duž doline Lima — južni ulaz u Republiku Srbiju",
+      "poster_url": "https://cdn.skylinewebcams.com/live3502.jpg",
+      "coordinates": {
+        "lat": 43.1437,
+        "lon": 19.7801
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Gostun/gostun1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-pancicev-vrh",
+      "name": "Kopaonik — Pančićev vrh (2.017 m)",
+      "quality": "HD_720P",
+      "featured": true,
+      "streets": [
+        "Pančićev vrh (2.017 m)",
+        "Mauzolej Josifa Pančića",
+        "Staza 4b"
+      ],
+      "municipality": "Raška / Brus, Kopaonik",
+      "category": "SQUARES",
+      "direction": "720p HD pogled sa najvišeg vrha Kopaonika (2.017 m) i izlazne stanice četvoroseda",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=PancicVrh",
+      "coordinates": {
+        "lat": 43.2681,
+        "lon": 20.8258
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=PancicVrh",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-konaci-centar",
+      "name": "Kopaonik — Konaci (Sunčani vrhovi)",
+      "quality": "HD_720P",
+      "streets": [
+        "Konaci — Sunčani vrhovi",
+        "Trg Josifa Pančića",
+        "Kopaonik centar"
+      ],
+      "municipality": "Raška, Kopaonik",
+      "category": "SQUARES",
+      "direction": "Pogled uživo na centralni trg u kompleksu Konaci na Kopaoniku",
+      "poster_url": "https://webcam.hopnakop.rs/webcam/feed3.jpg",
+      "coordinates": {
+        "lat": 43.2934,
+        "lon": 20.8129
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://webcam.hopnakop.rs/webcam/feed3.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1271712581/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-dolina-sportova",
+      "name": "Kopaonik — Dolina sportova & Karaman greben",
+      "quality": "HD_720P",
+      "streets": [
+        "Dolina sportova",
+        "Karaman greben",
+        "Suvo Rudište"
+      ],
+      "municipality": "Raška, Kopaonik",
+      "category": "SQUARES",
+      "direction": "Centralno skijalište u Dolini sportova sa polazima žičara Karaman greben i Pančić ekspres",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=Kopaonik",
+      "coordinates": {
+        "lat": 43.2855,
+        "lon": 20.8095
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=Kopaonik",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live4631.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-mali-karaman",
+      "name": "Kopaonik — Mali Karaman (1.904 m)",
+      "quality": "HD_720P",
+      "streets": [
+        "Mali Karaman",
+        "Staza 8",
+        "Brzeće gondola izlaz"
+      ],
+      "municipality": "Brus / Raška, Kopaonik",
+      "category": "SQUARES",
+      "direction": "Alpska panorama vrha Mali Karaman blizu izlazne stanice gondole Brzeće–Mali Karaman",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=MaliKaraman1",
+      "coordinates": {
+        "lat": 43.2768,
+        "lon": 20.8248
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=MaliKaraman1",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-novi-pazar-centar",
+      "name": "Novi Pazar — Trg Gazi Isa-bega & Stara čaršija",
+      "quality": "HD_720P",
+      "streets": [
+        "Trg Gazi Isa-bega Isakovića",
+        "28. novembra",
+        "Stara čaršija"
+      ],
+      "municipality": "Novi Pazar",
+      "category": "SQUARES",
+      "direction": "Panorama centra Novog Pazara, pešačke zone i doline reke Raške",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793911139/original.jpg",
+      "coordinates": {
+        "lat": 43.1396,
+        "lon": 20.5167
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://kameresrbije.rs/novipazar-proxy/cam_2.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "t",
+          "headers": {
+            "Referer": "https://kameresrbije.rs/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793911139/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-sjenica-pester",
+      "name": "Sjenica — Centar & Pešterska visoravan",
+      "quality": "HD_720P",
+      "streets": [
+        "Pešterska ulica",
+        "Milorada Jovanovića",
+        "Centar Sjenice"
+      ],
+      "municipality": "Sjenica, Pešter",
+      "category": "BOULEVARDS",
+      "direction": "Pogled duž glavne ulice u Sjenici na Pešterskoj visoravni (1.026 m)",
+      "poster_url": "https://cdn.skylinewebcams.com/live3502.jpg",
+      "coordinates": {
+        "lat": 43.2736,
+        "lon": 19.9982
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live3502.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    }
+  ]
+}

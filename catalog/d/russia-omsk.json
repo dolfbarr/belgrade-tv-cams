@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "OMSK",
+  "city_name": "Omsk",
+  "timezone": "Asia/Omsk",
+  "cameras": [
+    {
+      "id": "ru-oms-yubileyny-irtysh",
+      "name": "Lenina Street, Yubileyny Bridge & Irtysh River",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Lenina Street",
+        "Yubileyny Bridge",
+        "Om & Irtysh Confluence"
+      ],
+      "municipality": "Tsentralny District, Omsk",
+      "category": "BRIDGES",
+      "direction": "Live 1080p view over historic Lenina Street, Yubileyny Bridge, and the Irtysh River in central Omsk",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/3b/b5/3bb50779c8e594bc08f342ca9fbee79d.jpg",
+      "coordinates": {
+        "lat": 54.9822,
+        "lon": 73.3742
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/e87348ddde6344a5d236b65c77cec482/"
+        }
+      ]
+    }
+  ]
+}

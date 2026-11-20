@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "CHELYABINSK",
+  "city_name": "Chelyabinsk",
+  "timezone": "Asia/Yekaterinburg",
+  "cameras": [
+    {
+      "id": "ru-cek-lenina-susu-spire",
+      "name": "Prospekt Lenina & South Ural State University Spire",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Prospekt Lenina",
+        "SUSU Main Building Spire",
+        "Gagarin Park Gateway"
+      ],
+      "municipality": "Tsentralny District, Chelyabinsk",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p view along Prospekt Lenina framing the monumental spire of South Ural State University",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/c3/62/c362e551c438d9f1da81ab3fab7d3a2c.jpg",
+      "coordinates": {
+        "lat": 55.1604,
+        "lon": 61.3703
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/c40eac95b8221c8999a39c0125b5e380/"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "KRALJEVO",
+  "city_name": "Kraljevo",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "rs-kvo-vrba-izlaz",
+      "name": "Kraljevo (Vrba) — Moravski koridor A5 Izlaz",
+      "quality": "HD_720P",
+      "streets": [
+        "Autoput A5 (Moravski koridor)",
+        "Petlja Vrba — Kraljevo — Vrnjačka Banja"
+      ],
+      "municipality": "Kraljevo",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Vrba na Moravskom koridoru A5 — prilaz Kraljevu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam23/index.jpg",
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      },
+      "coordinates": {
+        "lat": 43.7025,
+        "lon": 20.738
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam23/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam23/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rs-kvo-vrba-ulaz",
+      "name": "Kraljevo (Vrba) — Moravski koridor A5 ka Kruševcu",
+      "quality": "HD_720P",
+      "streets": [
+        "Autoput A5 (Moravski koridor)",
+        "Kraljevo — Vrnjačka Banja — Trstenik — Kruševac"
+      ],
+      "municipality": "Kraljevo",
+      "category": "HIGHWAYS",
+      "direction": "Uključenje kod Kraljeva (Vrba) na Moravski koridor A5 ka Vrnjačkoj Banji i Pojatama",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam24/index.jpg",
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      },
+      "coordinates": {
+        "lat": 43.7021,
+        "lon": 20.7386
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam24/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam24/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ]
+    }
+  ]
+}

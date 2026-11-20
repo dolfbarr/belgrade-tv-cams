@@ -1,0 +1,92 @@
+{
+  "country": "SERBIA",
+  "country_name": "Serbia",
+  "country_iso": "RS",
+  "city": "CACAK",
+  "city_name": "Čačak",
+  "timezone": "Europe/Belgrade",
+  "cameras": [
+    {
+      "id": "rs-cac-pakovrace-izlaz",
+      "name": "Čačak (Pakovraće) — Izlaz ka Ovčar-Kablaru",
+      "quality": "HD_720P",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Pakovraće — Ovčar Banja — Čačak"
+      ],
+      "municipality": "Čačak",
+      "category": "HIGHWAYS",
+      "direction": "Naplatna stanica Pakovraće na ulazu u Ovčarsko-kablarsku klisuru i Čačak",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam11/index.jpg",
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      },
+      "coordinates": {
+        "lat": 43.8906,
+        "lon": 20.2669
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam11/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam11/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rs-cac-pakovrace-ulaz",
+      "name": "Čačak (Pakovraće) — Ulaz na Miloš Veliki (A2)",
+      "quality": "HD_720P",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Čačak — Pakovraće — Beograd"
+      ],
+      "municipality": "Čačak",
+      "category": "HIGHWAYS",
+      "direction": "Uključenje kod Pakovraća iz smera Čačka na autoput Miloš Veliki ka Beogradu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam12/index.jpg",
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      },
+      "coordinates": {
+        "lat": 43.8902,
+        "lon": 20.2675
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam12/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam12/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "NOVOSIBIRSK",
+  "city_name": "Novosibirsk",
+  "timezone": "Asia/Novosibirsk",
+  "cameras": [
+    {
+      "id": "ru-ovb-lenin-square",
+      "name": "Lenin Square & Novosibirsk Opera House",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Lenin Square",
+        "Krasny Prospekt",
+        "Vokzalnaya Magistral"
+      ],
+      "municipality": "Tsentralny District, Novosibirsk",
+      "category": "SQUARES",
+      "direction": "24/7 live Siberian capital view across Lenin Square, Krasny Prospekt, and the Opera & Ballet Theatre dome",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-07-22/ce/8e/ce8e349dbb1665e5df5216596c807ca4.jpg",
+      "coordinates": {
+        "lat": 55.0302,
+        "lon": 82.9204
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/627e3e6cfcbdf991f5bc560182570dfc/"
+        }
+      ]
+    }
+  ]
+}

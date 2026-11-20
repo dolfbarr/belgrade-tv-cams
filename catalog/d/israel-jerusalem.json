@@ -19,7 +19,7 @@
       "municipality": "Old City, Jerusalem",
       "category": "SQUARES",
       "direction": "East across the Jewish Quarter prayer plaza toward the Herodian limestone Western Wall",
-      "poster_url": "https://i.ytimg.com/vi/LMHUcDktP-w/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/77akujLn4k8/hqdefault.jpg",
       "coordinates": {
         "lat": 31.7767,
         "lon": 35.2345
@@ -27,15 +27,15 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=LMHUcDktP-w"
+          "url": "https://www.youtube.com/watch?v=77akujLn4k8"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@The.Western.Wall.TheKotel/streams?match=Main%20Plaza%7CWestern%20Wall%7CKotel%7C%D7%94%D7%9B%D7%95%D7%AA%D7%9C"
+          "url": "https://www.youtube.com/watch?v=AKGqd20ik_A"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@The.Western.Wall.TheKotel/live"
+          "url": "https://www.youtube.com/@Mt.ofOlivesPrayerBridge/streams?match=Western%20Wall%7CKotel"
         }
       ]
     }

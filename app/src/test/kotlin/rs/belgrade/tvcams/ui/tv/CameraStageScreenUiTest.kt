@@ -122,7 +122,7 @@ class CameraStageScreenUiTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val manifest = AssetCatalogSeedSource(context).readSeed()
         assertEquals(5, manifest.schemaVersion)
-        assertEquals(301, manifest.cameras.size)
+        assertEquals(351, manifest.cameras.size)
         // Verify legacy v1-v4 seed files were removed from APK assets
         val assetFiles = context.assets.list("").orEmpty().toSet()
         assertTrue(assetFiles.contains("seed_catalog.v5.json"))

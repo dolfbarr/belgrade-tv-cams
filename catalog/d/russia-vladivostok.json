@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "VLADIVOSTOK",
+  "city_name": "Vladivostok",
+  "timezone": "Asia/Vladivostok",
+  "cameras": [
+    {
+      "id": "ru-vvo-golden-horn-bay",
+      "name": "Golden Horn Bay & Zolotoy Bridge Panorama",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Zolotoy Rog (Golden Horn Bay)",
+        "Zolotoy Cable-Stayed Bridge",
+        "Svetlanskaya Embankment"
+      ],
+      "municipality": "Leninsky / Frunzensky, Vladivostok",
+      "category": "BRIDGES",
+      "direction": "24/7 Pacific Far East panorama across Golden Horn Bay harbor and the Zolotoy suspension bridge",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/e9/cf/e9cfee56647bb69e0c8b33a90e564e73.jpg",
+      "coordinates": {
+        "lat": 43.1118,
+        "lon": 131.8967
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/06efa538a615caa5880c2c5ba29d6b75/"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "ASTRAKHAN",
+  "city_name": "Astrakhan",
+  "timezone": "Europe/Astrakhan",
+  "cameras": [
+    {
+      "id": "ru-asf-lenin-square-kremlin",
+      "name": "Lenin Square & White-Stone Astrakhan Kremlin",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Lenin Square",
+        "Astrakhan Kremlin",
+        "Admiralteyskaya Street"
+      ],
+      "municipality": "Kirovsky District, Astrakhan (Volga Delta)",
+      "category": "SQUARES",
+      "direction": "Live 1080p view across Lenin Square fountains toward the white walls and belfry of the Astrakhan Kremlin",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/b0/f1/b0f1bbe9bf39362ec7f003c78d95d623.jpg",
+      "coordinates": {
+        "lat": 46.3478,
+        "lon": 48.0335
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/25817fc2c4fc9a1af4b7d3addbb9071d/"
+        }
+      ]
+    }
+  ]
+}

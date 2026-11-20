@@ -1,0 +1,91 @@
+{
+  "country": "GEORGIA",
+  "country_name": "Georgia",
+  "country_iso": "GE",
+  "city": "BATUMI",
+  "city_name": "Batumi",
+  "timezone": "Asia/Tbilisi",
+  "cameras": [
+    {
+      "id": "ge-bus-tower-ptz",
+      "name": "Batumi Tower — Miracle Park & Black Sea (PTZ)",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Batumi Boulevard",
+        "Miracle Park",
+        "Alphabetic Tower",
+        "Ninoshvili Street"
+      ],
+      "municipality": "Old Boulevard, Batumi",
+      "category": "SQUARES",
+      "direction": "Rotating 1080p high-rise panorama across Batumi Boulevard, Alphabetic Tower, and Black Sea port",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi3.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/batumi/"
+      },
+      "coordinates": {
+        "lat": 41.6525,
+        "lon": 41.6358
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/batumi3.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi3.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ge-bus-bay-skyline",
+      "name": "Batumi Bay — Tamar Mepe Seafront & Skyline",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Tamar Mepe Avenue",
+        "Batumi Bay",
+        "Batumi Sea Port Horizon"
+      ],
+      "municipality": "Makhinjauri / Batumi Bay",
+      "category": "BRIDGES",
+      "direction": "Wide coastal panorama across Batumi Bay looking southwest toward the Batumi skyscraper skyline",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/batumi/"
+      },
+      "coordinates": {
+        "lat": 41.6625,
+        "lon": 41.6812
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/batumi.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "SAINT_PETERSBURG",
+  "timezone": "Europe/Moscow",
+  "cameras": [
+    {
+      "id": "ru-spb-nevsky-livepoints",
+      "name": "Nevsky Prospekt — Central Promenade & Kazan Quarter",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Nevsky Prospekt",
+        "Kazanskaya Square Approach",
+        "Malaya Konyushennaya"
+      ],
+      "municipality": "Tsentralny District, Saint Petersburg",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p view along central Nevsky Prospekt pedestrian sidewalks and avenue traffic",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/80/a0/80a08fe35b05b6e571528165d07f3b42.jpg",
+      "coordinates": {
+        "lat": 59.9355,
+        "lon": 30.3268
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/f5c29b520639a5f81d80cd20e198312b/"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-pionerskaya-avenues",
+      "name": "Pionerskaya — Ispytateley & Kolomyazhsky Prospekt",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Prospekt Ispytateley",
+        "Kolomyazhsky Prospekt",
+        "Pionerskaya Metro Hub"
+      ],
+      "municipality": "Primorsky District, Saint Petersburg",
+      "category": "HIGHWAYS",
+      "direction": "High-angle 1080p intersection view of tramways and wide avenues at Pionerskaya in northern Saint Petersburg",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-10-05/65/21/6521bda8df240077933e6590125f6bc1.jpg",
+      "coordinates": {
+        "lat": 60.0025,
+        "lon": 30.2965
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/9cb1d5d561ecfa81ec7a98bc6999a6e0/"
+        }
+      ]
+    }
+  ]
+}

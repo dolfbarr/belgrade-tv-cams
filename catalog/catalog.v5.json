@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112003,
-  "updated_at": "2026-11-20T01:42:47Z",
+  "revision": 2026112014,
+  "updated_at": "2026-11-20T14:26:07Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -393,6 +393,15 @@
             "Referer": "https://kamere.24sedam.rs/",
             "Origin": "https://kamere.24sedam.rs",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_4.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://www.naxi.rs/kamere"
           }
         }
       ]
@@ -1644,6 +1653,38 @@
       }
     },
     {
+      "id": "bg-terazije-moskva",
+      "name": "Terazije — Hotel Moskva & Palata Albanija",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "BELGRADE",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Terazije",
+        "Kolarčeva",
+        "Kralja Milana",
+        "Prizrenska"
+      ],
+      "municipality": "Stari Grad",
+      "category": "SQUARES",
+      "direction": "Pogled duž Terazija ka Hotelu Moskva, Terazijskoj česmi i Palati Albanija",
+      "poster_url": "https://cdn.skylinewebcams.com/live2088.jpg",
+      "coordinates": {
+        "lat": 44.8133,
+        "lon": 20.4606
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live2088.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
       "id": "bg-lakat-nova-galenika",
       "name": "Zemun — Lakat krivina & Nova Galenika",
       "country": "SERBIA",
@@ -2289,6 +2330,42 @@
         {
           "type": "SNAPSHOT_POLL",
           "url": "https://g0.ipcamlive.com/player/snapshot.php?alias=kameratrg",
+          "interval_ms": 4000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "su-palic-jezero",
+      "name": "Jezero Palić — Velika terasa & Šetalište",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "SUBOTICA",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Obala Lajoša Vermeša",
+        "Velika terasa",
+        "Park Palić"
+      ],
+      "municipality": "Palić, Subotica",
+      "category": "SQUARES",
+      "direction": "Full HD 1080p pogled na obalu Palićkog jezera, mol i šetalište ispred Velike terase",
+      "poster_url": "https://g0.ipcamlive.com/player/snapshot.php?alias=kamerapalic",
+      "coordinates": {
+        "lat": 46.0983,
+        "lon": 19.7586
+      },
+      "streams": [
+        {
+          "type": "IPCAMLIVE",
+          "url": "https://ipcamlive.com/kamerapalic"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://g0.ipcamlive.com/player/snapshot.php?alias=kamerapalic",
           "interval_ms": 4000,
           "cache_buster_param": "t"
         }
@@ -3057,6 +3134,907 @@
       }
     },
     {
+      "id": "rs-stp-babin-zub",
+      "name": "Stara planina — Babin zub (1.758 m)",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Babin zub",
+        "Crni vrh",
+        "Ski centar Stara planina"
+      ],
+      "municipality": "Knjaževac / Pirot, Stara planina",
+      "category": "SQUARES",
+      "direction": "720p HD planinska kamera kod izlazne stanice žičare ispod stena Babinog zuba",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPBabinZubIzlaz",
+      "coordinates": {
+        "lat": 43.3833,
+        "lon": 22.6167
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPBabinZubIzlaz",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1390662340/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-stp-jabucko-ravniste",
+      "name": "Stara planina — Gondola Jabučko ravnište",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Jabučko ravnište",
+        "Gondola Stara planina",
+        "Rudine"
+      ],
+      "municipality": "Knjaževac, Stara planina",
+      "category": "SQUARES",
+      "direction": "720p HD pogled na izlaznu stanicu gondole na Jabučkom ravništu",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPGondolaIzlaz",
+      "coordinates": {
+        "lat": 43.3765,
+        "lon": 22.6185
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPGondolaIzlaz",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1578590093/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-stp-midzor",
+      "name": "Stara planina — Pogled ka Midžoru (2.169 m)",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "NIS",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Greben Stare planine",
+        "Vrh Midžor (2.169 m)",
+        "Sunčana dolina"
+      ],
+      "municipality": "Pirot / Knjaževac, Stara planina",
+      "category": "SQUARES",
+      "direction": "Visokogorska panorama ka najvišem vrhu uže Srbije — Midžoru (2.169 m)",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPMidzor",
+      "coordinates": {
+        "lat": 43.386,
+        "lon": 22.632
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=SPMidzor",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-cac-pakovrace-izlaz",
+      "name": "Čačak (Pakovraće) — Izlaz ka Ovčar-Kablaru",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "CACAK",
+      "city_name": "Čačak",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Pakovraće — Ovčar Banja — Čačak"
+      ],
+      "municipality": "Čačak",
+      "category": "HIGHWAYS",
+      "direction": "Naplatna stanica Pakovraće na ulazu u Ovčarsko-kablarsku klisuru i Čačak",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam11/index.jpg",
+      "coordinates": {
+        "lat": 43.8906,
+        "lon": 20.2669
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam11/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam11/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "rs-cac-pakovrace-ulaz",
+      "name": "Čačak (Pakovraće) — Ulaz na Miloš Veliki (A2)",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "CACAK",
+      "city_name": "Čačak",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Čačak — Pakovraće — Beograd"
+      ],
+      "municipality": "Čačak",
+      "category": "HIGHWAYS",
+      "direction": "Uključenje kod Pakovraća iz smera Čačka na autoput Miloš Veliki ka Beogradu",
+      "poster_url": "https://jpps.bitinfo.co.rs/side_pan_cam12/index.jpg",
+      "coordinates": {
+        "lat": 43.8902,
+        "lon": 20.2675
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/side_pan_cam12/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://jpps.bitinfo.co.rs/side_pan_cam12/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "rs-kop-ibarska-spiljani",
+      "name": "Raška oblast (GP Špiljani) — Ibarska magistrala",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Državni put I B-22 (Ibarska magistrala)",
+        "Raška — Novi Pazar — Ribariće — Špiljani"
+      ],
+      "municipality": "Tutin / Raški okrug",
+      "category": "HIGHWAYS",
+      "direction": "Južni krak Ibarske magistrale kroz kanjon Ibra u Raškom okrugu — ulaz u Srbiju",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793911139/original.jpg",
+      "coordinates": {
+        "lat": 42.9104,
+        "lon": 20.3413
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Spiljani/spiljani1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-limska-gostun",
+      "name": "Dolina Lima (GP Gostun) — Južni Jadran E-763",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Državni put I B-23 / E-763",
+        "Prijepolje — Brodarevo — Gostun"
+      ],
+      "municipality": "Prijepolje / Jugozapadna Srbija",
+      "category": "HIGHWAYS",
+      "direction": "Međunarodni koridor E-763 duž doline Lima — južni ulaz u Republiku Srbiju",
+      "poster_url": "https://cdn.skylinewebcams.com/live3502.jpg",
+      "coordinates": {
+        "lat": 43.1437,
+        "lon": 19.7801
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Gostun/gostun1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-pancicev-vrh",
+      "name": "Kopaonik — Pančićev vrh (2.017 m)",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "HD_720P",
+      "featured": true,
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Pančićev vrh (2.017 m)",
+        "Mauzolej Josifa Pančića",
+        "Staza 4b"
+      ],
+      "municipality": "Raška / Brus, Kopaonik",
+      "category": "SQUARES",
+      "direction": "720p HD pogled sa najvišeg vrha Kopaonika (2.017 m) i izlazne stanice četvoroseda",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=PancicVrh",
+      "coordinates": {
+        "lat": 43.2681,
+        "lon": 20.8258
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=PancicVrh",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-konaci-centar",
+      "name": "Kopaonik — Konaci (Sunčani vrhovi)",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Konaci — Sunčani vrhovi",
+        "Trg Josifa Pančića",
+        "Kopaonik centar"
+      ],
+      "municipality": "Raška, Kopaonik",
+      "category": "SQUARES",
+      "direction": "Pogled uživo na centralni trg u kompleksu Konaci na Kopaoniku",
+      "poster_url": "https://webcam.hopnakop.rs/webcam/feed3.jpg",
+      "coordinates": {
+        "lat": 43.2934,
+        "lon": 20.8129
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://webcam.hopnakop.rs/webcam/feed3.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1271712581/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-dolina-sportova",
+      "name": "Kopaonik — Dolina sportova & Karaman greben",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Dolina sportova",
+        "Karaman greben",
+        "Suvo Rudište"
+      ],
+      "municipality": "Raška, Kopaonik",
+      "category": "SQUARES",
+      "direction": "Centralno skijalište u Dolini sportova sa polazima žičara Karaman greben i Pančić ekspres",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=Kopaonik",
+      "coordinates": {
+        "lat": 43.2855,
+        "lon": 20.8095
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=Kopaonik",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live4631.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-mali-karaman",
+      "name": "Kopaonik — Mali Karaman (1.904 m)",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Mali Karaman",
+        "Staza 8",
+        "Brzeće gondola izlaz"
+      ],
+      "municipality": "Brus / Raška, Kopaonik",
+      "category": "SQUARES",
+      "direction": "Alpska panorama vrha Mali Karaman blizu izlazne stanice gondole Brzeće–Mali Karaman",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=MaliKaraman1",
+      "coordinates": {
+        "lat": 43.2768,
+        "lon": 20.8248
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=MaliKaraman1",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-novi-pazar-centar",
+      "name": "Novi Pazar — Trg Gazi Isa-bega & Stara čaršija",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Trg Gazi Isa-bega Isakovića",
+        "28. novembra",
+        "Stara čaršija"
+      ],
+      "municipality": "Novi Pazar",
+      "category": "SQUARES",
+      "direction": "Panorama centra Novog Pazara, pešačke zone i doline reke Raške",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1793911139/original.jpg",
+      "coordinates": {
+        "lat": 43.1396,
+        "lon": 20.5167
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://kameresrbije.rs/novipazar-proxy/cam_2.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "t",
+          "headers": {
+            "Referer": "https://kameresrbije.rs/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793911139/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-kop-sjenica-pester",
+      "name": "Sjenica — Centar & Pešterska visoravan",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KOPAONIK",
+      "city_name": "Kopaonik & Raška",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Pešterska ulica",
+        "Milorada Jovanovića",
+        "Centar Sjenice"
+      ],
+      "municipality": "Sjenica, Pešter",
+      "category": "BOULEVARDS",
+      "direction": "Pogled duž glavne ulice u Sjenici na Pešterskoj visoravni (1.026 m)",
+      "poster_url": "https://cdn.skylinewebcams.com/live3502.jpg",
+      "coordinates": {
+        "lat": 43.2736,
+        "lon": 19.9982
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live3502.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-kvo-vrba-izlaz",
+      "name": "Kraljevo (Vrba) — Moravski koridor A5 Izlaz",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KRALJEVO",
+      "city_name": "Kraljevo",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A5 (Moravski koridor)",
+        "Petlja Vrba — Kraljevo — Vrnjačka Banja"
+      ],
+      "municipality": "Kraljevo",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Vrba na Moravskom koridoru A5 — prilaz Kraljevu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam23/index.jpg",
+      "coordinates": {
+        "lat": 43.7025,
+        "lon": 20.738
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam23/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam23/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "rs-kvo-vrba-ulaz",
+      "name": "Kraljevo (Vrba) — Moravski koridor A5 ka Kruševcu",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "KRALJEVO",
+      "city_name": "Kraljevo",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A5 (Moravski koridor)",
+        "Kraljevo — Vrnjačka Banja — Trstenik — Kruševac"
+      ],
+      "municipality": "Kraljevo",
+      "category": "HIGHWAYS",
+      "direction": "Uključenje kod Kraljeva (Vrba) na Moravski koridor A5 ka Vrnjačkoj Banji i Pojatama",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam24/index.jpg",
+      "coordinates": {
+        "lat": 43.7021,
+        "lon": 20.7386
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam24/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam24/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "rs-uzi-prilipac-izlaz",
+      "name": "Užice & Požega (Prilipac) — Izlaz ka Zlatiboru",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "UZICE",
+      "city_name": "Užice & Divčibare",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Petlja Prilipac — Požega — Užice"
+      ],
+      "municipality": "Požega / Užice",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni završetak autoputa Miloš Veliki (A2) kod Prilipca — smer ka Požegi, Užicu i Zlatiboru",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam21/index.jpg",
+      "coordinates": {
+        "lat": 43.8315,
+        "lon": 20.0682
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam21/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam21/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "rs-uzi-prilipac-ulaz",
+      "name": "Užice & Požega (Prilipac) — Ulaz na Miloš Veliki",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "UZICE",
+      "city_name": "Užice & Divčibare",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Autoput A2 (Miloš Veliki)",
+        "Užice — Požega — Čačak — Beograd"
+      ],
+      "municipality": "Požega / Užice",
+      "category": "HIGHWAYS",
+      "direction": "Čeona naplatna stanica Prilipac — ulazak iz Užica i Požege na autoput A2 ka Beogradu",
+      "poster_url": "https://cam.bitinfo.co.rs/front_pan_cam22/index.jpg",
+      "coordinates": {
+        "lat": 43.8311,
+        "lon": 20.0688
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam22/index.m3u8",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam22/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
+          "headers": {
+            "Referer": "https://kamere.toll4all.com/",
+            "Origin": "https://kamere.toll4all.com"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://kamere.toll4all.com/",
+        "Origin": "https://kamere.toll4all.com"
+      }
+    },
+    {
+      "id": "rs-uzi-divcibare-centar",
+      "name": "Divčibare — Centar & Planina Maljen",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "UZICE",
+      "city_name": "Užice & Divčibare",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Valjevska ulica",
+        "Divčibare centar",
+        "Planina Maljen"
+      ],
+      "municipality": "Divčibare, Valjevo",
+      "category": "SQUARES",
+      "direction": "Pogled uživo na centar planinskog odmarališta Divčibare na Maljenu (980 m)",
+      "poster_url": "https://kamere.mojedivcibare.com/kam.jpg",
+      "coordinates": {
+        "lat": 44.1044,
+        "lon": 19.9917
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://kamere.mojedivcibare.com/kam.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1672910649/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-uzi-divcibare-skistaza",
+      "name": "Divčibare — Ski staza Crni vrh",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "UZICE",
+      "city_name": "Užice & Divčibare",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Ski staza Crni vrh",
+        "Divčibare Ski Resort",
+        "Vrh Crni vrh (1.096 m)"
+      ],
+      "municipality": "Divčibare, Valjevo",
+      "category": "SQUARES",
+      "direction": "Pogled na podnožje ski-staze Crni vrh i žičaru na Divčibarama",
+      "poster_url": "https://kamere.mojedivcibare.com/skistaza.jpg",
+      "coordinates": {
+        "lat": 44.1089,
+        "lon": 20.0169
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://kamere.mojedivcibare.com/skistaza.jpg",
+          "interval_ms": 8000,
+          "cache_buster_param": "_"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-kraljev-trg-live",
+      "name": "Zlatibor — Kraljev trg & Zlatiborsko jezero",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "ZLATIBOR",
+      "city_name": "Zlatibor",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Kraljev trg",
+        "Zlatiborsko jezero",
+        "Šetalište"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "SQUARES",
+      "direction": "24/7 uživo prenos sa Kraljevog trga, promenade i jezera u centru Zlatibora",
+      "poster_url": "https://i.ytimg.com/vi/mJ8EEWSXrfg/hqdefault.jpg",
+      "coordinates": {
+        "lat": 43.7275,
+        "lon": 19.7055
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=mJ8EEWSXrfg"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@ZlatiborRs/streams?match=Kraljev|Live kamera|Zlatibor"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live5452.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-kotroman-ulaz",
+      "name": "Mokra Gora (GP Kotroman) — Koridor E-761",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "ZLATIBOR",
+      "city_name": "Zlatibor",
+      "quality": "SD",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Državni put I B-28 / E-761",
+        "Kremna — Mokra Gora — Kotroman"
+      ],
+      "municipality": "Mokra Gora / Užice",
+      "category": "HIGHWAYS",
+      "direction": "Zapadni planinski koridor E-761 pored Mokre Gore i Šarganske osmice — ulaz u Srbiju",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1640359624/original.jpg",
+      "coordinates": {
+        "lat": 43.7484,
+        "lon": 19.4023
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://kamere.mup.gov.rs:4443/Kotroman/kotroman1.m3u8"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-tornik-panorama",
+      "name": "Ski centar Tornik — Vrh (1.496 m) & Čigota",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "ZLATIBOR",
+      "city_name": "Zlatibor",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Vrh Tornik (1.496 m)",
+        "Gold Gondola izlaz",
+        "Pogled ka Čigoti"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "SQUARES",
+      "direction": "Panoramska kamera sa najvišeg vrha Zlatibora (Tornik 1.496 m) ka grebenu Čigote",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1390661695/original.jpg",
+      "coordinates": {
+        "lat": 43.7318,
+        "lon": 19.7113
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1390661695/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-tornik-polaz",
+      "name": "Ski centar Tornik — Polaz šestosedne žičare",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "ZLATIBOR",
+      "city_name": "Zlatibor",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Ski centar Tornik",
+        "Ribničko jezero — Tornik",
+        "Šestosedna žičara"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "SQUARES",
+      "direction": "720p HD pogled na polaznu stanicu žičare i dojezd ski-staza na Torniku",
+      "poster_url": "https://www.skijalistasrbije.rs/1kop.php?pic=TornikPolaz",
+      "coordinates": {
+        "lat": 43.7225,
+        "lon": 19.7042
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.skijalistasrbije.rs/1kop.php?pic=TornikPolaz",
+          "interval_ms": 15000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "rs-zla-park-centar",
+      "name": "Zlatibor — Borova šuma & Centralni park",
+      "country": "SERBIA",
+      "country_name": "Serbia",
+      "country_iso": "RS",
+      "city": "ZLATIBOR",
+      "city_name": "Zlatibor",
+      "quality": "HD_720P",
+      "timezone": "Europe/Belgrade",
+      "streets": [
+        "Miladina Pećinara",
+        "Jezero — Park",
+        "Zlatibor centar"
+      ],
+      "municipality": "Čajetina, Zlatibor",
+      "category": "BOULEVARDS",
+      "direction": "Pogled preko centralnog parka i borove šume u turističkom centru Zlatibora",
+      "poster_url": "https://cdn.skylinewebcams.com/live5452.jpg",
+      "coordinates": {
+        "lat": 43.7268,
+        "lon": 19.706
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cdn.skylinewebcams.com/live5452.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1640359624/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
       "id": "ru-mow-kremlin-earthcam",
       "name": "Moscow Kremlin, St. Basil's & Moskva River",
       "country": "RUSSIA",
@@ -3534,6 +4512,65 @@
         {
           "type": "RUTUBE_LIVE",
           "url": "https://rutube.ru/video/92e79cc0d122fb94647b79d4e7778773/"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-nevsky-livepoints",
+      "name": "Nevsky Prospekt — Central Promenade & Kazan Quarter",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Nevsky Prospekt",
+        "Kazanskaya Square Approach",
+        "Malaya Konyushennaya"
+      ],
+      "municipality": "Tsentralny District, Saint Petersburg",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p view along central Nevsky Prospekt pedestrian sidewalks and avenue traffic",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/80/a0/80a08fe35b05b6e571528165d07f3b42.jpg",
+      "coordinates": {
+        "lat": 59.9355,
+        "lon": 30.3268
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/f5c29b520639a5f81d80cd20e198312b/"
+        }
+      ]
+    },
+    {
+      "id": "ru-spb-pionerskaya-avenues",
+      "name": "Pionerskaya — Ispytateley & Kolomyazhsky Prospekt",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "SAINT_PETERSBURG",
+      "quality": "FHD_1080P",
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Prospekt Ispytateley",
+        "Kolomyazhsky Prospekt",
+        "Pionerskaya Metro Hub"
+      ],
+      "municipality": "Primorsky District, Saint Petersburg",
+      "category": "HIGHWAYS",
+      "direction": "High-angle 1080p intersection view of tramways and wide avenues at Pionerskaya in northern Saint Petersburg",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-10-05/65/21/6521bda8df240077933e6590125f6bc1.jpg",
+      "coordinates": {
+        "lat": 60.0025,
+        "lon": 30.2965
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/9cb1d5d561ecfa81ec7a98bc6999a6e0/"
         }
       ]
     },
@@ -4082,6 +5119,254 @@
           "url": "https://rec.maglan.ru/site/screenshot.html?guid=66f62f890e0d76418f70",
           "interval_ms": 12000,
           "cache_buster_param": "rnd"
+        }
+      ]
+    },
+    {
+      "id": "ru-asf-lenin-square-kremlin",
+      "name": "Lenin Square & White-Stone Astrakhan Kremlin",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "ASTRAKHAN",
+      "city_name": "Astrakhan",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Astrakhan",
+      "streets": [
+        "Lenin Square",
+        "Astrakhan Kremlin",
+        "Admiralteyskaya Street"
+      ],
+      "municipality": "Kirovsky District, Astrakhan (Volga Delta)",
+      "category": "SQUARES",
+      "direction": "Live 1080p view across Lenin Square fountains toward the white walls and belfry of the Astrakhan Kremlin",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/b0/f1/b0f1bbe9bf39362ec7f003c78d95d623.jpg",
+      "coordinates": {
+        "lat": 46.3478,
+        "lon": 48.0335
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/25817fc2c4fc9a1af4b7d3addbb9071d/"
+        }
+      ]
+    },
+    {
+      "id": "ru-cek-lenina-susu-spire",
+      "name": "Prospekt Lenina & South Ural State University Spire",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "CHELYABINSK",
+      "city_name": "Chelyabinsk",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Yekaterinburg",
+      "streets": [
+        "Prospekt Lenina",
+        "SUSU Main Building Spire",
+        "Gagarin Park Gateway"
+      ],
+      "municipality": "Tsentralny District, Chelyabinsk",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p view along Prospekt Lenina framing the monumental spire of South Ural State University",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/c3/62/c362e551c438d9f1da81ab3fab7d3a2c.jpg",
+      "coordinates": {
+        "lat": 55.1604,
+        "lon": 61.3703
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/c40eac95b8221c8999a39c0125b5e380/"
+        }
+      ]
+    },
+    {
+      "id": "ru-goj-kremlin-volga",
+      "name": "Nizhny Novgorod Kremlin & Volga Confluence",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "NIZHNY_NOVGOROD",
+      "city_name": "Nizhny Novgorod",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Nizhny Novgorod Kremlin",
+        "Nizhne-Volzhskaya Embankment",
+        "Chkalov Staircase"
+      ],
+      "municipality": "Nizhegorodsky District, Nizhny Novgorod",
+      "category": "SQUARES",
+      "direction": "Live 1080p panorama of the red-brick Nizhny Novgorod Kremlin towers above the Volga River",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/f2/0f/f20fad3b5352344f4c4303158695b64d.jpg",
+      "coordinates": {
+        "lat": 56.3287,
+        "lon": 44.002
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/fbfe392c5537cde6a2ebda9be7f8163c/"
+        }
+      ]
+    },
+    {
+      "id": "ru-ovb-lenin-square",
+      "name": "Lenin Square & Novosibirsk Opera House",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "NOVOSIBIRSK",
+      "city_name": "Novosibirsk",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Novosibirsk",
+      "streets": [
+        "Lenin Square",
+        "Krasny Prospekt",
+        "Vokzalnaya Magistral"
+      ],
+      "municipality": "Tsentralny District, Novosibirsk",
+      "category": "SQUARES",
+      "direction": "24/7 live Siberian capital view across Lenin Square, Krasny Prospekt, and the Opera & Ballet Theatre dome",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-07-22/ce/8e/ce8e349dbb1665e5df5216596c807ca4.jpg",
+      "coordinates": {
+        "lat": 55.0302,
+        "lon": 82.9204
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/627e3e6cfcbdf991f5bc560182570dfc/"
+        }
+      ]
+    },
+    {
+      "id": "ru-oms-yubileyny-irtysh",
+      "name": "Lenina Street, Yubileyny Bridge & Irtysh River",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "OMSK",
+      "city_name": "Omsk",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Omsk",
+      "streets": [
+        "Lenina Street",
+        "Yubileyny Bridge",
+        "Om & Irtysh Confluence"
+      ],
+      "municipality": "Tsentralny District, Omsk",
+      "category": "BRIDGES",
+      "direction": "Live 1080p view over historic Lenina Street, Yubileyny Bridge, and the Irtysh River in central Omsk",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/3b/b5/3bb50779c8e594bc08f342ca9fbee79d.jpg",
+      "coordinates": {
+        "lat": 54.9822,
+        "lon": 73.3742
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/e87348ddde6344a5d236b65c77cec482/"
+        }
+      ]
+    },
+    {
+      "id": "ru-aer-cablecar-panorama",
+      "name": "Sochi — Arboretum Ropeway & Black Sea Panorama",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "SOCHI",
+      "city_name": "Sochi",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Europe/Moscow",
+      "streets": [
+        "Kurortny Prospekt",
+        "Sochi Dendrarium Ropeway",
+        "Black Sea Coast"
+      ],
+      "municipality": "Khostinsky District, Sochi",
+      "category": "SQUARES",
+      "direction": "Live 1080p elevated panorama from the Sochi Arboretum ropeway overlooking sub-tropical parks and the Black Sea",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/95/a4/95a4dc14e34f1cb1567aa3e5ea212ee6.jpg",
+      "coordinates": {
+        "lat": 43.5714,
+        "lon": 39.7429
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/49324935661e2c9527b171c8370e9995/"
+        }
+      ]
+    },
+    {
+      "id": "ru-ufa-chernikovka-avenue",
+      "name": "Chernikovka & Pervomayskaya Grand Boulevard",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "UFA",
+      "city_name": "Ufa",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Yekaterinburg",
+      "streets": [
+        "Pervomayskaya Street",
+        "Chernikovka District",
+        "Prospekt Oktyabrya Corridor"
+      ],
+      "municipality": "Kalininsky / Ordzhonikidzevsky, Ufa",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p elevated view across northern Ufa's neoclassical Chernikovka avenues",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/62/c1/62c13a5791a2add406499c2a2272e0a6.jpg",
+      "coordinates": {
+        "lat": 54.8156,
+        "lon": 56.0689
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/de2a6a4aa61c1d1ed991ce7cc10fb822/"
+        }
+      ]
+    },
+    {
+      "id": "ru-vvo-golden-horn-bay",
+      "name": "Golden Horn Bay & Zolotoy Bridge Panorama",
+      "country": "RUSSIA",
+      "country_name": "Russia",
+      "country_iso": "RU",
+      "city": "VLADIVOSTOK",
+      "city_name": "Vladivostok",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Vladivostok",
+      "streets": [
+        "Zolotoy Rog (Golden Horn Bay)",
+        "Zolotoy Cable-Stayed Bridge",
+        "Svetlanskaya Embankment"
+      ],
+      "municipality": "Leninsky / Frunzensky, Vladivostok",
+      "category": "BRIDGES",
+      "direction": "24/7 Pacific Far East panorama across Golden Horn Bay harbor and the Zolotoy suspension bridge",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/e9/cf/e9cfee56647bb69e0c8b33a90e564e73.jpg",
+      "coordinates": {
+        "lat": 43.1118,
+        "lon": 131.8967
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/06efa538a615caa5880c2c5ba29d6b75/"
         }
       ]
     },
@@ -5924,18 +7209,18 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
-          "interval_ms": 30000,
-          "cache_buster_param": "t"
-        },
-        {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=a6k2evUSFOU"
         },
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=l6Hf0ymcwVQ"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.rbb24.de/include/webcam/fsz/hugesize_logo.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
         }
       ]
     },
@@ -5995,14 +7280,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=tw9PIVnDbbA"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1360420099/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=tw9PIVnDbbA"
         }
       ]
     },
@@ -6364,6 +7649,520 @@
       ]
     },
     {
+      "id": "ge-bak-ski-ropeway",
+      "name": "Bakuriani — Ski Track & Mountain Ropeway",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "BAKURIANI",
+      "city_name": "Bakuriani",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Bakuriani Ski Track",
+        "Didveli / Kokhta Corridor",
+        "Trialeti Range"
+      ],
+      "municipality": "Bakuriani, Borjomi",
+      "category": "SQUARES",
+      "direction": "Live 1080p view of skiers, illuminated pistes, and mountain ropeway in Bakuriani",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani2.jpg",
+      "coordinates": {
+        "lat": 41.7452,
+        "lon": 43.5315
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani2.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani2.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/bakuriani/"
+      }
+    },
+    {
+      "id": "ge-bak-residence",
+      "name": "Bakuriani — Aghmashenebeli Street & Pine Valley",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "BAKURIANI",
+      "city_name": "Bakuriani",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Davit Aghmashenebeli Street",
+        "Bakuriani Residence",
+        "Lesser Caucasus"
+      ],
+      "municipality": "Bakuriani, Borjomi",
+      "category": "BOULEVARDS",
+      "direction": "Live resort view across Bakuriani's central valley and pine-covered Lesser Caucasus slopes",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
+      "coordinates": {
+        "lat": 41.7478,
+        "lon": 43.5292
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani1.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/bakuriani/"
+      }
+    },
+    {
+      "id": "ge-bak-alpine-slopes",
+      "name": "Bakuriani — Upper Resort Panorama",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "BAKURIANI",
+      "city_name": "Bakuriani",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Koba Tsakadze Street",
+        "Bakuriani Ring",
+        "Kokhta Foothills"
+      ],
+      "municipality": "Bakuriani, Borjomi",
+      "category": "SQUARES",
+      "direction": "Live mountain weather and upper resort panorama in Bakuriani at 1,700 m",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani3.jpg",
+      "coordinates": {
+        "lat": 41.7435,
+        "lon": 43.534
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani3.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani3.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/bakuriani/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/bakuriani/"
+      }
+    },
+    {
+      "id": "ge-bus-tower-ptz",
+      "name": "Batumi Tower — Miracle Park & Black Sea (PTZ)",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "BATUMI",
+      "city_name": "Batumi",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Batumi Boulevard",
+        "Miracle Park",
+        "Alphabetic Tower",
+        "Ninoshvili Street"
+      ],
+      "municipality": "Old Boulevard, Batumi",
+      "category": "SQUARES",
+      "direction": "Rotating 1080p high-rise panorama across Batumi Boulevard, Alphabetic Tower, and Black Sea port",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi3.jpg",
+      "coordinates": {
+        "lat": 41.6525,
+        "lon": 41.6358
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/batumi3.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi3.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/batumi/"
+      }
+    },
+    {
+      "id": "ge-bus-bay-skyline",
+      "name": "Batumi Bay — Tamar Mepe Seafront & Skyline",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "BATUMI",
+      "city_name": "Batumi",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Tamar Mepe Avenue",
+        "Batumi Bay",
+        "Batumi Sea Port Horizon"
+      ],
+      "municipality": "Makhinjauri / Batumi Bay",
+      "category": "BRIDGES",
+      "direction": "Wide coastal panorama across Batumi Bay looking southwest toward the Batumi skyscraper skyline",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi.jpg",
+      "coordinates": {
+        "lat": 41.6625,
+        "lon": 41.6812
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/batumi.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/batumi.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/batumi/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/batumi/"
+      }
+    },
+    {
+      "id": "ge-gud-resort-slopes-1",
+      "name": "Gudauri Ski Resort — Main Alpine Slopes",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "GUDAURI",
+      "city_name": "Gudauri & Greater Caucasus",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Georgian Military Highway (E117)",
+        "Gudauri Ski Slopes",
+        "Pirveli Station"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "SQUARES",
+      "direction": "Live high-altitude view of Gudauri ski runs and Greater Caucasus mountain ridges",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri.jpg",
+      "coordinates": {
+        "lat": 42.4765,
+        "lon": 44.484
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/gudauri.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/gudauri/"
+      }
+    },
+    {
+      "id": "ge-gud-resort-slopes-2",
+      "name": "Gudauri Ski Resort — Upper Valley & Lifts",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "GUDAURI",
+      "city_name": "Gudauri & Greater Caucasus",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Upper Gudauri",
+        "Soliko Chairlift",
+        "Greater Caucasus"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "HIGHWAYS",
+      "direction": "Live alpine panorama over Upper Gudauri snowfields and chairlift corridors",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri2.jpg",
+      "coordinates": {
+        "lat": 42.478,
+        "lon": 44.487
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/gudauri2.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri2.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/gudauri/"
+      }
+    },
+    {
+      "id": "ge-gud-kudebi-vitamin",
+      "name": "Mount Kudebi — Cafe Vitamin Ridge (3,006 m)",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "GUDAURI",
+      "city_name": "Gudauri & Greater Caucasus",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Mount Kudebi Summit Ridge",
+        "Cafe Vitamin",
+        "Kobi-Gudauri Pass"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "SQUARES",
+      "direction": "High-mountain 3,000 m weather and summit ridge broadcast from Kudebi above Gudauri",
+      "poster_url": "https://i.ytimg.com/vi/7uoyrER_QB4/hqdefault.jpg",
+      "coordinates": {
+        "lat": 42.4952,
+        "lon": 44.4764
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=7uoyrER_QB4"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Cafe_Vitamin_Gudauri/streams?match=Vitamin|Gudauri"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.gudauri.ru/images/webcam/mta_vitamin.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "ge-gud-soliko-lift",
+      "name": "Gudauri — Soliko Ski Lift & Snow Park (2,260 m)",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "GUDAURI",
+      "city_name": "Gudauri & Greater Caucasus",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Soliko Mid-Station",
+        "Kudebi Approach",
+        "Gudauri Bowl"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "HIGHWAYS",
+      "direction": "Live 1080p alpine broadcast at Soliko ski lift station (2,260 m) in central Gudauri",
+      "poster_url": "https://i.ytimg.com/vi/vBVWcSjPAZM/hqdefault.jpg",
+      "coordinates": {
+        "lat": 42.4878,
+        "lon": 44.4805
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=vBVWcSjPAZM"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Cafe_Vitamin_Gudauri/streams?match=Soliko"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.gudauri.ru/images/webcam/mta_soliko.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "ge-kut-aghmashenebeli",
+      "name": "Kutaisi — Davit Aghmashenebeli Palm Avenue",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "KUTAISI",
+      "city_name": "Kutaisi & Svaneti",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Davit Aghmashenebeli Avenue",
+        "Palm Boulevard",
+        "Central Kutaisi"
+      ],
+      "municipality": "Kutaisi, Imereti",
+      "category": "BOULEVARDS",
+      "direction": "Live 1080p view along Kutaisi's palm-lined Davit Aghmashenebeli Avenue and bike corridor",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/kutaisi1.jpg",
+      "coordinates": {
+        "lat": 42.253,
+        "lon": 42.6905
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/kutaisi1.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/kutaisi/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/kutaisi1.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/kutaisi/"
+          }
+        }
+      ],
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/kutaisi/"
+      }
+    },
+    {
+      "id": "ge-kut-maysuradze-skyline",
+      "name": "Kutaisi — Rioni Valley & Maysuradze Skyline",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "KUTAISI",
+      "city_name": "Kutaisi & Svaneti",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Maysuradze Street",
+        "Rioni River Valley",
+        "Bagrati Horizon"
+      ],
+      "municipality": "Kutaisi, Imereti",
+      "category": "SQUARES",
+      "direction": "Elevated 24/7 panorama across Kutaisi rooftops and the Imereti foothills",
+      "poster_url": "https://i.ytimg.com/vi/e0cDm8bDC34/hqdefault.jpg",
+      "coordinates": {
+        "lat": 42.2695,
+        "lon": 42.7082
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=e0cDm8bDC34"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/channel/UCX9DH3hxTALrso7sel64jLw/live"
+        }
+      ]
+    },
+    {
+      "id": "ge-kut-mestia-hatsvali",
+      "name": "Mestia (Svaneti) — Zuruldi Ridge & Mount Ushba (2,335 m)",
+      "country": "GEORGIA",
+      "country_name": "Georgia",
+      "country_iso": "GE",
+      "city": "KUTAISI",
+      "city_name": "Kutaisi & Svaneti",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "timezone": "Asia/Tbilisi",
+      "streets": [
+        "Hatsvali–Zuruldi Top Station",
+        "Mount Ushba (4,710 m)",
+        "Upper Svaneti"
+      ],
+      "municipality": "Mestia, Upper Svaneti",
+      "category": "SQUARES",
+      "direction": "Panoramic 2,335 m Greater Caucasus summit view from Zuruldi toward twin-peaked Mount Ushba",
+      "poster_url": "https://panodata.panomax.com/cams/5419/recent_reduced.jpg",
+      "coordinates": {
+        "lat": 43.0181,
+        "lon": 42.7428
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://panodata.panomax.com/cams/5419/recent_reduced.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
       "id": "am-evn-skyline-ararat",
       "name": "Yerevan City Skyline — Arabkir & Mount Ararat Horizon",
       "country": "ARMENIA",
@@ -6450,6 +8249,99 @@
       ]
     },
     {
+      "id": "am-evn-kentron-skyline",
+      "name": "Central Yerevan — Kentron Skyline & Ararat Valley",
+      "country": "ARMENIA",
+      "country_name": "Armenia",
+      "country_iso": "AM",
+      "city": "YEREVAN",
+      "quality": "FHD_1080P",
+      "timezone": "Asia/Yerevan",
+      "streets": [
+        "Kentron District",
+        "Mashtots Avenue",
+        "Republic Square Quarter"
+      ],
+      "municipality": "Kentron, Yerevan",
+      "category": "SQUARES",
+      "direction": "1080p weather and skyline view across downtown Yerevan toward the Ararat plain",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1719832822/original.jpg",
+      "coordinates": {
+        "lat": 40.1811,
+        "lon": 44.5136
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1719832822/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "am-evn-tsaghkadzor-teghenis",
+      "name": "Tsaghkadzor — Mount Teghenis Alpine Slopes",
+      "country": "ARMENIA",
+      "country_name": "Armenia",
+      "country_iso": "AM",
+      "city": "YEREVAN",
+      "quality": "HD_720P",
+      "timezone": "Asia/Yerevan",
+      "streets": [
+        "Mount Teghenis (2,819 m)",
+        "Tsaghkadzor Ski Slopes",
+        "Kecharis Highlands"
+      ],
+      "municipality": "Tsaghkadzor, Kotayk",
+      "category": "HIGHWAYS",
+      "direction": "Alpine weather snapshot overlooking the Mount Teghenis ski slopes in Tsaghkadzor",
+      "poster_url": "https://imgproxy.windy.com/_/full/plain/current/1579077347/original.jpg",
+      "coordinates": {
+        "lat": 40.5332,
+        "lon": 44.7049
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1579077347/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
+        }
+      ]
+    },
+    {
+      "id": "am-evn-byurakan-allsky",
+      "name": "Byurakan Astrophysical Observatory — 2.6m Dome AllSky",
+      "country": "ARMENIA",
+      "country_name": "Armenia",
+      "country_iso": "AM",
+      "city": "YEREVAN",
+      "quality": "HD_720P",
+      "timezone": "Asia/Yerevan",
+      "streets": [
+        "Byurakan Observatory",
+        "ZTA-2.6m Telescope Dome",
+        "Southern Slope of Aragats"
+      ],
+      "municipality": "Byurakan, Aragatsotn",
+      "category": "SQUARES",
+      "direction": "Astronomical sky and dome horizon camera at Viktor Ambartsumian Byurakan Observatory (1,405 m)",
+      "poster_url": "https://www.bao.am/ALLSKY/AllSkyCurrentImage.JPG",
+      "coordinates": {
+        "lat": 40.3304,
+        "lon": 44.2734
+      },
+      "streams": [
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.bao.am/ALLSKY/AllSkyCurrentImage.JPG",
+          "interval_ms": 60000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
       "id": "us-nyc-times-square-4k",
       "name": "Times Square North — Broadway & 7th Avenue 4K",
       "country": "USA",
@@ -6472,18 +8364,18 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://imgproxy.windy.com/_/full/plain/current/1793910950/original.jpg",
-          "interval_ms": 60000,
-          "cache_buster_param": "v"
-        },
-        {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=ZxCeWQ3Lcig"
         },
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=KHy_n-EMWY8"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793910950/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },
@@ -6613,7 +8505,7 @@
       "municipality": "Midtown Manhattan / Long Island City",
       "category": "BRIDGES",
       "direction": "Panoramic view across the East River toward the Empire State Building",
-      "poster_url": "https://i.ytimg.com/vi/_-elt-iymj0/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/VGnFLdQW39A/hqdefault.jpg",
       "coordinates": {
         "lat": 40.745,
         "lon": -73.9585
@@ -6621,7 +8513,13 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=_-elt-iymj0"
+          "url": "https://www.youtube.com/watch?v=VGnFLdQW39A"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1793910950/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },
@@ -7019,8 +8917,8 @@
           "type": "HLS",
           "url": "https://wzmedia.dot.ca.gov/D7/CCTV-101.stream/playlist.m3u8",
           "headers": {
-            "Referer": "https://cwwp2.dot.ca.gov/",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Referer": "https://cwwp2.dot.ca.gov/"
           }
         }
       ]
@@ -7346,14 +9244,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=vk5BHoDxXf0"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1689176350/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=vk5BHoDxXf0"
         }
       ]
     },
@@ -7406,18 +9304,18 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://imgproxy.windy.com/_/full/plain/current/1701618298/original.jpg",
-          "interval_ms": 60000,
-          "cache_buster_param": "v"
-        },
-        {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=yzxiAJAXXtQ"
         },
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/channel/UC3UpyHYs2n0i5Z1IPJGJfOQ/live"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1701618298/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },
@@ -7436,7 +9334,7 @@
       "municipality": "Jongno-gu, Seoul",
       "category": "SQUARES",
       "direction": "4K UHD view over historic Jongno rooftops and forested Bugaksan peaks",
-      "poster_url": "https://i.ytimg.com/vi/sVrpfQ-sjs0/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/5gVrWGRZo9s/hqdefault.jpg",
       "coordinates": {
         "lat": 37.5805,
         "lon": 126.9818
@@ -7444,7 +9342,13 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=sVrpfQ-sjs0"
+          "url": "https://www.youtube.com/watch?v=5gVrWGRZo9s"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1689176350/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },
@@ -7605,14 +9509,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=ErHJBXTmm2Q"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1349760603/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=ErHJBXTmm2Q"
         }
       ]
     },
@@ -7703,14 +9607,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=_k-5U7IeK8g"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1793916441/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=_k-5U7IeK8g"
         }
       ]
     },
@@ -7757,7 +9661,7 @@
       "municipality": "Chiyoda-ku, Tokyo",
       "category": "BOULEVARDS",
       "direction": "2K QHD 24/7 live street view across Akihabara Electric Town and Central Exit",
-      "poster_url": "https://i.ytimg.com/vi/bYoM8tq2l8E/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/Vo1VJLDZ9l4/hqdefault.jpg",
       "coordinates": {
         "lat": 35.6986,
         "lon": 139.7711
@@ -7765,7 +9669,7 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=bYoM8tq2l8E"
+          "url": "https://www.youtube.com/watch?v=Vo1VJLDZ9l4"
         },
         {
           "type": "YOUTUBE_LIVE",
@@ -7828,18 +9732,18 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://imgproxy.windy.com/_/full/plain/current/1586454316/original.jpg",
-          "interval_ms": 60000,
-          "cache_buster_param": "v"
-        },
-        {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=5B4LmH4JbnY"
         },
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/watch?v=dfVK7ld38Ys"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1586454316/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },
@@ -7865,14 +9769,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=ZN4gh5IOowM"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1793916374/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=ZN4gh5IOowM"
         }
       ]
     },
@@ -7925,14 +9829,14 @@
       },
       "streams": [
         {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=Pmdk2kHf-l8"
+        },
+        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1586457854/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=Pmdk2kHf-l8"
         }
       ]
     },
@@ -8017,7 +9921,7 @@
       "municipality": "Shimogyo-ku, Kyoto",
       "category": "HIGHWAYS",
       "direction": "East-West along Tokaido Shinkansen, JR Kyoto Line, and Sagano Line tracks",
-      "poster_url": "https://i.ytimg.com/vi/TLkLbIDOb-I/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/A88IWO3fFUc/hqdefault.jpg",
       "coordinates": {
         "lat": 34.9852,
         "lon": 135.7584
@@ -8025,7 +9929,7 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=TLkLbIDOb-I"
+          "url": "https://www.youtube.com/watch?v=A88IWO3fFUc"
         },
         {
           "type": "YOUTUBE_LIVE",
@@ -8339,41 +10243,6 @@
         {
           "type": "YOUTUBE_LIVE",
           "url": "https://www.youtube.com/@mbsnews/streams?match=%E4%BC%8A%E4%B8%B9%E7%A9%BA%E6%B8%AF%7CItami"
-        }
-      ]
-    },
-    {
-      "id": "au-syd-harbour-mcmahons-point",
-      "name": "Sydney Harbour Bridge & Opera House — McMahons Point",
-      "country": "AUSTRALIA",
-      "country_name": "Australia",
-      "country_iso": "AU",
-      "city": "SYDNEY",
-      "city_name": "Sydney",
-      "quality": "UHD_4K",
-      "featured": true,
-      "timezone": "Australia/Sydney",
-      "streets": [
-        "Blues Point Road",
-        "East Crescent Street",
-        "Port Jackson"
-      ],
-      "municipality": "North Sydney",
-      "category": "BRIDGES",
-      "direction": "Southeast across Port Jackson framing Sydney Harbour Bridge and Sydney Opera House",
-      "poster_url": "https://i.ytimg.com/vi/0F-vs59QJas/hqdefault.jpg",
-      "coordinates": {
-        "lat": -33.8499,
-        "lon": 151.2039
-      },
-      "streams": [
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=0F-vs59QJas"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@SydneyHarbourLIVE/live"
         }
       ]
     },
@@ -9017,7 +10886,7 @@
       "municipality": "Old City, Jerusalem",
       "category": "SQUARES",
       "direction": "East across the Jewish Quarter prayer plaza toward the Herodian limestone Western Wall",
-      "poster_url": "https://i.ytimg.com/vi/LMHUcDktP-w/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/77akujLn4k8/hqdefault.jpg",
       "coordinates": {
         "lat": 31.7767,
         "lon": 35.2345
@@ -9025,15 +10894,15 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=LMHUcDktP-w"
+          "url": "https://www.youtube.com/watch?v=77akujLn4k8"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@The.Western.Wall.TheKotel/streams?match=Main%20Plaza%7CWestern%20Wall%7CKotel%7C%D7%94%D7%9B%D7%95%D7%AA%D7%9C"
+          "url": "https://www.youtube.com/watch?v=AKGqd20ik_A"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@The.Western.Wall.TheKotel/live"
+          "url": "https://www.youtube.com/@Mt.ofOlivesPrayerBridge/streams?match=Western%20Wall%7CKotel"
         }
       ]
     },
@@ -9504,7 +11373,7 @@
       "municipality": "Olivais, Lisboa",
       "category": "HIGHWAYS",
       "direction": "Across Runway 02/20 and active taxiways at Lisbon Humberto Delgado Airport",
-      "poster_url": "https://i.ytimg.com/vi/IMrR2A-afgg/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/skI9dYcf6cA/hqdefault.jpg",
       "coordinates": {
         "lat": 38.7739,
         "lon": -9.1352
@@ -9512,7 +11381,7 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=IMrR2A-afgg"
+          "url": "https://www.youtube.com/watch?v=skI9dYcf6cA"
         },
         {
           "type": "YOUTUBE_LIVE",
@@ -9578,7 +11447,7 @@
       "municipality": "Simpson Bay",
       "category": "BOULEVARDS",
       "direction": "East across Maho Beach and Beacon Hill Road into Runway 10 threshold",
-      "poster_url": "https://i.ytimg.com/vi/N27ReV6sfYQ/hqdefault.jpg",
+      "poster_url": "https://i.ytimg.com/vi/EfR9f8oRs3A/hqdefault.jpg",
       "coordinates": {
         "lat": 18.0385,
         "lon": -63.1185
@@ -9586,7 +11455,7 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=N27ReV6sfYQ"
+          "url": "https://www.youtube.com/watch?v=EfR9f8oRs3A"
         },
         {
           "type": "YOUTUBE_LIVE",
@@ -9942,7 +11811,7 @@
     },
     {
       "id": "th-bkk-sukhumvit-skyline-4k",
-      "name": "Bangkok 4K City Skyline",
+      "name": "Sukhumvit Road — Soi 19 Promenade 4K",
       "country": "THAILAND",
       "country_name": "Thailand",
       "country_iso": "TH",
@@ -9954,28 +11823,29 @@
       "streets": [
         "Sukhumvit Road",
         "Soi Sukhumvit 19",
+        "Asok Junction",
         "Khlong Toei Nuea"
       ],
       "municipality": "Watthana, Bangkok",
       "category": "BOULEVARDS",
-      "direction": "West over the Sukhumvit high-rise skyline toward Nana and Pathum Wan",
-      "poster_url": "https://i.ytimg.com/vi/LO6vvUIpmUg/hqdefault.jpg",
+      "direction": "24/7 4K UHD street-level view along Sukhumvit Road at Soi 19 near Asok in central Bangkok",
+      "poster_url": "https://i.ytimg.com/vi/Q71sLS8h9a4/hqdefault.jpg",
       "coordinates": {
         "lat": 13.738,
-        "lon": 100.556
+        "lon": 100.5598
       },
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=LO6vvUIpmUg"
+          "url": "https://www.youtube.com/watch?v=Q71sLS8h9a4"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@bangkok-360/streams?match=Bangkok"
+          "url": "https://www.youtube.com/watch?v=UemFRPrl1hk"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@bangkok-360/live"
+          "url": "https://www.youtube.com/@TheRealSamuiWebcam/streams?match=Soi 19|Sukhumvit|Bangkok"
         }
       ]
     },

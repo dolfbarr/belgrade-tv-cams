@@ -7,35 +7,6 @@
   "timezone": "Australia/Sydney",
   "cameras": [
     {
-      "id": "au-syd-harbour-mcmahons-point",
-      "name": "Sydney Harbour Bridge & Opera House — McMahons Point",
-      "quality": "UHD_4K",
-      "featured": true,
-      "streets": [
-        "Blues Point Road",
-        "East Crescent Street",
-        "Port Jackson"
-      ],
-      "municipality": "North Sydney",
-      "category": "BRIDGES",
-      "direction": "Southeast across Port Jackson framing Sydney Harbour Bridge and Sydney Opera House",
-      "poster_url": "https://i.ytimg.com/vi/0F-vs59QJas/hqdefault.jpg",
-      "coordinates": {
-        "lat": -33.8499,
-        "lon": 151.2039
-      },
-      "streams": [
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=0F-vs59QJas"
-        },
-        {
-          "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@SydneyHarbourLIVE/live"
-        }
-      ]
-    },
-    {
       "id": "au-syd-harbour-kirribilli",
       "name": "Circular Quay & Sydney Harbour — Kirribilli",
       "quality": "UHD_4K",

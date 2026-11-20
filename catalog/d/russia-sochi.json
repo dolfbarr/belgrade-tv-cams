@@ -1,0 +1,35 @@
+{
+  "country": "RUSSIA",
+  "country_name": "Russia",
+  "country_iso": "RU",
+  "city": "SOCHI",
+  "city_name": "Sochi",
+  "timezone": "Europe/Moscow",
+  "cameras": [
+    {
+      "id": "ru-aer-cablecar-panorama",
+      "name": "Sochi — Arboretum Ropeway & Black Sea Panorama",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Kurortny Prospekt",
+        "Sochi Dendrarium Ropeway",
+        "Black Sea Coast"
+      ],
+      "municipality": "Khostinsky District, Sochi",
+      "category": "SQUARES",
+      "direction": "Live 1080p elevated panorama from the Sochi Arboretum ropeway overlooking sub-tropical parks and the Black Sea",
+      "poster_url": "https://pic.rtbcdn.ru/video/2026-08-07/95/a4/95a4dc14e34f1cb1567aa3e5ea212ee6.jpg",
+      "coordinates": {
+        "lat": 43.5714,
+        "lon": 39.7429
+      },
+      "streams": [
+        {
+          "type": "RUTUBE_LIVE",
+          "url": "https://rutube.ru/video/49324935661e2c9527b171c8370e9995/"
+        }
+      ]
+    }
+  ]
+}

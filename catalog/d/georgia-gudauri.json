@@ -1,0 +1,158 @@
+{
+  "country": "GEORGIA",
+  "country_name": "Georgia",
+  "country_iso": "GE",
+  "city": "GUDAURI",
+  "city_name": "Gudauri & Greater Caucasus",
+  "timezone": "Asia/Tbilisi",
+  "cameras": [
+    {
+      "id": "ge-gud-resort-slopes-1",
+      "name": "Gudauri Ski Resort — Main Alpine Slopes",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Georgian Military Highway (E117)",
+        "Gudauri Ski Slopes",
+        "Pirveli Station"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "SQUARES",
+      "direction": "Live high-altitude view of Gudauri ski runs and Greater Caucasus mountain ridges",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/gudauri/"
+      },
+      "coordinates": {
+        "lat": 42.4765,
+        "lon": 44.484
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/gudauri.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ge-gud-resort-slopes-2",
+      "name": "Gudauri Ski Resort — Upper Valley & Lifts",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Upper Gudauri",
+        "Soliko Chairlift",
+        "Greater Caucasus"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "HIGHWAYS",
+      "direction": "Live alpine panorama over Upper Gudauri snowfields and chairlift corridors",
+      "poster_url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri2.jpg",
+      "poster_headers": {
+        "Referer": "https://www.kamerebi.live/gudauri/"
+      },
+      "coordinates": {
+        "lat": 42.478,
+        "lon": 44.487
+      },
+      "streams": [
+        {
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/gudauri2.m3u8",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/gudauri2.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
+          "headers": {
+            "Referer": "https://www.kamerebi.live/gudauri/"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ge-gud-kudebi-vitamin",
+      "name": "Mount Kudebi — Cafe Vitamin Ridge (3,006 m)",
+      "quality": "FHD_1080P",
+      "featured": true,
+      "streets": [
+        "Mount Kudebi Summit Ridge",
+        "Cafe Vitamin",
+        "Kobi-Gudauri Pass"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "SQUARES",
+      "direction": "High-mountain 3,000 m weather and summit ridge broadcast from Kudebi above Gudauri",
+      "poster_url": "https://i.ytimg.com/vi/7uoyrER_QB4/hqdefault.jpg",
+      "coordinates": {
+        "lat": 42.4952,
+        "lon": 44.4764
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=7uoyrER_QB4"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Cafe_Vitamin_Gudauri/streams?match=Vitamin|Gudauri"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.gudauri.ru/images/webcam/mta_vitamin.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    },
+    {
+      "id": "ge-gud-soliko-lift",
+      "name": "Gudauri — Soliko Ski Lift & Snow Park (2,260 m)",
+      "quality": "FHD_1080P",
+      "streets": [
+        "Soliko Mid-Station",
+        "Kudebi Approach",
+        "Gudauri Bowl"
+      ],
+      "municipality": "Gudauri, Greater Caucasus",
+      "category": "HIGHWAYS",
+      "direction": "Live 1080p alpine broadcast at Soliko ski lift station (2,260 m) in central Gudauri",
+      "poster_url": "https://i.ytimg.com/vi/vBVWcSjPAZM/hqdefault.jpg",
+      "coordinates": {
+        "lat": 42.4878,
+        "lon": 44.4805
+      },
+      "streams": [
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/watch?v=vBVWcSjPAZM"
+        },
+        {
+          "type": "YOUTUBE_LIVE",
+          "url": "https://www.youtube.com/@Cafe_Vitamin_Gudauri/streams?match=Soliko"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://www.gudauri.ru/images/webcam/mta_soliko.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "t"
+        }
+      ]
+    }
+  ]
+}
