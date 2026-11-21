@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112100,
-  "updated_at": "2026-11-21T00:01:00Z",
+  "revision": 2026112107,
+  "updated_at": "2026-11-21T07:11:11Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -5053,14 +5053,14 @@
       },
       "streams": [
         {
-          "type": "HLS",
-          "url": "https://live-msk2.camera.rt.ru/public/master.m3u8?sid=3374004d-7835-40d0-88c8-515ad29c4dcd"
-        },
-        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1622614150/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
+        },
+        {
+          "type": "HLS",
+          "url": "https://live-msk2.camera.rt.ru/public/master.m3u8?sid=3374004d-7835-40d0-88c8-515ad29c4dcd"
         }
       ]
     },
