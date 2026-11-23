@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112219,
-  "updated_at": "2026-11-22T19:42:33Z",
+  "revision": 2026112307,
+  "updated_at": "2026-11-23T07:41:11Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -3449,15 +3449,15 @@
       "streams": [
         {
           "type": "SNAPSHOT_POLL",
-          "url": "https://imgproxy.windy.com/_/full/plain/current/1271712581/original.jpg",
-          "interval_ms": 60000,
-          "cache_buster_param": "v"
-        },
-        {
-          "type": "SNAPSHOT_POLL",
           "url": "https://webcam.hopnakop.rs/webcam/feed3.jpg",
           "interval_ms": 8000,
           "cache_buster_param": "_"
+        },
+        {
+          "type": "SNAPSHOT_POLL",
+          "url": "https://imgproxy.windy.com/_/full/plain/current/1271712581/original.jpg",
+          "interval_ms": 60000,
+          "cache_buster_param": "v"
         }
       ]
     },
