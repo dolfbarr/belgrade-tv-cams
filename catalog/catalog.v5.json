@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112323,
-  "updated_at": "2026-11-23T23:56:06Z",
+  "revision": 2026112409,
+  "updated_at": "2026-11-24T09:56:47Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -387,21 +387,21 @@
       },
       "streams": [
         {
-          "type": "HLS",
-          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/zarkovo/playlist.m3u8",
-          "headers": {
-            "Referer": "https://kamere.24sedam.rs/",
-            "Origin": "https://kamere.24sedam.rs",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
-          }
-        },
-        {
           "type": "SNAPSHOT_POLL",
           "url": "https://stream.uzivobeograd.rs/live/cam_4.jpg",
           "interval_ms": 1500,
           "cache_buster_param": "_",
           "headers": {
             "Referer": "https://www.naxi.rs/kamere"
+          }
+        },
+        {
+          "type": "HLS",
+          "url": "https://srbija-nadlanu.ott.solutions/srbija-nadlanu/zarkovo/playlist.m3u8",
+          "headers": {
+            "Referer": "https://kamere.24sedam.rs/",
+            "Origin": "https://kamere.24sedam.rs",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36"
           }
         }
       ]
@@ -427,18 +427,18 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.jpg",
-          "interval_ms": 3000,
-          "cache_buster_param": "_",
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.m3u8",
           "headers": {
             "Referer": "https://kamere.toll4all.com/",
             "Origin": "https://kamere.toll4all.com"
           }
         },
         {
-          "type": "HLS",
-          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.m3u8",
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam6/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
           "headers": {
             "Referer": "https://kamere.toll4all.com/",
             "Origin": "https://kamere.toll4all.com"
