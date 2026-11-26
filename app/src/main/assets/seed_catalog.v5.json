@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112521,
-  "updated_at": "2026-11-25T21:44:58Z",
+  "revision": 2026112608,
+  "updated_at": "2026-11-26T08:20:08Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -1167,17 +1167,17 @@
       },
       "streams": [
         {
-          "type": "HLS",
-          "url": "https://streamer.devnet.rs/hls/trgrepublike.m3u8",
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
           "headers": {
             "Referer": "https://www.naxi.rs/kamere"
           }
         },
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
-          "interval_ms": 1500,
-          "cache_buster_param": "_",
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/trgrepublike.m3u8",
           "headers": {
             "Referer": "https://www.naxi.rs/kamere"
           }
@@ -7719,17 +7719,17 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
-          "interval_ms": 30000,
-          "cache_buster_param": "time",
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani1.m3u8",
           "headers": {
             "Referer": "https://www.kamerebi.live/bakuriani/"
           }
         },
         {
-          "type": "HLS",
-          "url": "https://streaming-hls1.televizia.org/hls/bakuriani1.m3u8",
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
           "headers": {
             "Referer": "https://www.kamerebi.live/bakuriani/"
           }
