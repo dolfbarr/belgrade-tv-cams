@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112608,
-  "updated_at": "2026-11-26T08:20:08Z",
+  "revision": 2026112621,
+  "updated_at": "2026-11-26T21:34:32Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -471,18 +471,18 @@
       },
       "streams": [
         {
-          "type": "HLS",
-          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.m3u8",
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
           "headers": {
             "Referer": "https://kamere.toll4all.com/",
             "Origin": "https://kamere.toll4all.com"
           }
         },
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
-          "interval_ms": 3000,
-          "cache_buster_param": "_",
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.m3u8",
           "headers": {
             "Referer": "https://kamere.toll4all.com/",
             "Origin": "https://kamere.toll4all.com"
@@ -1167,17 +1167,17 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
-          "interval_ms": 1500,
-          "cache_buster_param": "_",
+          "type": "HLS",
+          "url": "https://streamer.devnet.rs/hls/trgrepublike.m3u8",
           "headers": {
             "Referer": "https://www.naxi.rs/kamere"
           }
         },
         {
-          "type": "HLS",
-          "url": "https://streamer.devnet.rs/hls/trgrepublike.m3u8",
+          "type": "SNAPSHOT_POLL",
+          "url": "https://stream.uzivobeograd.rs/live/cam_18.jpg",
+          "interval_ms": 1500,
+          "cache_buster_param": "_",
           "headers": {
             "Referer": "https://www.naxi.rs/kamere"
           }
@@ -11003,11 +11003,11 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=zKGzYuT5tg0"
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Angeli"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Angeli"
+          "url": "https://www.youtube.com/watch?v=zKGzYuT5tg0"
         }
       ]
     },
