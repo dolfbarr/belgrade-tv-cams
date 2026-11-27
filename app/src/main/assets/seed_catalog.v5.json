@@ -1,7 +1,7 @@
 {
   "schema_version": 5,
-  "revision": 2026112621,
-  "updated_at": "2026-11-26T21:34:32Z",
+  "revision": 2026112709,
+  "updated_at": "2026-11-27T09:00:20Z",
   "cameras": [
     {
       "id": "bg-most-na-adi-topcider",
@@ -471,18 +471,18 @@
       },
       "streams": [
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
-          "interval_ms": 3000,
-          "cache_buster_param": "_",
+          "type": "HLS",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.m3u8",
           "headers": {
             "Referer": "https://kamere.toll4all.com/",
             "Origin": "https://kamere.toll4all.com"
           }
         },
         {
-          "type": "HLS",
-          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.m3u8",
+          "type": "SNAPSHOT_POLL",
+          "url": "https://cam.bitinfo.co.rs/front_pan_cam5/index.jpg",
+          "interval_ms": 3000,
+          "cache_buster_param": "_",
           "headers": {
             "Referer": "https://kamere.toll4all.com/",
             "Origin": "https://kamere.toll4all.com"
@@ -5053,14 +5053,14 @@
       },
       "streams": [
         {
-          "type": "HLS",
-          "url": "https://live-msk2.camera.rt.ru/public/master.m3u8?sid=3374004d-7835-40d0-88c8-515ad29c4dcd"
-        },
-        {
           "type": "SNAPSHOT_POLL",
           "url": "https://imgproxy.windy.com/_/full/plain/current/1622614150/original.jpg",
           "interval_ms": 60000,
           "cache_buster_param": "v"
+        },
+        {
+          "type": "HLS",
+          "url": "https://live-msk2.camera.rt.ru/public/master.m3u8?sid=3374004d-7835-40d0-88c8-515ad29c4dcd"
         }
       ]
     },
@@ -7719,17 +7719,17 @@
       },
       "streams": [
         {
-          "type": "HLS",
-          "url": "https://streaming-hls1.televizia.org/hls/bakuriani1.m3u8",
+          "type": "SNAPSHOT_POLL",
+          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
+          "interval_ms": 30000,
+          "cache_buster_param": "time",
           "headers": {
             "Referer": "https://www.kamerebi.live/bakuriani/"
           }
         },
         {
-          "type": "SNAPSHOT_POLL",
-          "url": "https://streaming-hls1.televizia.org/hls/thumbnails/bakuriani1.jpg",
-          "interval_ms": 30000,
-          "cache_buster_param": "time",
+          "type": "HLS",
+          "url": "https://streaming-hls1.televizia.org/hls/bakuriani1.m3u8",
           "headers": {
             "Referer": "https://www.kamerebi.live/bakuriani/"
           }
@@ -11003,11 +11003,11 @@
       "streams": [
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Angeli"
+          "url": "https://www.youtube.com/watch?v=zKGzYuT5tg0"
         },
         {
           "type": "YOUTUBE_LIVE",
-          "url": "https://www.youtube.com/watch?v=zKGzYuT5tg0"
+          "url": "https://www.youtube.com/@iloveyouvenice/streams?match=Angeli"
         }
       ]
     },
